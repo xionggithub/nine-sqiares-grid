@@ -1,10 +1,33 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import { useEffect, StrictMode } from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+// import { initI18n } from './i18n.ts';
+import { bitable } from '@lark-base-open/js-sdk';
+import './index.css';
+import { Suspense } from 'react';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+const rootElement = document.getElementById('root') as HTMLElement;
+const root = ReactDOM.createRoot(rootElement);
+
+function LoadApp() {
+    useEffect(() => {
+        bitable.bridge
+            .getLanguage()
+            .then((lang) => {
+                // initI18n(lang as any);
+            })
+            .catch((e) => {
+                console.log('getLanguage error', e);
+            });
+    }, []);
+
+    return (
+        <StrictMode>
+            <Suspense fallback="loading">
+                <App />
+            </Suspense>
+        </StrictMode>
+    );
+}
+
+root.render(<LoadApp />);
