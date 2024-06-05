@@ -67,9 +67,9 @@ interface ITextConfigStore {
 
 export const useTextConfigStore = create<ITextConfigStore>((set) => ({
   textConfig: {
-    HLeftValue: '',
-    HMiddleValue: '',
-    HRightValue: '',
+    HLeftValue: '能力',
+    HMiddleValue: '能力',
+    HRightValue: '能力',
     VupValue: '',
     VMiddleValue: '',
     VDownValue: '',

@@ -29,6 +29,23 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
     const { datasourceConfig } = useDatasourceConfigStore((state) => state);
     const { textConfig } = useTextConfigStore((state) => state);
 
+    /**
+     * HLeftValue: string,
+     HMiddleValue: string,
+     HRightValue: string,
+     VupValue: string,
+     VMiddleValue: string,
+     VDownValue: string,
+     leftDownValue: string,
+     middleDownValue: string,
+     rightDownValue: string,
+     leftMiddleValue: string,
+     middleMiddleValue: string,
+     rightMiddleValue: string,
+     leftUpValue: string,
+     middleUpValue: string,
+     rightUpValue: string,
+     * */
     return (
         <div
             className="relative flex-1 h-screen grid-container grid"
@@ -57,21 +74,21 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label rotate-label">绩效</div>
+                        <div className="side-bar-label rotate-label">{textConfig.VupValue}</div>
                     </div>
                     <div className="label-container"
                          style={{
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label rotate-label">绩效</div>
+                        <div className="side-bar-label rotate-label">{textConfig.VMiddleValue}</div>
                     </div>
                     <div className="label-container"
                          style={{
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label rotate-label">绩效</div>
+                        <div className="side-bar-label rotate-label">{textConfig.VDownValue }</div>
                     </div>
                 </div>
             </div>
@@ -85,7 +102,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label">能力</div>
+                        <div className="side-bar-label">{textConfig.HLeftValue}</div>
                     </div>
 
                     <div className="label-container"
@@ -93,14 +110,14 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label">能力</div>
+                        <div className="side-bar-label">{textConfig.HMiddleValue}</div>
                     </div>
                     <div className="label-container"
                          style={{
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label">能力</div>
+                        <div className="side-bar-label">{textConfig.HRightValue}</div>
                     </div>
                 </div>
                 <div className="bottom-side-bar-row"
