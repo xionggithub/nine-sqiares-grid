@@ -1,5 +1,39 @@
 import { create } from 'zustand';
 
+export interface IDatasourceType {
+  leftDownValue: any[],
+  middleDownValue: any[],
+  rightDownValue: any[],
+  leftMiddleValue: any[],
+  middleMiddleValue: any[],
+  rightMiddleValue: any[],
+  leftUpValue: any[],
+  middleUpValue: any[],
+  rightUpValue: any[],
+}
+
+interface IDatasourceStore {
+  datasource: IDatasourceType;
+  updateDatasource: (typeConfig: IDatasourceStore) => void;
+}
+
+export const useDatasourceStore = create<IDatasourceStore>((set) => ({
+  datasource: {
+    leftDownValue: [],
+    middleDownValue: [],
+    rightDownValue: [],
+    leftMiddleValue: [],
+    middleMiddleValue: [],
+    rightMiddleValue: [],
+    leftUpValue: [],
+    middleUpValue: [],
+    rightUpValue: [],
+  },
+  updateDatasource: (datasource) => set(() => ({ datasource })),
+}));
+
+
+
 export interface IDatasourceConfigType {
   tableId: string;
   theme: 'light' | 'dark' | 'primary';
@@ -67,9 +101,9 @@ interface ITextConfigStore {
 
 export const useTextConfigStore = create<ITextConfigStore>((set) => ({
   textConfig: {
-    HLeftValue: '能力',
-    HMiddleValue: '能力',
-    HRightValue: '能力',
+    HLeftValue: '',
+    HMiddleValue: '',
+    HRightValue: '',
     VupValue: '',
     VMiddleValue: '',
     VDownValue: '',
