@@ -67,3 +67,83 @@
     gap: 5px;
     flex-wrap: wrap;
 }
+
+
+.selection-title {
+    font-size: 14px;
+    font-weight: 400;
+    font-family: "PingFang SC";
+    line-height: 22px;
+    padding-bottom: 8px;
+}
+
+.selection-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.selection-card {
+    width: 100%;
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    border-radius: 6px;
+    padding: 8px;
+    gap: 6px;
+    background-color: #F5F6F7;
+    border: 1px solid #DEE0E3;
+}
+
+.selection-card-title {
+    font-size: 12px;
+    font-weight: 400;
+    font-family: "PingFang SC";
+    line-height: 20px;
+}
+
+.selection-card-bottom-text {
+    font-size: 12px;
+    font-weight: 400;
+    font-family: "PingFang SC";
+    line-height: 20px;
+    text-align: center;
+    color: #1456F0;
+}
+
+.delete-able-select-container {
+    display: grid;
+    grid-template-columns: auto 15px;
+    column-gap: 15px;
+    align-items: center;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+
+.margin-top-tw {
+    margin-top: 20px;
+}
+
+.margin-bottom-tw {
+    margin-bottom: 20px;
+}
+
+.semi-form-field-label-text {
+    font-family: "PingFang SC";
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    color: #646A73;
+}
+

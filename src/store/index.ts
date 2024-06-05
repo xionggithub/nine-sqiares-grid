@@ -1,120 +1,88 @@
 import { create } from 'zustand';
 
-export interface ITypeConfigType {
+export interface IDatasourceConfigType {
   tableId: string;
-  rowRange: string;
-  title: string;
-  secTitle: string;
-  backGround: string;
-  rowLength: number;
   theme: 'light' | 'dark' | 'primary';
-  control: Array<'indicator' | 'arrow'>;
-  update: string;
+  rowRange: string;
+  personnel: string;
+  allFields: string[];
+  horizontalField: string;
+  horizontalLeftCategories: string[];
+  horizontalMiddleCategories: string[];
+  horizontalRightCategories: string[];
+  verticalField: string;
+  verticalUpCategories: string[];
+  verticalMiddleCategories: string[];
+  verticalDownCategories: string[];
+  group: string;
 }
 
-interface ITypeConfigStore {
-  typeConfig: ITypeConfigType;
-  updateTypeConfig: (typeConfig: ITypeConfigStore) => void;
+interface IDatasourceConfigStore {
+  datasourceConfig: IDatasourceConfigType;
+  updateDatasourceConfig: (typeConfig: IDatasourceConfigStore) => void;
 }
 
-export const useTypeConfigStore = create<ITypeConfigStore>((set) => ({
-  typeConfig: {
+export const useDatasourceConfigStore = create<IDatasourceConfigStore>((set) => ({
+  datasourceConfig: {
     tableId: '',
-    rowRange: '',
-    title: 'hidden',
-    secTitle: 'hidden',
-    backGround: 'hidden',
-    rowLength: 3,
     theme: 'light',
-    control: ['indicator', 'arrow'],
-    update: 'update',
+    rowRange: '',
+    personnel: '',
+    allFields: [],
+    horizontalField: '',
+    horizontalLeftCategories: [],
+    horizontalMiddleCategories: [],
+    horizontalRightCategories: [],
+    verticalField: '',
+    verticalUpCategories: [],
+    verticalMiddleCategories: [],
+    verticalDownCategories: [],
+    group: ''
   },
-  updateTypeConfig: (typeConfig) => set(() => ({ typeConfig })),
+  updateDatasourceConfig: (datasourceConfig) => set(() => ({ datasourceConfig })),
 }));
 
-export interface IStyleConfigType {
-  title: {
-    width: number;
-    fontSize: string;
-    color: string;
-    textAlign: 'left' | 'center' | 'right';
-    fontWeight: boolean;
-    fontStyle: boolean;
-    textUnderline: boolean;
-    lineThrough: boolean;
-  };
-  secTitle: {
-    width: number;
-    fontSize: string;
-    color: string;
-    textAlign: 'left' | 'center' | 'right';
-    fontWeight: boolean;
-    fontStyle: boolean;
-    textUnderline: boolean;
-    lineThrough: boolean;
-  };
-  background: {
-    opacity: number;
-    color: string;
-    size: string;
-  };
-  indicator: {
-    type: 'dot' | 'line' | 'columnar';
-    position: 'left' | 'center' | 'right';
-  };
-  arrow: {
-    type: 'always' | 'hover';
-  };
-  transition: {
-    animation: 'fade' | 'slide';
-    speed: number;
-  };
+export interface ITextConfigType {
+  HLeftValue: string,
+  HMiddleValue: string,
+  HRightValue: string,
+  VupValue: string,
+  VMiddleValue: string,
+  VDownValue: string,
+  leftDownValue: string,
+  middleDownValue: string,
+  rightDownValue: string,
+  leftMiddleValue: string,
+  middleMiddleValue: string,
+  rightMiddleValue: string,
+  leftUpValue: string,
+  middleUpValue: string,
+  rightUpValue: string,
 }
 
-interface IStyleConfigStore {
-  styleConfig: IStyleConfigType;
-  updateStyleConfig: (styleConfig: IStyleConfigType) => void;
+interface ITextConfigStore {
+  textConfig: ITextConfigType;
+  updateTextConfig: (styleConfig: ITextConfigType) => void;
 }
 
-export const useStyleConfigStore = create<IStyleConfigStore>((set) => ({
-  styleConfig: {
-    title: {
-      width: 90,
-      fontSize: '34',
-      textAlign: 'center',
-      color: '#000000',
-      fontWeight: true,
-      fontStyle: false,
-      textUnderline: false,
-      lineThrough: false,
-    },
-    secTitle: {
-      width: 90,
-      fontSize: '16',
-      textAlign: 'center',
-      color: '#000000',
-      fontWeight: false,
-      fontStyle: false,
-      textUnderline: false,
-      lineThrough: false,
-    },
-    background: {
-      opacity: 90,
-      color: 'rgba(255, 255, 255, 1)',
-      size: 'cover',
-    },
-    indicator: {
-      type: 'dot',
-      position: 'center',
-    },
-    arrow: {
-      type: 'always',
-    },
-    transition: {
-      animation: 'slide',
-      speed: 800,
-    },
+export const useTextConfigStore = create<ITextConfigStore>((set) => ({
+  textConfig: {
+    HLeftValue: '',
+    HMiddleValue: '',
+    HRightValue: '',
+    VupValue: '',
+    VMiddleValue: '',
+    VDownValue: '',
+    leftDownValue: '',
+    middleDownValue: '',
+    rightDownValue: '',
+    leftMiddleValue: '',
+    middleMiddleValue: '',
+    rightMiddleValue: '',
+    leftUpValue: '',
+    middleUpValue: '',
+    rightUpValue: '',
   },
-  updateStyleConfig: (styleConfig: IStyleConfigType) =>
-    set(() => ({ styleConfig })),
+  updateTextConfig: (textConfig: ITextConfigType) =>
+    set(() => ({ textConfig })),
 }));
