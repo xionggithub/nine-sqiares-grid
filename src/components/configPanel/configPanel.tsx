@@ -30,7 +30,7 @@ import {
     IconDelete,
     IconPlus
 } from '@douyinfe/semi-icons';
-import { useDatasourceConfigStore, useTextConfigStore } from '../../store';
+import { useDatasourceConfigStore, useTextConfigStore, useDatasourceStore } from '../../store';
 // import { ITableSource } from '../../App';
 // import HorizontalLine from '@/assets/svg/horizontal-line.svg?react';
 // import BoldIcon from '@/assets/svg/bold.svg?react';
@@ -60,6 +60,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     // 类型与数据
     const { datasourceConfig, updateDatasourceConfig } = useDatasourceConfigStore((state) => state);
+    const { datasource, updateDatasource } = useDatasourceStore((state) => state);
 
     const formApi = useRef<any>();
 
@@ -129,17 +130,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     // 类型与数据表单更改
     const handleFormValueChange = (values: any) => {
+        console.log(values)
         const newConfig = { ...datasourceConfig, ...values };
         updateDatasourceConfig({ ...newConfig });
-    };
-
-    // 样式数据更改
-    const handleChangeStyleConfigData = (filedName: string, value: any) => {
-        const newStyleConfigData = {
-            ...textConfig,
-            [filedName]: value,
-        };
-        updateTextConfig({ ...newStyleConfigData });
     };
 
     // 保存配置
@@ -162,14 +155,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     const tDataRange = [{
         type: 0, viewName: '全部数据', viewId: '123'
     }];
-    const personnelList = [
-        { name: '员工', type: 1 }
-    ];
     const horizontalAxisList = [
         { name: '能力', type: 1 }
-    ]
-    const verticalAxisList = [
-        { name: '绩效', type: 1 }
     ]
     const groupDataList = [
         { name: '部门', type: 1 }
@@ -209,35 +196,38 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         label={{ text: t('data_source') }}
                                         style={{ width: 300 }}
                                         onChange={async (selectValue) => {
-                                            const { categories } = await getTableConfig(
-                                                selectValue as string,
-                                            );
-                                            const textField = categories.filter(
-                                                (item: any) => item.type === FieldType.Text,
-                                            );
+                                            console.log(selectValue, 'selectvalue======')
+                                            // const { categories } = await getTableConfig(
+                                            //     selectValue as string,
+                                            // );
+                                            // console.log('categories----',categories);
 
-                                            const imageFile = categories.filter(
-                                                (item: any) => item.type === FieldType.Attachment,
-                                            );
+                                            // const textField = categories.filter(
+                                            //     (item: any) => item.type === FieldType.Text,
+                                            // );
+                                            //
+                                            // const imageFile = categories.filter(
+                                            //     (item: any) => item.type === FieldType.Attachment,
+                                            // );
+                                            //
+                                            // const { tableId, ...otherProperties } = datasourceConfig;
+                                            // console.log(tableId);
 
-                                            const { tableId, ...otherProperties } = datasourceConfig;
-                                            console.log(tableId);
-
-                                            // 更改表格的时候重置其他的默认数据
-                                            const newConfig = {
-                                                ...otherProperties,
-                                                tableId: selectValue,
-                                                rowRange: 'All',
-                                                title: textField[0] ? textField[0].id : 'hidden',
-                                                secTitle: textField[0] ? textField[0].id : 'hidden',
-                                                backGround: imageFile[0] ? imageFile[0].id : 'hidden',
-                                            };
-
-                                            // updateTypeConfig({ ...typeConfig, ...newConfig });
-                                            formApi.current.setValues({ ...newConfig });
+                                            // // 更改表格的时候重置其他的默认数据
+                                            // const newConfig = {
+                                            //     ...otherProperties,
+                                            //     tableId: selectValue,
+                                            //     rowRange: 'All',
+                                            //     title: textField[0] ? textField[0].id : 'hidden',
+                                            //     secTitle: textField[0] ? textField[0].id : 'hidden',
+                                            //     backGround: imageFile[0] ? imageFile[0].id : 'hidden',
+                                            // };
+                                            //
+                                            // // updateTypeConfig({ ...typeConfig, ...newConfig });
+                                            // formApi.current.setValues({ ...newConfig });
                                             // return selectValue;
                                         }}
-                                        optionList={tTableSource.map((source) => ({
+                                        optionList={datasource.tables.map((source) => ({
                                             value: source.tableId,
                                             label: source.tableName,
                                         }))}
@@ -271,11 +261,10 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         label={{ text: t('personnel') }}
                                         style={{ width: 300 }}
                                         remote={true}
-                                        optionList={personnelList.map((item) => {
-                                            console.log(item, datasourceConfig.allFields)
-                                            const { type, name } = item as any;
+                                        optionList={datasource.fields.map((item) => {
+                                            const { id, name } = item as any;
                                             return {
-                                                value: type,
+                                                value: id,
                                                 label: name,
                                             };
                                         })}
@@ -288,13 +277,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         <Select
                                             style={{ width: '100%' }}
                                             remote={true}
-                                            optionList={horizontalAxisList.map((item) => {
-                                                console.log(item, datasourceConfig.horizontalLeftCategories)
-                                                const { type, name } = item as any;
-                                                return {
-                                                    value: type,
-                                                    label: name,
-                                                };
+                                            optionList={datasource.fields.map((item) => {
+                                                    const { id, name } = item as any;
+                                                    return {
+                                                        value: id,
+                                                        label: name,
+                                                    };
                                             })}
                                         />
                                     </div>
@@ -307,7 +295,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     style={{ width: '100%' }}
                                                     remote={true}
                                                     optionList={horizontalAxisList.map((item) => {
-                                                        console.log(item, datasourceConfig.horizontalMiddleCategories)
+                                                        // console.log(item, datasourceConfig.horizontalMiddleCategories)
                                                         const { type, name } = item as any;
                                                         return {
                                                             value: type,
@@ -329,7 +317,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     style={{ width: '100%' }}
                                                     remote={true}
                                                     optionList={horizontalAxisList.map((item) => {
-                                                        console.log(item, datasourceConfig.horizontalMiddleCategories)
                                                         const { type, name } = item as any;
                                                         return {
                                                             value: type,
@@ -351,7 +338,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     style={{ width: '100%' }}
                                                     remote={true}
                                                     optionList={horizontalAxisList.map((item) => {
-                                                        console.log(item, datasourceConfig.horizontalMiddleCategories)
+                                                        // console.log(item, datasourceConfig.horizontalMiddleCategories)
                                                         const { type, name } = item as any;
                                                         return {
                                                             value: type,
@@ -376,13 +363,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         <Select
                                             style={{ width: '100%' }}
                                             remote={true}
-                                            optionList={verticalAxisList.map((item) => {
-                                                console.log(item, datasourceConfig.horizontalMiddleCategories)
-                                                const { type, name } = item as any;
-                                                return {
-                                                    value: type,
-                                                    label: name,
-                                                };
+                                            optionList={datasource.fields.map((item) => {
+                                                    const { id, name } = item as any;
+                                                    return {
+                                                        value: id,
+                                                        label: name,
+                                                    };
                                             })}
                                         />
                                     </div>
@@ -395,7 +381,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     style={{ width: '100%' }}
                                                     remote={true}
                                                     optionList={horizontalAxisList.map((item) => {
-                                                        console.log(item, datasourceConfig.horizontalMiddleCategories)
+                                                        // console.logconsole.log(item, datasourceConfig.horizontalMiddleCategories)
                                                         const { type, name } = item as any;
                                                         return {
                                                             value: type,
@@ -417,7 +403,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     style={{ width: '100%' }}
                                                     remote={true}
                                                     optionList={horizontalAxisList.map((item) => {
-                                                        console.log(item, datasourceConfig.horizontalMiddleCategories)
+                                                        // console.log(item, datasourceConfig.horizontalMiddleCategories)
                                                         const { type, name } = item as any;
                                                         return {
                                                             value: type,
@@ -439,7 +425,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     style={{ width: '100%' }}
                                                     remote={true}
                                                     optionList={horizontalAxisList.map((item) => {
-                                                        console.log(item, datasourceConfig.horizontalMiddleCategories)
+                                                        // console.log(item, datasourceConfig.horizontalMiddleCategories)
                                                         const { type, name } = item as any;
                                                         return {
                                                             value: type,
@@ -462,7 +448,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         style={{ width: 300 }}
                                         remote={true}
                                         optionList={groupDataList.map((item) => {
-                                            console.log(item, datasourceConfig.allFields)
+                                            // console.log(item, datasourceConfig.allFields)
                                             const { type, name } = item as any;
                                             return {
                                                 value: type,

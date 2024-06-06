@@ -1,6 +1,13 @@
 import { create } from 'zustand';
 
 export interface IDatasourceType {
+  isInitLoading: boolean;
+  isProcessDataLoading: boolean;
+  // 所有表对象
+  tables: any[];
+  //选中
+  tableId: string;
+  fields: any[];
   leftDownValue: any[],
   middleDownValue: any[],
   rightDownValue: any[],
@@ -19,6 +26,11 @@ interface IDatasourceStore {
 
 export const useDatasourceStore = create<IDatasourceStore>((set) => ({
   datasource: {
+    isInitLoading: true,
+    isProcessDataLoading: false,
+    tables: [],
+    tableId: '',
+    fields: [],
     leftDownValue: [],
     middleDownValue: [],
     rightDownValue: [],
@@ -39,7 +51,6 @@ export interface IDatasourceConfigType {
   theme: 'light' | 'dark' | 'primary';
   rowRange: string;
   personnel: string;
-  allFields: string[];
   horizontalField: string;
   horizontalLeftCategories: string[];
   horizontalMiddleCategories: string[];
@@ -62,7 +73,6 @@ export const useDatasourceConfigStore = create<IDatasourceConfigStore>((set) => 
     theme: 'light',
     rowRange: '',
     personnel: '',
-    allFields: [],
     horizontalField: '',
     horizontalLeftCategories: [],
     horizontalMiddleCategories: [],
