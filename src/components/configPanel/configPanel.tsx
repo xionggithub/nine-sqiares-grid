@@ -171,7 +171,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 fields = await table.getFieldMetaList()
                                             }
                                             flushSync(() => {
-                                                datasource.fields[tableId] = [...fields];
+                                                datasource.fields[tableId] = [...fields.map(item => ({ ...item, disabled: false}))];
                                                 datasource.tableId = tableId
                                                 setTableId(tableId)
                                                 setFields(fields)
@@ -212,12 +212,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         label={{ text: t('personnel') }}
                                         style={{ width: 300 }}
                                         remote={true}
+                                        onChange={async (selectValue) => {
+
+                                        }}
                                         optionList={fields.map((item) => {
-                                            const { id, name } = item as any;
+                                            const { id, name, disabled } = item as any;
                                             return {
                                                 value: id,
                                                 label: name,
-                                                disabled: false
+                                                disabled: disabled
                                             };
                                         })}
                                     />
@@ -229,11 +232,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         <Select
                                             style={{ width: '100%' }}
                                             remote={true}
+                                            onChange={async (selectValue) => {
+
+                                            }}
                                             optionList={fields.map((item) => {
-                                                    const { id, name } = item as any;
+                                                    const { id, name, disabled } = item as any;
                                                     return {
                                                         value: id,
                                                         label: name,
+                                                        disabled: disabled
                                                     };
                                             })}
                                         />
@@ -315,11 +322,19 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         <Select
                                             style={{ width: '100%' }}
                                             remote={true}
+                                            onChange={async (selectValue) => {
+                                                let id = selectValue as string
+                                                let item = fields.find(item => item.id === id);
+                                                if (item) {
+                                                    item.disabled = true
+                                                }
+                                            }}
                                             optionList={fields.map((item) => {
-                                                    const { id, name } = item as any;
+                                                    const { id, name, disabled } = item as any;
                                                     return {
                                                         value: id,
                                                         label: name,
+                                                        disabled: disabled
                                                     };
                                             })}
                                         />
