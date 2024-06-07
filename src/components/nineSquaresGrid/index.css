@@ -74,6 +74,7 @@
     line-height: 32px;
     height: 32px;
     text-align: center;
+    overflow: hidden;
 }
 
 .label-container {
@@ -82,6 +83,7 @@
     display: grid;
     align-items: center;
     justify-items: center;
+    overflow: hidden;
 }
 
 .rotate-label {

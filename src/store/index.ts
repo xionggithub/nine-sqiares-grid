@@ -1,13 +1,11 @@
 import { create } from 'zustand';
 
 export interface IDatasourceType {
-  isInitLoading: boolean;
-  isProcessDataLoading: boolean;
   // 所有表对象
   tables: any[];
   //选中
   tableId: string;
-  fields: any[];
+  fields: { [key: string]: any[] };
   leftDownValue: any[],
   middleDownValue: any[],
   rightDownValue: any[],
@@ -26,11 +24,9 @@ interface IDatasourceStore {
 
 export const useDatasourceStore = create<IDatasourceStore>((set) => ({
   datasource: {
-    isInitLoading: true,
-    isProcessDataLoading: false,
     tables: [],
     tableId: '',
-    fields: [],
+    fields: {},
     leftDownValue: [],
     middleDownValue: [],
     rightDownValue: [],

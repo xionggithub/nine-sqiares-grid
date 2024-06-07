@@ -5,9 +5,9 @@ import {
     SourceType,
     IDataRange,
     FieldType,
-    DashboardState,
+    DashboardState, base,
 } from '@lark-base-open/js-sdk';
-import { useEffect, useRef, FC } from 'react';
+import {useEffect, useRef, FC, useState} from 'react';
 import {
     Tabs,
     TabPane,
@@ -26,25 +26,16 @@ import {
     IconAlignRight,
     IconAlignCenter,
     IconFont,
-    IconChevronDown,
-    IconDelete,
-    IconPlus
+    IconChevronDown
 } from '@douyinfe/semi-icons';
 import { useDatasourceConfigStore, useTextConfigStore, useDatasourceStore } from '../../store';
-// import { ITableSource } from '../../App';
-// import HorizontalLine from '@/assets/svg/horizontal-line.svg?react';
-// import BoldIcon from '@/assets/svg/bold.svg?react';
-// import ItalicIcon from '@/assets/svg/italic.svg?react';
-// import UnderlineIcon from '@/assets/svg/underline.svg?react';
+import { flushSync } from "react-dom"
+
+import deleteIcon from '../../assets/icon_delete-trash_outlined.svg';
+import addIcon from '../../assets/icon_add_outlined.svg';
 import { useTranslation } from 'react-i18next';
 
 import './index.css';
-
-const textAlignIcons = {
-    left: <IconAlignLeft />,
-    center: <IconAlignCenter />,
-    right: <IconAlignRight />,
-};
 
 interface IConfigPanelPropsType {
     dataRange: IDataRange[];
@@ -54,13 +45,16 @@ interface IConfigPanelPropsType {
 
 export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
-    const { tableSource, dataRange, categories, getTableConfig } = props;
-
     const { t, i18n } = useTranslation();
 
     // 类型与数据
     const { datasourceConfig, updateDatasourceConfig } = useDatasourceConfigStore((state) => state);
     const { datasource, updateDatasource } = useDatasourceStore((state) => state);
+
+
+    const [tableId, setTableId] = useState('')
+    const [fields, setFields] = useState([])
+
 
     const formApi = useRef<any>();
 
@@ -82,57 +76,26 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     };
 
     useEffect(() => {
-        async function getConfig() {
-            const config = await dashboard.getConfig();
-            const { typeConfig: systemTypeConfig, textConfig } =
-                config.customConfig as any;
-            updateTextConfig(textConfig);
-            getTableConfig(datasourceConfig.tableId);
-
-            // 主题
-            const theme = await bridge.getTheme();
-            switchTheme(theme);
-            const themeValue = theme === ThemeModeType.LIGHT ? 'dark' : 'light';
-            const newConfigValue = { ...systemTypeConfig, theme: themeValue };
-            updateDatasourceConfig(newConfigValue);
-            // 语言
-            const locale = await bridge.getLocale();
-            i18n.changeLanguage(locale);
-            console.log('i18n：：：：',i18n)
-            if (!formApi.current) return;
-            // 更新
-            formApi.current.setValues(newConfigValue);
-        }
-
-        getConfig().then();
+        flushSync(() => {
+            setTableId(datasource.tableId)
+        })
     }, []);
 
     useEffect(() => {
-        // 初始化的时候
-        if (datasourceConfig.tableId === '') {
-            const initValues = {
-                tableId: tableSource[0]?.tableId || '',
-                rowRange: 'All',
-                title: 'hidden',
-                secTitle: 'hidden',
-                backGround: 'hidden',
-                rowLength: 3,
-                theme: 'dark',
-                personalOptions: [
-                    { key: 'employees', type : 1 }
-                ],
-            };
-            if (!formApi.current) return;
-            // 更新
-            formApi.current.setValues({ ...initValues });
-        }
-    }, [tableSource, datasourceConfig.tableId]);
+
+    }, []);
 
     // 类型与数据表单更改
-    const handleFormValueChange = (values: any) => {
+    const handleDataSourceConfigFormValueChange = (values: any) => {
         console.log(values)
         const newConfig = { ...datasourceConfig, ...values };
         updateDatasourceConfig({ ...newConfig });
+    };
+
+    const handleTextConfigFormValueChange = (values: any) => {
+        console.log(textConfig)
+        const newConfig = { ...textConfig, ...values };
+        updateTextConfig({ ...newConfig });
     };
 
     // 保存配置
@@ -151,7 +114,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     };
 
     // test data
-    const tTableSource = [{tableName: "数据表", tableId: '34243'}];
     const tDataRange = [{
         type: 0, viewName: '全部数据', viewId: '123'
     }];
@@ -161,6 +123,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     const groupDataList = [
         { name: '部门', type: 1 }
     ]
+
+    console.log(datasource.tableId, '--------------config panel----')
 
     return (
         <div
@@ -186,8 +150,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                             >
 
                                 <Form
-                                    initValues={{}}
-                                    onValueChange={(values) => handleFormValueChange(values)}
+                                    onValueChange={(values) => handleDataSourceConfigFormValueChange(values)}
                                     getFormApi={(api) => (formApi.current = api)}
                                     autoComplete="off"
                                 >
@@ -195,37 +158,25 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         field="tableId"
                                         label={{ text: t('data_source') }}
                                         style={{ width: 300 }}
+                                        defaultValue={tableId}
                                         onChange={async (selectValue) => {
                                             console.log(selectValue, 'selectvalue======')
-                                            // const { categories } = await getTableConfig(
-                                            //     selectValue as string,
-                                            // );
-                                            // console.log('categories----',categories);
-
-                                            // const textField = categories.filter(
-                                            //     (item: any) => item.type === FieldType.Text,
-                                            // );
-                                            //
-                                            // const imageFile = categories.filter(
-                                            //     (item: any) => item.type === FieldType.Attachment,
-                                            // );
-                                            //
-                                            // const { tableId, ...otherProperties } = datasourceConfig;
-                                            // console.log(tableId);
-
-                                            // // 更改表格的时候重置其他的默认数据
-                                            // const newConfig = {
-                                            //     ...otherProperties,
-                                            //     tableId: selectValue,
-                                            //     rowRange: 'All',
-                                            //     title: textField[0] ? textField[0].id : 'hidden',
-                                            //     secTitle: textField[0] ? textField[0].id : 'hidden',
-                                            //     backGround: imageFile[0] ? imageFile[0].id : 'hidden',
-                                            // };
-                                            //
-                                            // // updateTypeConfig({ ...typeConfig, ...newConfig });
-                                            // formApi.current.setValues({ ...newConfig });
-                                            // return selectValue;
+                                            const tableId = selectValue as string;
+                                            let fields = [];
+                                            if (datasource.fields[tableId] && datasource.fields[tableId].length > 0) {
+                                                fields = datasource.fields[tableId];
+                                            } else {
+                                                const table = await base.getTable(tableId);
+                                                console.log('-----',table)
+                                                fields = await table.getFieldMetaList()
+                                            }
+                                            flushSync(() => {
+                                                datasource.fields[tableId] = [...fields];
+                                                datasource.tableId = tableId
+                                                setTableId(tableId)
+                                                setFields(fields)
+                                            })
+                                            console.log(datasource.tableId, datasource.fields)
                                         }}
                                         optionList={datasource.tables.map((source) => ({
                                             value: source.tableId,
@@ -261,11 +212,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         label={{ text: t('personnel') }}
                                         style={{ width: 300 }}
                                         remote={true}
-                                        optionList={datasource.fields.map((item) => {
+                                        optionList={fields.map((item) => {
                                             const { id, name } = item as any;
                                             return {
                                                 value: id,
                                                 label: name,
+                                                disabled: false
                                             };
                                         })}
                                     />
@@ -277,7 +229,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         <Select
                                             style={{ width: '100%' }}
                                             remote={true}
-                                            optionList={datasource.fields.map((item) => {
+                                            optionList={fields.map((item) => {
                                                     const { id, name } = item as any;
                                                     return {
                                                         value: id,
@@ -303,10 +255,10 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                         };
                                                     })}
                                                 />
-                                                <IconDelete />
+                                                <img src={deleteIcon} alt="" className="delete-icon"/>
                                             </div>
                                             <div className="flex-column">
-                                                <IconPlus/>
+                                                <img src={addIcon} alt="" className="add-icon"/>
                                                 <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                             </div>
                                         </div>
@@ -324,10 +276,10 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                         };
                                                     })}
                                                 />
-                                                <IconDelete />
+                                                <img src={deleteIcon} alt="" className="delete-icon"/>
                                             </div>
                                             <div className="flex-column">
-                                                <IconPlus/>
+                                                <img src={addIcon} alt="" className="add-icon"/>
                                                 <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                             </div>
                                         </div>
@@ -346,10 +298,10 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                         };
                                                     })}
                                                 />
-                                                <IconDelete />
+                                                <img src={deleteIcon} alt="" className="delete-icon"/>
                                             </div>
                                             <div className="flex-column">
-                                                <IconPlus/>
+                                                <img src={addIcon} alt="" className="add-icon"/>
                                                 <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                             </div>
                                         </div>
@@ -363,7 +315,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         <Select
                                             style={{ width: '100%' }}
                                             remote={true}
-                                            optionList={datasource.fields.map((item) => {
+                                            optionList={fields.map((item) => {
                                                     const { id, name } = item as any;
                                                     return {
                                                         value: id,
@@ -389,10 +341,10 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                         };
                                                     })}
                                                 />
-                                                <IconDelete />
+                                                <img src={deleteIcon} alt="" className="delete-icon"/>
                                             </div>
                                             <div className="flex-column">
-                                                <IconPlus/>
+                                                <img src={addIcon} alt="" className="add-icon"/>
                                                 <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                             </div>
                                         </div>
@@ -411,10 +363,10 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                         };
                                                     })}
                                                 />
-                                                <IconDelete />
+                                                <img src={deleteIcon} alt="" className="delete-icon"/>
                                             </div>
                                             <div className="flex-column">
-                                                <IconPlus/>
+                                                <img src={addIcon} alt="" className="add-icon"/>
                                                 <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                             </div>
                                         </div>
@@ -433,10 +385,10 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                         };
                                                     })}
                                                 />
-                                                <IconDelete />
+                                                <img src={deleteIcon} alt="" className="delete-icon"/>
                                             </div>
                                             <div className="flex-column">
-                                                <IconPlus/>
+                                                <img src={addIcon} alt="" className="add-icon"/>
                                                 <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                             </div>
                                         </div>
@@ -472,7 +424,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
                                 <Form
                                     initValues={{}}
-                                    onValueChange={(values) => handleFormValueChange(values)}
+                                    onValueChange={(values) => handleTextConfigFormValueChange(values)}
                                     getFormApi={(api) => (formApi.current = api)}
                                     autoComplete="off"
                                 >

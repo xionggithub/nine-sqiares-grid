@@ -54,22 +54,20 @@ function App() {
     }, []);
 
     async function initConfigData(id: string | null) {
-        datasource.isInitLoading = true;
-        console.log('更新表格数据', id, 'isload: ', datasource.isInitLoading, new Date().toISOString());
+        console.log('更新表格数据', id, 'isload: ', new Date().toISOString());
         const tableIdList = await base.getTableList();
         console.log('tablelist for feishu: ',tableIdList)
         const tableList = await Promise.all(getTableList(tableIdList));
         console.log('tableList: ',tableList);
         datasource.tables = [...tableList];
         const tableId = id ? id : tableList[0].tableId;
-        datasource.tableId = id;
+        datasource.tableId = tableId;
         const table = await base.getTable(tableId);
         console.log('-----',table)
         const fields = await table.getFieldMetaList()
-        datasource.fields = [...fields];
+        datasource.fields[tableId] = [...fields];
         console.log('datasource: ',datasource.fields);
-        datasource.isInitLoading = false;
-        console.log('isload: ', datasource.isInitLoading, new Date().toISOString())
+        console.log('isload: ',datasource, new Date().toISOString())
         // 强制刷新
         flushSync(() => {
             setIsLoading(false)
