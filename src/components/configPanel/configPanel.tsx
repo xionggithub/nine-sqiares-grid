@@ -116,6 +116,10 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     const chooseHorizontalAxisField = (horizontalField: string) => {
         console.log('on horizontalAxis selected ', horizontalField, datasourceConfig)
         datasourceConfig.horizontalField = horizontalField;
+        horizontalCategories.left = ['']
+        horizontalCategories.middle = [''];
+        horizontalCategories.right = [''];
+        setHorizontalCategories({...horizontalCategories})
         let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
         fields.forEach(item => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
@@ -128,13 +132,37 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         if (field && field.property?.options) {
             console.log('----field::', field)
             let options = field.property.options.map(item => ({ ...item, disabled: false}))
-            setHorizontalCategoryOptions(options)
+
+            if (options.length === 1) {
+                options[0].disabled = true
+                horizontalCategories.left = [options[0].id]
+                return;
+            } else if (options.length === 2) {
+                options[0].disabled = true
+                horizontalCategories.left = [options[0].id]
+                options[1].disabled = true
+                horizontalCategories.middle = [options[1].id]
+                return;
+            } else if (options.length >= 3) {
+                options[0].disabled = true
+                horizontalCategories.left = [options[0].id]
+                options[Math.floor(options.length / 2)].disabled = true
+                horizontalCategories.middle = [options[Math.floor(options.length / 2)].id];
+                options[options.length-1].disabled = true
+                horizontalCategories.right = [options[options.length -1].id];
+            }
+            setHorizontalCategoryOptions([...options])
+            setHorizontalCategories({...horizontalCategories})
         }
     }
 
     const chooseVerticalAxisField = (verticalField: string) => {
         console.log('on verticalAxis selected ', verticalField, datasourceConfig)
         datasourceConfig.verticalField = verticalField;
+        verticalCategories.up = ['']
+        verticalCategories.middle = [''];
+        verticalCategories.down = [''];
+        setVerticalCategories({...verticalCategories})
         let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
         fields.forEach(item => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
@@ -146,7 +174,26 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         if (field) {
             console.log('----field::', field)
             let options = field.property.options.map(item => ({ ...item, disabled: false}))
-            setVerticalCategoryOptions(options)
+            if (options.length === 1) {
+                options[0].disabled = true
+                verticalCategories.up = [options[0].id]
+                return;
+            } else if (options.length === 2) {
+                options[0].disabled = true
+                verticalCategories.up = [options[0].id]
+                options[1].disabled = true
+                verticalCategories.middle = [options[1].id]
+                return;
+            } else if (options.length >= 3) {
+                options[0].disabled = true
+                verticalCategories.up = [options[0].id]
+                options[Math.floor(options.length / 2)].disabled = true
+                verticalCategories.middle = [options[Math.floor(options.length / 2)].id];
+                options[options.length-1].disabled = true
+                verticalCategories.down = [options[options.length -1].id];
+            }
+            setVerticalCategoryOptions([...options])
+            setVerticalCategories({...verticalCategories})
         }
     }
 
