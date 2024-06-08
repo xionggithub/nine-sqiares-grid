@@ -69,6 +69,7 @@ function App() {
         console.log('datasource: ',datasource.fields);
         console.log('isload: ',datasource, new Date().toISOString())
         const ranges = await dashboard.getTableDataRange(tableId)
+        datasource.dataRanges = ranges
         console.log('table data range: ',ranges);
         // 强制刷新
         flushSync(() => {

@@ -6,6 +6,7 @@ export interface IDatasourceType {
   //选中
   tableId: string;
   fields: { [key: string]: any[] };
+  dataRanges: { type:string; viewId:string; viewName: string; viewType: number; }[]
   leftDownValue: any[],
   middleDownValue: any[],
   rightDownValue: any[],
@@ -27,6 +28,7 @@ export const useDatasourceStore = create<IDatasourceStore>((set) => ({
     tables: [],
     tableId: '',
     fields: {},
+    dataRanges: [],
     leftDownValue: [],
     middleDownValue: [],
     rightDownValue: [],
