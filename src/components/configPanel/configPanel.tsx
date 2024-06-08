@@ -271,7 +271,21 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     };
 
     useEffect(() => {
-        setTableId(datasource.tableId)
+        console.log('config panel useeffect', datasourceConfig, textConfig)
+        setTableId(datasourceConfig.tableId)
+        setFields(datasource.fields[datasourceConfig.tableId].map(item => ({ ...item, disabled: false})))
+        setHorizontalCategories({...datasourceConfig.horizontalCategories})
+        setVerticalCategories({...datasourceConfig.verticalCategories})
+        let field = datasource.fields[datasourceConfig.tableId].find(item => item.id === datasourceConfig.verticalField)
+        if (field) {
+            let options = field.property.options.map(item => ({ ...item, disabled: (Object.values(datasourceConfig.horizontalCategories)).flat().some(id => id === item.id)}))
+            setVerticalCategoryOptions([...options])
+        }
+        let field1 = datasource.fields[datasourceConfig.tableId].find(item => item.id === datasourceConfig.horizontalField)
+        if (field1) {
+            let options = field1.property.options.map(item => ({ ...item, disabled: (Object.values(datasourceConfig.horizontalCategories)).flat().some(id => id === item.id)}))
+            setHorizontalCategoryOptions([...options])
+        }
     }, []);
 
     useEffect(() => {
@@ -296,19 +310,18 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         datasourceConfig.horizontalCategories = {...horizontalCategories}
         datasourceConfig.verticalCategories = {...verticalCategories}
         updateDatasourceConfig({ ...datasourceConfig });
-
         console.log('save config:::', datasource, datasourceConfig, textConfig)
-        // dashboard.saveConfig({
-        //     dataConditions: [
-        //         {
-        //             tableId: datasourceConfig.tableId,
-        //         },
-        //     ],
-        //     customConfig: {
-        //         datasourceConfig,
-        //         textConfig,
-        //     },
-        // }).then();
+        dashboard.saveConfig({
+            dataConditions: [
+                {
+                    tableId: datasourceConfig.tableId,
+                },
+            ],
+            customConfig: {
+                datasourceConfig,
+                textConfig,
+            },
+        }).then();
     };
 
     // test data
@@ -351,7 +364,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             field="tableId"
                                             label={{ text: t('data_source') }}
                                             style={{ width: 300 }}
-                                            initValue={tableId}
+                                            initValue={datasourceConfig.tableId}
                                             renderSelectedItem={renderTableSelectedItem}
                                             onChange={ async (selectValue) => chooseTable(selectValue as string)}
                                             optionList={datasource.tables.map((source) => ({
@@ -438,6 +451,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             field={id + index}
                                                             noLabel={true}
                                                             style={{ width: '100%' }}
+                                                            key={index}
                                                             remote={true}
                                                             initValue={id}
                                                             onChange={(selectValue) => {
@@ -519,6 +533,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                         <Form.Select
                                                             field=""
                                                             noLabel={true}
+                                                            key={index}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             initValue={id}
@@ -587,6 +602,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                         <Form.Select
                                                             field=""
                                                             noLabel={true}
+                                                            key={index}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             initValue={id}
@@ -712,6 +728,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             label={{ text: t('group') }}
                                             style={{ width: 300 }}
                                             remote={true}
+                                            initValue={datasourceConfig.group}
                                             onChange={async (selectValue) => {
                                                 datasourceConfig.group = selectValue as string;
                                                 let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)

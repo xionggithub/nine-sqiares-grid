@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import { useDatasourceConfigStore, useTextConfigStore, useDatasourceStore } from '../../store';
 import {
     base,
@@ -30,6 +30,24 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
     const { datasourceConfig } = useDatasourceConfigStore((state) => state);
     const { textConfig } = useTextConfigStore((state) => state);
     const { datasource } = useDatasourceStore((state) => state);
+
+    const cellTitleKeyList = [
+        "leftUpValue",
+        "middleUpValue",
+        "rightUpValue",
+
+        "leftMiddleValue",
+        "middleMiddleValue",
+        "rightMiddleValue",
+
+        "leftDownValue",
+        "middleDownValue",
+        "rightDownValue"
+    ];
+
+    useEffect(() => {
+
+    }, []);
 
     const gridContentConfig = [
         { lightBgColor: '#F7EEC6', darkBgColor: '#CE9D31', valueKey: 'leftUpValue' },
@@ -110,6 +128,9 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
         return options.map(item => item.name).join('/');
     }
 
+    const cellTitle = (index: number) => {
+        return textConfig[cellTitleKeyList[index]] ?? ''
+    }
 
     return (
         <div
@@ -160,8 +181,9 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
 
 
             <div className="grid grid-content">
-                { gridContentConfig.map(item => {
+                { gridContentConfig.map((item, index) => {
                     return <div className="cell"
+                                key={index}
                         style={{
                             backgroundColor: datasourceConfig.theme === 'light' ? item.lightBgColor : item.darkBgColor
                         }}
@@ -171,7 +193,12 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                                  borderBottom:  datasourceConfig.theme === 'light' ?  '1px solid #1F23291A' : '1px solid #FFFFFF'
                              }}
                         >
+                            <div className='cell-header-left-text'>
+                                { cellTitle(index) }
+                            </div>
+                            <div className='cell-header-right-text'>
 
+                            </div>
                         </div>
 
                         <div className="cell-content">

@@ -1,9 +1,9 @@
-import { useEffect, useCallback, useState } from 'react';
-import { NineSquaresGrid } from "./components/nineSquaresGrid";
-import { ConfigPanel } from "./components/configPanel";
-import { DashboardState, dashboard, base, IDataRange } from "@lark-base-open/js-sdk";
-import { useDatasourceConfigStore, useTextConfigStore, useDatasourceStore } from './store';
-import { flushSync } from "react-dom"
+import {useCallback, useEffect, useState} from 'react';
+import {NineSquaresGrid} from "./components/nineSquaresGrid";
+import {ConfigPanel} from "./components/configPanel";
+import {base, dashboard, DashboardState, IDataRange} from "@lark-base-open/js-sdk";
+import {useDatasourceConfigStore, useDatasourceStore, useTextConfigStore} from './store';
+import {flushSync} from "react-dom"
 
 export interface ITableSource {
     tableId: string;
@@ -54,7 +54,7 @@ function App() {
     }, []);
 
     async function initConfigData(id: string | null) {
-        console.log('更新表格数据', id, 'isload: ', new Date().toISOString());
+        console.log('-----------------------------------------------更新表格数据', id, dashboard.state);
         const tableIdList = await base.getTableList();
         console.log('tablelist for feishu: ',tableIdList)
         const tableList = await Promise.all(getTableList(tableIdList));
@@ -68,37 +68,28 @@ function App() {
         datasource.fields[tableId] = [...fields];
         console.log('datasource: ',datasource.fields);
         console.log('isload: ',datasource, new Date().toISOString())
+        const ranges = await dashboard.getTableDataRange(tableId)
+        console.log('table data range: ',ranges);
         // 强制刷新
         flushSync(() => {
             setIsLoading(false)
         })
-        return {}
-
-        // console.log('更新表格数据', id);
-        // const tableIdList = await base.getTableList();
-        // console.log('tablelist for feishu: ',tableIdList)
-        // const tableList = await Promise.all(getTableList(tableIdList));
-        //
-        // const tableId = id ? id : tableList[0].tableId;
-        // const table = await base.getTable(tableId);
-        //
-        // const [tableRanges, categories] = await Promise.all([
-        //     getTableRange(tableId),
-        //     getCategories(table, tableId),
-        // ]);
-        //
-        // setDataRange([...tableRanges]);
-        //
-        // setCategories([{ id: 'hidden', name: '隐藏', type: -1 }, ...categories]);
-        //
-        // setTableSource([...tableList]);
-        // const renderRes = await dashboard.setRendered();
-        // console.log('自动化 渲染通知--->', renderRes, categories);
-        // return { categories };
+        return
     }
 
     useEffect(() => {
-        initConfigData(null).then();
+        // 先获取保存的配置数据
+        if (dashboard.state !== DashboardState.Create) {
+            console.log('load config')
+            dashboard.getConfig().then((config) => {
+                updateDatasourceConfig(config.customConfig.datasourceConfig)
+                updateTextConfig(config.customConfig.textConfig)
+                console.log('获取到 config：', config);
+                initConfigData(config.customConfig.datasourceConfig.tableId).then();
+            })
+        } else {
+            initConfigData(null).then();
+        }
     }, []);
 
     useEffect(() => {
