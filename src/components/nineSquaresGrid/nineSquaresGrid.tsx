@@ -78,7 +78,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label rotate-label">{datasourceConfig.verticalField}</div>
+                        <div className="side-bar-label rotate-label">{datasource.fields[datasource.tableId].find(item => item.id === datasourceConfig.verticalField)?.name ?? ""}</div>
                     </div>
                 </div>
                 <div className="left-side-bar-column three-row-grid">
@@ -172,7 +172,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                          style={{
                         backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                     }}>
-                        <div className="side-bar-label">{datasourceConfig.horizontalField}</div>
+                        <div className="side-bar-label">{datasource.fields[datasource.tableId].find(item => item.id === datasourceConfig.horizontalField)?.name ?? ""}</div>
                     </div>
                 </div>
             </div>

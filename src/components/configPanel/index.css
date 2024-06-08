@@ -77,6 +77,10 @@
     padding-bottom: 8px;
 }
 
+.form-list {
+    row-gap: 20px;
+}
+
 .selection-list {
     width: 100%;
     display: flex;
@@ -119,12 +123,12 @@
     align-items: center;
 }
 
-.flex-row {
+.flex-column {
     display: flex;
     flex-direction: column;
 }
 
-.flex-column {
+.flex-row {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -147,6 +151,9 @@
     color: #646A73;
 }
 
+.semi-form-field {
+    padding: 0 !important;
+}
 
 .delete-icon {
     width: 15px;

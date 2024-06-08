@@ -54,7 +54,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const [tableId, setTableId] = useState('')
     const [fields, setFields] = useState([])
-
+    const [verticalCategories, setVerticalCategories] = useState([])
+    const [horizontalCategoryOptions, setHorizontalCategoryOptions] = useState([])
 
     const formApi = useRef<any>();
 
@@ -117,12 +118,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     const tDataRange = [{
         type: 0, viewName: '全部数据', viewId: '123'
     }];
-    const horizontalAxisList = [
-        { name: '能力', type: 1 }
-    ]
-    const groupDataList = [
-        { name: '部门', type: 1 }
-    ]
 
     console.log(datasource.tableId, '--------------config panel----')
 
@@ -154,275 +149,340 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                     getFormApi={(api) => (formApi.current = api)}
                                     autoComplete="off"
                                 >
-                                    <Form.Select
-                                        field="tableId"
-                                        label={{ text: t('data_source') }}
-                                        style={{ width: 300 }}
-                                        defaultValue={tableId}
-                                        onChange={async (selectValue) => {
-                                            console.log(selectValue, 'selectvalue======')
-                                            const tableId = selectValue as string;
-                                            let fields = [];
-                                            if (datasource.fields[tableId] && datasource.fields[tableId].length > 0) {
-                                                fields = datasource.fields[tableId];
-                                            } else {
-                                                const table = await base.getTable(tableId);
-                                                console.log('-----',table)
-                                                fields = await table.getFieldMetaList()
-                                            }
-                                            flushSync(() => {
-                                                datasource.fields[tableId] = [...fields.map(item => ({ ...item, disabled: false}))];
-                                                datasource.tableId = tableId
-                                                setTableId(tableId)
-                                                setFields(fields)
-                                            })
-                                            console.log(datasource.tableId, datasource.fields)
-                                        }}
-                                        optionList={datasource.tables.map((source) => ({
-                                            value: source.tableId,
-                                            label: source.tableName,
-                                        }))}
-                                    />
-
-                                    <Form.Select
-                                        field="rowRange"
-                                        label={{ text: t('data_range') }}
-                                        style={{ width: 300 }}
-                                        remote={true}
-                                        optionList={tDataRange.map((range) => {
-                                            const { type, viewName, viewId } = range as any;
-                                            if (type === SourceType.ALL) {
-                                                return {
-                                                    value: 'All',
-                                                    label: t('view_all'),
-                                                };
-                                            } else {
-                                                return {
-                                                    value: viewId,
-                                                    label: viewName,
-                                                };
-                                            }
-                                        })}
-                                    />
-
-                                    <Divider dashed={false} />
-
-                                    <Form.Select
-                                        field="personnel"
-                                        label={{ text: t('personnel') }}
-                                        style={{ width: 300 }}
-                                        remote={true}
-                                        onChange={async (selectValue) => {
-
-                                        }}
-                                        optionList={fields.map((item) => {
-                                            const { id, name, disabled } = item as any;
-                                            return {
-                                                value: id,
-                                                label: name,
-                                                disabled: disabled
-                                            };
-                                        })}
-                                    />
-
-                                    <div className="selection-title">{t('horizontalAxis')}</div>
-
-                                    <div className="selection-card">
-                                        <div className="selection-card-title">{t('chooseField')}</div>
-                                        <Select
-                                            style={{ width: '100%' }}
-                                            remote={true}
+                                    <div className="flex-column form-list">
+                                        <Form.Select
+                                            field="tableId"
+                                            label={{ text: t('data_source') }}
+                                            style={{ width: 300 }}
+                                            defaultValue={tableId}
                                             onChange={async (selectValue) => {
-
-                                            }}
-                                            optionList={fields.map((item) => {
-                                                    const { id, name, disabled } = item as any;
-                                                    return {
-                                                        value: id,
-                                                        label: name,
-                                                        disabled: disabled
-                                                    };
-                                            })}
-                                        />
-                                    </div>
-
-                                    <div className="selection-list margin-top-tw margin-bottom-tw">
-                                        <div className="selection-card">
-                                            <div className="selection-card-title">{t('left')}</div>
-                                            <div className="delete-able-select-container">
-                                                <Select
-                                                    style={{ width: '100%' }}
-                                                    remote={true}
-                                                    optionList={horizontalAxisList.map((item) => {
-                                                        // console.log(item, datasourceConfig.horizontalMiddleCategories)
-                                                        const { type, name } = item as any;
-                                                        return {
-                                                            value: type,
-                                                            label: name,
-                                                        };
-                                                    })}
-                                                />
-                                                <img src={deleteIcon} alt="" className="delete-icon"/>
-                                            </div>
-                                            <div className="flex-column">
-                                                <img src={addIcon} alt="" className="add-icon"/>
-                                                <div className="selection-card-bottom-text">{t('addCategory')}</div>
-                                            </div>
-                                        </div>
-                                        <div className="selection-card">
-                                            <div className="selection-card-title">{t('middle')}</div>
-                                            <div className="delete-able-select-container">
-                                                <Select
-                                                    style={{ width: '100%' }}
-                                                    remote={true}
-                                                    optionList={horizontalAxisList.map((item) => {
-                                                        const { type, name } = item as any;
-                                                        return {
-                                                            value: type,
-                                                            label: name,
-                                                        };
-                                                    })}
-                                                />
-                                                <img src={deleteIcon} alt="" className="delete-icon"/>
-                                            </div>
-                                            <div className="flex-column">
-                                                <img src={addIcon} alt="" className="add-icon"/>
-                                                <div className="selection-card-bottom-text">{t('addCategory')}</div>
-                                            </div>
-                                        </div>
-                                        <div className="selection-card">
-                                            <div className="selection-card-title">{t('right')}</div>
-                                            <div className="delete-able-select-container">
-                                                <Select
-                                                    style={{ width: '100%' }}
-                                                    remote={true}
-                                                    optionList={horizontalAxisList.map((item) => {
-                                                        // console.log(item, datasourceConfig.horizontalMiddleCategories)
-                                                        const { type, name } = item as any;
-                                                        return {
-                                                            value: type,
-                                                            label: name,
-                                                        };
-                                                    })}
-                                                />
-                                                <img src={deleteIcon} alt="" className="delete-icon"/>
-                                            </div>
-                                            <div className="flex-column">
-                                                <img src={addIcon} alt="" className="add-icon"/>
-                                                <div className="selection-card-bottom-text">{t('addCategory')}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                    <div className="selection-title">{t('verticalAxis')}</div>
-
-                                    <div className="selection-card">
-                                        <div className="selection-card-title">{t('chooseField')}</div>
-                                        <Select
-                                            style={{ width: '100%' }}
-                                            remote={true}
-                                            onChange={async (selectValue) => {
-                                                let id = selectValue as string
-                                                let item = fields.find(item => item.id === id);
-                                                if (item) {
-                                                    item.disabled = true
+                                                console.log(selectValue, 'selectvalue======')
+                                                const tableId = selectValue as string;
+                                                let fields = [];
+                                                if (datasource.fields[tableId] && datasource.fields[tableId].length > 0) {
+                                                    fields = datasource.fields[tableId];
+                                                } else {
+                                                    const table = await base.getTable(tableId);
+                                                    console.log('-----',table)
+                                                    fields = await table.getFieldMetaList()
                                                 }
+                                                if (datasourceConfig.tableId !== tableId) {
+                                                    datasourceConfig.horizontalField = ''
+                                                    datasourceConfig.verticalField = ''
+                                                    datasourceConfig.personnel = ''
+                                                    datasourceConfig.tableId = tableId
+                                                }
+                                                flushSync(() => {
+                                                    datasource.fields[tableId] = [...fields.map(item => ({ ...item, disabled: false}))];
+                                                    datasource.tableId = tableId
+                                                    updateDatasource(datasource)
+                                                    updateDatasourceConfig(datasourceConfig)
+                                                    setTableId(tableId)
+                                                    setFields(fields)
+                                                })
+                                                console.log(datasource.tableId, datasource.fields)
+                                            }}
+                                            optionList={datasource.tables.map((source) => ({
+                                                value: source.tableId,
+                                                label: source.tableName,
+                                            }))}
+                                        />
+
+                                        <Form.Select
+                                            field="rowRange"
+                                            label={{ text: t('data_range') }}
+                                            style={{ width: 300 }}
+                                            remote={true}
+                                            optionList={tDataRange.map((range) => {
+                                                const { type, viewName, viewId } = range as any;
+                                                if (type === SourceType.ALL) {
+                                                    return {
+                                                        value: 'All',
+                                                        label: t('view_all'),
+                                                    };
+                                                } else {
+                                                    return {
+                                                        value: viewId,
+                                                        label: viewName,
+                                                    };
+                                                }
+                                            })}
+                                        />
+
+                                        <Divider dashed={false} />
+
+                                        <Form.Select
+                                            field="personnel"
+                                            label={{ text: t('personnel') }}
+                                            style={{ width: 300 }}
+                                            remote={true}
+                                            onChange={async (selectValue) => {
+                                                datasourceConfig.personnel = selectValue as string;
+                                                let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+                                                console.log(selectedIds)
+                                                fields.forEach(item => {
+                                                    item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+                                                    console.log(item.disabled, item.id)
+                                                })
+                                                flushSync(() => {
+                                                    updateDatasourceConfig(datasourceConfig)
+                                                    setFields(fields)
+                                                })
                                             }}
                                             optionList={fields.map((item) => {
+                                                const { id, name, disabled } = item as any;
+                                                return {
+                                                    value: id,
+                                                    label: name,
+                                                    disabled: disabled
+                                                };
+                                            })}
+                                        />
+
+                                        <div className="selection-title">{t('horizontalAxis')}</div>
+
+                                        <div className="selection-card">
+                                            <div className="selection-card-title">{t('chooseField')}</div>
+                                            <Form.Select
+                                                field="horizontalField"
+                                                noLabel={true}
+                                                style={{ width: '100%' }}
+                                                remote={true}
+                                                onChange={async (selectValue) => {
+                                                    datasourceConfig.horizontalField = selectValue as string;
+                                                    let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+                                                    fields.forEach(item => {
+                                                        item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+                                                        console.log(item.disabled, item.id)
+                                                    })
+                                                    flushSync(() => {
+                                                        console.log('horizontalField-----',datasource.fields[datasource.tableId])
+                                                        updateDatasourceConfig(datasourceConfig)
+                                                        setFields(fields)
+                                                        let field = fields.find(item => item.id === datasourceConfig.horizontalField)
+                                                        if (field) {
+                                                            console.log('----field::', field)
+                                                            let options = field.property.options.map(item => ({ ...item, disabled: false}))
+                                                            setHorizontalCategoryOptions(options)
+                                                        }
+                                                    })
+                                                }}
+                                                optionList={fields.map((item) => {
                                                     const { id, name, disabled } = item as any;
                                                     return {
                                                         value: id,
                                                         label: name,
                                                         disabled: disabled
                                                     };
+                                                })}
+                                            />
+                                        </div>
+
+                                        <div className="selection-list">
+                                            <div className="selection-card">
+                                                <div className="selection-card-title">{t('left')}</div>
+                                                <div className="delete-able-select-container">
+                                                    <Select
+                                                        style={{ width: '100%' }}
+                                                        remote={true}
+                                                        optionList={horizontalCategoryOptions.map((item) => {
+                                                            const { id, name, disabled } = item as any;
+                                                            return {
+                                                                value: id,
+                                                                label: name,
+                                                                disabled: disabled
+                                                            };
+                                                        })}
+                                                    />
+                                                    <img src={deleteIcon} alt="" className="delete-icon"/>
+                                                </div>
+                                                <div className="flex-row">
+                                                    <img src={addIcon} alt="" className="add-icon"/>
+                                                    <div className="selection-card-bottom-text">{t('addCategory')}</div>
+                                                </div>
+                                            </div>
+                                            <div className="selection-card">
+                                                <div className="selection-card-title">{t('middle')}</div>
+                                                <div className="delete-able-select-container">
+                                                    <Select
+                                                        style={{ width: '100%' }}
+                                                        remote={true}
+                                                        optionList={horizontalCategoryOptions.map((item) => {
+                                                            const { id, name, disabled } = item as any;
+                                                            return {
+                                                                value: id,
+                                                                label: name,
+                                                                disabled: disabled
+                                                            };
+                                                        })}
+                                                    />
+                                                    <img src={deleteIcon} alt="" className="delete-icon"/>
+                                                </div>
+                                                <div className="flex-row">
+                                                    <img src={addIcon} alt="" className="add-icon"/>
+                                                    <div className="selection-card-bottom-text">{t('addCategory')}</div>
+                                                </div>
+                                            </div>
+                                            <div className="selection-card">
+                                                <div className="selection-card-title">{t('right')}</div>
+                                                <div className="delete-able-select-container">
+                                                    <Select
+                                                        style={{ width: '100%' }}
+                                                        remote={true}
+                                                        optionList={horizontalCategoryOptions.map((item) => {
+                                                            const { id, name, disabled } = item as any;
+                                                            return {
+                                                                value: id,
+                                                                label: name,
+                                                                disabled: disabled
+                                                            };
+                                                        })}
+                                                    />
+                                                    <img src={deleteIcon} alt="" className="delete-icon"/>
+                                                </div>
+                                                <div className="flex-row">
+                                                    <img src={addIcon} alt="" className="add-icon"/>
+                                                    <div className="selection-card-bottom-text">{t('addCategory')}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div className="selection-title">{t('verticalAxis')}</div>
+
+                                        <div className="selection-card">
+                                            <div className="selection-card-title">{t('chooseField')}</div>
+                                            <Form.Select
+                                                field="verticalField"
+                                                noLabel={true}
+                                                style={{ width: '100%' }}
+                                                remote={true}
+                                                onChange={async (selectValue) => {
+                                                    datasourceConfig.verticalField = selectValue as string;
+                                                    let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+                                                    fields.forEach(item => {
+                                                        item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+                                                        console.log(item.disabled, item.id)
+                                                    })
+                                                    flushSync(() => {
+                                                        updateDatasourceConfig(datasourceConfig)
+                                                        setFields(fields)
+                                                        let field = fields.find(item => item.id === datasourceConfig.verticalField)
+                                                        if (field) {
+                                                            console.log('----field::', field)
+                                                            let options = field.property.options.map(item => ({ ...item, disabled: false}))
+                                                            setVerticalCategories(options)
+                                                        }
+                                                    })
+                                                }}
+                                                optionList={fields.map((item) => {
+                                                    const { id, name, disabled } = item as any;
+                                                    return {
+                                                        value: id,
+                                                        label: name,
+                                                        disabled: disabled
+                                                    };
+                                                })}
+                                            />
+                                        </div>
+
+                                        <div className="selection-list margin-top-tw margin-bottom-tw">
+                                            <div className="selection-card">
+                                                <div className="selection-card-title">{t('up')}</div>
+                                                <div className="delete-able-select-container">
+                                                    <Select
+                                                        style={{ width: '100%' }}
+                                                        remote={true}
+                                                        optionList={verticalCategories.map((item) => {
+                                                            const { id, name, disabled } = item as any;
+                                                            return {
+                                                                value: id,
+                                                                label: name,
+                                                                disabled: disabled
+                                                            };
+                                                        })}
+                                                    />
+                                                    <img src={deleteIcon} alt="" className="delete-icon"/>
+                                                </div>
+                                                <div className="flex-row">
+                                                    <img src={addIcon} alt="" className="add-icon"/>
+                                                    <div className="selection-card-bottom-text">{t('addCategory')}</div>
+                                                </div>
+                                            </div>
+                                            <div className="selection-card">
+                                                <div className="selection-card-title">{t('middle')}</div>
+                                                <div className="delete-able-select-container">
+                                                    <Select
+                                                        style={{ width: '100%' }}
+                                                        remote={true}
+                                                        optionList={verticalCategories.map((item) => {
+                                                            const { id, name, disabled } = item as any;
+                                                            return {
+                                                                value: id,
+                                                                label: name,
+                                                                disabled: disabled
+                                                            };
+                                                        })}
+                                                    />
+                                                    <img src={deleteIcon} alt="" className="delete-icon"/>
+                                                </div>
+                                                <div className="flex-row">
+                                                    <img src={addIcon} alt="" className="add-icon"/>
+                                                    <div className="selection-card-bottom-text">{t('addCategory')}</div>
+                                                </div>
+                                            </div>
+                                            <div className="selection-card">
+                                                <div className="selection-card-title">{t('down')}</div>
+                                                <div className="delete-able-select-container">
+                                                    <Select
+                                                        style={{ width: '100%' }}
+                                                        remote={true}
+                                                        optionList={verticalCategories.map((item) => {
+                                                            const { id, name, disabled } = item as any;
+                                                            return {
+                                                                value: id,
+                                                                label: name,
+                                                                disabled: disabled
+                                                            };
+                                                        })}
+                                                    />
+                                                    <img src={deleteIcon} alt="" className="delete-icon"/>
+                                                </div>
+                                                <div className="flex-row">
+                                                    <img src={addIcon} alt="" className="add-icon"/>
+                                                    <div className="selection-card-bottom-text">{t('addCategory')}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <Form.Select
+                                            field="group"
+                                            label={{ text: t('group') }}
+                                            style={{ width: 300 }}
+                                            remote={true}
+                                            onChange={async (selectValue) => {
+                                                datasourceConfig.group = selectValue as string;
+                                                let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+                                                fields.forEach(item => {
+                                                    item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+                                                    console.log(item.disabled, item.id)
+                                                })
+                                                flushSync(() => {
+                                                    updateDatasourceConfig(datasourceConfig)
+                                                    setFields(fields)
+                                                })
+                                            }}
+                                            optionList={fields.map((item) => {
+                                                // console.log(item, datasourceConfig.allFields)
+                                                const { type, name, disabled } = item as any;
+                                                return {
+                                                    value: type,
+                                                    label: name,
+                                                    disabled: disabled
+                                                };
                                             })}
                                         />
                                     </div>
-
-                                    <div className="selection-list margin-top-tw margin-bottom-tw">
-                                        <div className="selection-card">
-                                            <div className="selection-card-title">{t('up')}</div>
-                                            <div className="delete-able-select-container">
-                                                <Select
-                                                    style={{ width: '100%' }}
-                                                    remote={true}
-                                                    optionList={horizontalAxisList.map((item) => {
-                                                        // console.logconsole.log(item, datasourceConfig.horizontalMiddleCategories)
-                                                        const { type, name } = item as any;
-                                                        return {
-                                                            value: type,
-                                                            label: name,
-                                                        };
-                                                    })}
-                                                />
-                                                <img src={deleteIcon} alt="" className="delete-icon"/>
-                                            </div>
-                                            <div className="flex-column">
-                                                <img src={addIcon} alt="" className="add-icon"/>
-                                                <div className="selection-card-bottom-text">{t('addCategory')}</div>
-                                            </div>
-                                        </div>
-                                        <div className="selection-card">
-                                            <div className="selection-card-title">{t('middle')}</div>
-                                            <div className="delete-able-select-container">
-                                                <Select
-                                                    style={{ width: '100%' }}
-                                                    remote={true}
-                                                    optionList={horizontalAxisList.map((item) => {
-                                                        // console.log(item, datasourceConfig.horizontalMiddleCategories)
-                                                        const { type, name } = item as any;
-                                                        return {
-                                                            value: type,
-                                                            label: name,
-                                                        };
-                                                    })}
-                                                />
-                                                <img src={deleteIcon} alt="" className="delete-icon"/>
-                                            </div>
-                                            <div className="flex-column">
-                                                <img src={addIcon} alt="" className="add-icon"/>
-                                                <div className="selection-card-bottom-text">{t('addCategory')}</div>
-                                            </div>
-                                        </div>
-                                        <div className="selection-card">
-                                            <div className="selection-card-title">{t('down')}</div>
-                                            <div className="delete-able-select-container">
-                                                <Select
-                                                    style={{ width: '100%' }}
-                                                    remote={true}
-                                                    optionList={horizontalAxisList.map((item) => {
-                                                        // console.log(item, datasourceConfig.horizontalMiddleCategories)
-                                                        const { type, name } = item as any;
-                                                        return {
-                                                            value: type,
-                                                            label: name,
-                                                        };
-                                                    })}
-                                                />
-                                                <img src={deleteIcon} alt="" className="delete-icon"/>
-                                            </div>
-                                            <div className="flex-column">
-                                                <img src={addIcon} alt="" className="add-icon"/>
-                                                <div className="selection-card-bottom-text">{t('addCategory')}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <Form.Select
-                                        field="group"
-                                        label={{ text: t('group') }}
-                                        style={{ width: 300 }}
-                                        remote={true}
-                                        optionList={groupDataList.map((item) => {
-                                            // console.log(item, datasourceConfig.allFields)
-                                            const { type, name } = item as any;
-                                            return {
-                                                value: type,
-                                                label: name,
-                                            };
-                                        })}
-                                    />
                                 </Form>
                             </div>
                         </TabPane>
