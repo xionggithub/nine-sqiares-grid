@@ -52,10 +52,24 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     const { datasource, updateDatasource } = useDatasourceStore((state) => state);
 
 
+    // 保存 选择的表
     const [tableId, setTableId] = useState('')
+    // 保存选择表的字段数据
     const [fields, setFields] = useState([])
-    const [verticalCategories, setVerticalCategories] = useState([])
+    // 保存竖轴选择完字段后子分类的选项数据
+    const [verticalCategoryOptions, setVerticalCategoryOptions] = useState([])
+    const [verticalCategories, setVerticalCategories] = useState({
+        up: [''],
+        middle: [''],
+        down: ['']
+    })
+    // 保存横轴选择完字段后子分类的选项数据
     const [horizontalCategoryOptions, setHorizontalCategoryOptions] = useState([])
+    const [horizontalCategories, setHorizontalCategories] = useState({
+        left: [''],
+        middle: [''],
+        right: ['']
+    })
 
     const formApi = useRef<any>();
 
@@ -154,9 +168,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             field="tableId"
                                             label={{ text: t('data_source') }}
                                             style={{ width: 300 }}
-                                            defaultValue={tableId}
+                                            initValue={tableId}
                                             onChange={async (selectValue) => {
-                                                console.log(selectValue, 'selectvalue======')
+                                                console.log('on data source selected ', selectValue, datasourceConfig)
                                                 const tableId = selectValue as string;
                                                 let fields = [];
                                                 if (datasource.fields[tableId] && datasource.fields[tableId].length > 0) {
@@ -189,10 +203,14 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         />
 
                                         <Form.Select
-                                            field="rowRange"
+                                            field="dataRange"
                                             label={{ text: t('data_range') }}
                                             style={{ width: 300 }}
                                             remote={true}
+                                            onChange={(selectedValue) => {
+                                                datasourceConfig.dataRange = selectedValue as string
+                                                console.log('on data range selected ', selectedValue, datasourceConfig)
+                                            }}
                                             optionList={tDataRange.map((range) => {
                                                 const { type, viewName, viewId } = range as any;
                                                 if (type === SourceType.ALL) {
@@ -216,6 +234,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             label={{ text: t('personnel') }}
                                             style={{ width: 300 }}
                                             remote={true}
+                                            initValue={datasourceConfig.personnel}
                                             onChange={async (selectValue) => {
                                                 datasourceConfig.personnel = selectValue as string;
                                                 let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
@@ -227,6 +246,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 flushSync(() => {
                                                     updateDatasourceConfig(datasourceConfig)
                                                     setFields(fields)
+                                                    console.log('on personnel choose', selectValue, datasourceConfig)
                                                 })
                                             }}
                                             optionList={fields.map((item) => {
@@ -248,7 +268,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 noLabel={true}
                                                 style={{ width: '100%' }}
                                                 remote={true}
+                                                initValue={datasourceConfig.horizontalField}
                                                 onChange={async (selectValue) => {
+                                                    console.log('on horizontalAxis selected ', selectValue, datasourceConfig)
                                                     datasourceConfig.horizontalField = selectValue as string;
                                                     let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
                                                     fields.forEach(item => {
@@ -281,66 +303,137 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         <div className="selection-list">
                                             <div className="selection-card">
                                                 <div className="selection-card-title">{t('left')}</div>
-                                                <div className="delete-able-select-container">
-                                                    <Select
-                                                        style={{ width: '100%' }}
-                                                        remote={true}
-                                                        optionList={horizontalCategoryOptions.map((item) => {
-                                                            const { id, name, disabled } = item as any;
-                                                            return {
-                                                                value: id,
-                                                                label: name,
-                                                                disabled: disabled
-                                                            };
-                                                        })}
-                                                    />
-                                                    <img src={deleteIcon} alt="" className="delete-icon"/>
-                                                </div>
-                                                <div className="flex-row">
+                                                {horizontalCategories.left.map((id, index) => {
+                                                    return (<div className="delete-able-select-container">
+                                                        <Form.Select
+                                                            noLabel={true}
+                                                            style={{ width: '100%' }}
+                                                            remote={true}
+                                                            initValue={id}
+                                                            onChange={(selectValue) => {
+                                                                horizontalCategories.left[index] = selectValue as string
+                                                            }}
+                                                            optionList={horizontalCategoryOptions.map((item) => {
+                                                                const { id, name, disabled } = item as any;
+                                                                return {
+                                                                    value: id,
+                                                                    label: name,
+                                                                    disabled: disabled
+                                                                };
+                                                            })}
+                                                        />
+                                                        <img src={deleteIcon} alt="" className="delete-icon action-container"
+                                                             onClick={ () => {
+                                                                 if (horizontalCategories.left.length <= 1) {
+                                                                     return
+                                                                 }
+                                                                 horizontalCategories.left.splice(index, 1)
+                                                                 flushSync(() => {
+                                                                     setHorizontalCategories(horizontalCategories)
+                                                                 })
+                                                             }}
+                                                        />
+                                                    </div>)
+                                                })}
+                                                <div className="flex-row action-container"
+                                                     onClick={ () => {
+                                                         horizontalCategories.left.push('')
+                                                         flushSync(() => {
+                                                             setHorizontalCategories(horizontalCategories)
+                                                         })
+                                                     }}
+                                                >
                                                     <img src={addIcon} alt="" className="add-icon"/>
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                                 </div>
                                             </div>
                                             <div className="selection-card">
                                                 <div className="selection-card-title">{t('middle')}</div>
-                                                <div className="delete-able-select-container">
-                                                    <Select
-                                                        style={{ width: '100%' }}
-                                                        remote={true}
-                                                        optionList={horizontalCategoryOptions.map((item) => {
-                                                            const { id, name, disabled } = item as any;
-                                                            return {
-                                                                value: id,
-                                                                label: name,
-                                                                disabled: disabled
-                                                            };
-                                                        })}
-                                                    />
-                                                    <img src={deleteIcon} alt="" className="delete-icon"/>
-                                                </div>
-                                                <div className="flex-row">
+                                                {horizontalCategories.middle.map((id, index) => {
+                                                    return (<div className="delete-able-select-container">
+                                                        <Form.Select
+                                                            noLabel={true}
+                                                            style={{ width: '100%' }}
+                                                            remote={true}
+                                                            initValue={id}
+                                                            onChange={(selectValue) => {
+                                                                horizontalCategories.middle[index] = selectValue as string
+                                                            }}
+                                                            optionList={horizontalCategoryOptions.map((item) => {
+                                                                const { id, name, disabled } = item as any;
+                                                                return {
+                                                                    value: id,
+                                                                    label: name,
+                                                                    disabled: disabled
+                                                                };
+                                                            })}
+                                                        />
+                                                        <img src={deleteIcon} alt="" className="delete-icon action-container"
+                                                             onClick={ () => {
+                                                                 if (horizontalCategories.middle.length <= 1) {
+                                                                     return
+                                                                 }
+                                                                 horizontalCategories.middle.splice(index, 1)
+                                                                 flushSync(() => {
+                                                                     setHorizontalCategories(horizontalCategories)
+                                                                 })
+                                                             }}
+                                                        />
+                                                    </div>)
+                                                })}
+                                                <div className="flex-row action-container"
+                                                     onClick={() => {
+                                                        horizontalCategories.middle.push('')
+                                                        flushSync(() => {
+                                                            setHorizontalCategories(horizontalCategories)
+                                                        })
+                                                }}>
                                                     <img src={addIcon} alt="" className="add-icon"/>
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                                 </div>
                                             </div>
                                             <div className="selection-card">
                                                 <div className="selection-card-title">{t('right')}</div>
-                                                <div className="delete-able-select-container">
-                                                    <Select
-                                                        style={{ width: '100%' }}
-                                                        remote={true}
-                                                        optionList={horizontalCategoryOptions.map((item) => {
-                                                            const { id, name, disabled } = item as any;
-                                                            return {
-                                                                value: id,
-                                                                label: name,
-                                                                disabled: disabled
-                                                            };
-                                                        })}
-                                                    />
-                                                    <img src={deleteIcon} alt="" className="delete-icon"/>
-                                                </div>
-                                                <div className="flex-row">
+                                                {horizontalCategories.right.map((id, index) => {
+                                                    return (<div className="delete-able-select-container">
+                                                        <Form.Select
+                                                            noLabel={true}
+                                                            style={{ width: '100%' }}
+                                                            remote={true}
+                                                            initValue={id}
+                                                            onChange={(selectValue) => {
+                                                                horizontalCategories.right[index] = selectValue as string
+                                                            }}
+                                                            optionList={horizontalCategoryOptions.map((item) => {
+                                                                const { id, name, disabled } = item as any;
+                                                                return {
+                                                                    value: id,
+                                                                    label: name,
+                                                                    disabled: disabled
+                                                                };
+                                                            })}
+                                                        />
+                                                        <img src={deleteIcon} alt="" className="delete-icon action-container"
+                                                             onClick={ () => {
+                                                                 if (horizontalCategories.right.length <= 1) {
+                                                                     return
+                                                                 }
+                                                                 horizontalCategories.right.splice(index, 1)
+                                                                 flushSync(() => {
+                                                                     setHorizontalCategories(horizontalCategories)
+                                                                 })
+                                                             }}
+                                                        />
+                                                    </div>)
+                                                })}
+                                                <div className="flex-row action-container"
+                                                     onClick={ () => {
+                                                         horizontalCategories.right.push('')
+                                                         flushSync(() => {
+                                                             setHorizontalCategories(horizontalCategories)
+                                                         })
+                                                     }}
+                                                >
                                                     <img src={addIcon} alt="" className="add-icon"/>
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                                 </div>
@@ -357,7 +450,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 noLabel={true}
                                                 style={{ width: '100%' }}
                                                 remote={true}
+                                                initValue={datasourceConfig.verticalField}
                                                 onChange={async (selectValue) => {
+                                                    console.log('on verticalAxis selected ', selectValue, datasourceConfig)
                                                     datasourceConfig.verticalField = selectValue as string;
                                                     let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
                                                     fields.forEach(item => {
@@ -371,7 +466,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                         if (field) {
                                                             console.log('----field::', field)
                                                             let options = field.property.options.map(item => ({ ...item, disabled: false}))
-                                                            setVerticalCategories(options)
+                                                            setVerticalCategoryOptions(options)
                                                         }
                                                     })
                                                 }}
@@ -389,66 +484,138 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         <div className="selection-list margin-top-tw margin-bottom-tw">
                                             <div className="selection-card">
                                                 <div className="selection-card-title">{t('up')}</div>
-                                                <div className="delete-able-select-container">
-                                                    <Select
-                                                        style={{ width: '100%' }}
-                                                        remote={true}
-                                                        optionList={verticalCategories.map((item) => {
-                                                            const { id, name, disabled } = item as any;
-                                                            return {
-                                                                value: id,
-                                                                label: name,
-                                                                disabled: disabled
-                                                            };
-                                                        })}
-                                                    />
-                                                    <img src={deleteIcon} alt="" className="delete-icon"/>
-                                                </div>
-                                                <div className="flex-row">
+                                                {verticalCategories.up.map((id, index) => {
+                                                    return (<div className="delete-able-select-container">
+                                                        <Form.Select
+                                                            noLabel={true}
+                                                            style={{ width: '100%' }}
+                                                            remote={true}
+                                                            initValue={id}
+                                                            onChange={(selectValue) => {
+                                                                verticalCategories.up[index] = selectValue as string
+                                                            }}
+                                                            optionList={verticalCategoryOptions.map((item) => {
+                                                                const { id, name, disabled } = item as any;
+                                                                return {
+                                                                    value: id,
+                                                                    label: name,
+                                                                    disabled: disabled
+                                                                };
+                                                            })}
+                                                        />
+                                                        <img src={deleteIcon} alt="" className="delete-icon action-container"
+                                                             onClick={ () => {
+                                                                 if (verticalCategories.up.length <= 1) {
+                                                                     return
+                                                                 }
+                                                                 verticalCategories.up.splice(index, 1)
+                                                                 flushSync(() => {
+                                                                     setVerticalCategories(verticalCategories)
+                                                                 })
+                                                             }}
+                                                        />
+                                                    </div>)
+                                                })}
+                                                <div className="flex-row action-container"
+                                                     onClick={ () => {
+                                                         verticalCategories.up.push('')
+                                                         flushSync(() => {
+                                                             setVerticalCategories(verticalCategories)
+                                                         })
+                                                     }}
+                                                >
                                                     <img src={addIcon} alt="" className="add-icon"/>
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                                 </div>
                                             </div>
                                             <div className="selection-card">
                                                 <div className="selection-card-title">{t('middle')}</div>
-                                                <div className="delete-able-select-container">
-                                                    <Select
-                                                        style={{ width: '100%' }}
-                                                        remote={true}
-                                                        optionList={verticalCategories.map((item) => {
-                                                            const { id, name, disabled } = item as any;
-                                                            return {
-                                                                value: id,
-                                                                label: name,
-                                                                disabled: disabled
-                                                            };
-                                                        })}
-                                                    />
-                                                    <img src={deleteIcon} alt="" className="delete-icon"/>
-                                                </div>
-                                                <div className="flex-row">
+                                                {verticalCategories.middle.map((id, index) => {
+                                                    return (<div className="delete-able-select-container">
+                                                        <Form.Select
+                                                            noLabel={true}
+                                                            style={{ width: '100%' }}
+                                                            remote={true}
+                                                            initValue={id}
+                                                            onChange={(selectValue) => {
+                                                                verticalCategories.middle[index] = selectValue as string
+                                                            }}
+                                                            optionList={verticalCategoryOptions.map((item) => {
+                                                                const { id, name, disabled } = item as any;
+                                                                return {
+                                                                    value: id,
+                                                                    label: name,
+                                                                    disabled: disabled
+                                                                };
+                                                            })}
+                                                        />
+                                                        <img src={deleteIcon} alt="" className="delete-icon action-container"
+                                                             onClick={ () => {
+                                                                 if (verticalCategories.middle.length <= 1) {
+                                                                     return
+                                                                 }
+                                                                 verticalCategories.middle.splice(index, 1)
+                                                                 flushSync(() => {
+                                                                     setVerticalCategories(verticalCategories)
+                                                                 })
+                                                             }}
+                                                        />
+                                                    </div>)
+                                                })}
+                                                <div className="flex-row action-container"
+                                                     onClick={ () => {
+                                                         verticalCategories.middle.push('')
+                                                         flushSync(() => {
+                                                             setVerticalCategories(verticalCategories)
+                                                         })
+                                                     }}
+                                                >
                                                     <img src={addIcon} alt="" className="add-icon"/>
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                                 </div>
                                             </div>
                                             <div className="selection-card">
                                                 <div className="selection-card-title">{t('down')}</div>
-                                                <div className="delete-able-select-container">
-                                                    <Select
-                                                        style={{ width: '100%' }}
-                                                        remote={true}
-                                                        optionList={verticalCategories.map((item) => {
-                                                            const { id, name, disabled } = item as any;
-                                                            return {
-                                                                value: id,
-                                                                label: name,
-                                                                disabled: disabled
-                                                            };
-                                                        })}
-                                                    />
-                                                    <img src={deleteIcon} alt="" className="delete-icon"/>
-                                                </div>
-                                                <div className="flex-row">
+                                                {verticalCategories.down.map((id, index) => {
+                                                    return (<div className="delete-able-select-container">
+                                                        <Form.Select
+                                                            noLabel={true}
+                                                            style={{ width: '100%' }}
+                                                            remote={true}
+                                                            initValue={id}
+                                                            onChange={(selectValue) => {
+                                                                verticalCategories.down[index] = selectValue as string
+                                                            }}
+                                                            optionList={verticalCategoryOptions.map((item) => {
+                                                                const { id, name, disabled } = item as any;
+                                                                return {
+                                                                    value: id,
+                                                                    label: name,
+                                                                    disabled: disabled
+                                                                };
+                                                            })}
+                                                        />
+                                                        <img src={deleteIcon} alt="" className="delete-icon action-container"
+                                                             onClick={ () => {
+                                                                 if (verticalCategories.down.length <= 1) {
+                                                                     return
+                                                                 }
+                                                                 verticalCategories.down.splice(index, 1)
+                                                                 flushSync(() => {
+                                                                     setVerticalCategories(verticalCategories)
+                                                                 })
+                                                             }}
+                                                        />
+                                                    </div>)
+                                                })}
+                                                <div className="flex-row action-container"
+                                                     onClick={ () => {
+                                                         verticalCategories.down.push('')
+                                                         flushSync(() => {
+                                                             setVerticalCategories(verticalCategories)
+                                                         })
+                                                     }}
+                                                >
                                                     <img src={addIcon} alt="" className="add-icon"/>
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                                 </div>

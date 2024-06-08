@@ -45,7 +45,7 @@ export const useDatasourceStore = create<IDatasourceStore>((set) => ({
 export interface IDatasourceConfigType {
   tableId: string;
   theme: 'light' | 'dark' | 'primary';
-  rowRange: string;
+  dataRange: string;
   personnel: string;
   horizontalField: string;
   horizontalLeftCategories: string[];
@@ -67,7 +67,7 @@ export const useDatasourceConfigStore = create<IDatasourceConfigStore>((set) => 
   datasourceConfig: {
     tableId: '',
     theme: 'light',
-    rowRange: '',
+    dataRange: '',
     personnel: '',
     horizontalField: '',
     horizontalLeftCategories: [],
