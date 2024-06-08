@@ -60,7 +60,22 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
      rightUpValue: string,
      * */
 
-    const horizontalAxisTitle = (type: 'left' | 'middle' | 'right') => {
+    const horizontalAxisTitle = () => {
+        return datasource.fields[datasource.tableId].find(item => item.id === datasourceConfig.horizontalField)?.name ?? ""
+    }
+
+    const horizontalAxisCategoryTitle = (type: 'left' | 'middle' | 'right') => {
+        let text = '';
+        if (type === 'left') {
+            text = textConfig.HLeftValue
+        } else if (type === 'middle') {
+            text = textConfig.HMiddleValue
+        } else if (type === 'right') {
+            text = textConfig.HRightValue
+        }
+        if (text.length > 0) {
+            return  text;
+        }
         let field = (datasource.fields[datasourceConfig.tableId] ?? []).find(item => item.id === datasourceConfig.horizontalField);
         if (!field) return  ''
         if (!field.property?.options) return ''
@@ -69,7 +84,23 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
         if (options.length === 0) return  ''
         return options.map(item => item.name).join('/');
     }
-    const verticalAxisTitle = (type: 'up' | 'middle' | 'down') => {
+
+    const verticalAxisTitle = () => {
+        return  datasource.fields[datasource.tableId].find(item => item.id === datasourceConfig.verticalField)?.name ?? ""
+    }
+
+    const verticalAxisCategoryTitle = (type: 'up' | 'middle' | 'down') => {
+        let text = '';
+        if (type === 'up') {
+            text = textConfig.VUpValue
+        } else if (type === 'middle') {
+            text = textConfig.VMiddleValue
+        } else if (type === 'down') {
+            text = textConfig.VDownValue
+        }
+        if (text.length > 0) {
+            return  text;
+        }
         let field = (datasource.fields[datasourceConfig.tableId] ?? []).find(item => item.id === datasourceConfig.verticalField);
         if (!field) return  ''
         if (!field.property?.options) return ''
@@ -99,7 +130,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label rotate-label">{datasource.fields[datasource.tableId].find(item => item.id === datasourceConfig.verticalField)?.name ?? ""}</div>
+                        <div className="side-bar-label rotate-label">{verticalAxisTitle()}</div>
                     </div>
                 </div>
                 <div className="left-side-bar-column three-row-grid">
@@ -108,21 +139,21 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label rotate-label">{verticalAxisTitle('up')}</div>
+                        <div className="side-bar-label rotate-label">{verticalAxisCategoryTitle('up')}</div>
                     </div>
                     <div className="label-container"
                          style={{
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label rotate-label">{verticalAxisTitle('middle')}</div>
+                        <div className="side-bar-label rotate-label">{verticalAxisCategoryTitle('middle')}</div>
                     </div>
                     <div className="label-container"
                          style={{
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label rotate-label">{verticalAxisTitle('down') }</div>
+                        <div className="side-bar-label rotate-label">{verticalAxisCategoryTitle('down') }</div>
                     </div>
                 </div>
             </div>
@@ -169,7 +200,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label">{horizontalAxisTitle('left')}</div>
+                        <div className="side-bar-label">{horizontalAxisCategoryTitle('left')}</div>
                     </div>
 
                     <div className="label-container"
@@ -177,14 +208,14 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label">{horizontalAxisTitle('middle')}</div>
+                        <div className="side-bar-label">{horizontalAxisCategoryTitle('middle')}</div>
                     </div>
                     <div className="label-container"
                          style={{
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label">{horizontalAxisTitle('right')}</div>
+                        <div className="side-bar-label">{horizontalAxisCategoryTitle('right')}</div>
                     </div>
                 </div>
                 <div className="bottom-side-bar-row"
@@ -193,7 +224,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                          style={{
                         backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                     }}>
-                        <div className="side-bar-label">{datasource.fields[datasource.tableId].find(item => item.id === datasourceConfig.horizontalField)?.name ?? ""}</div>
+                        <div className="side-bar-label">{horizontalAxisTitle()}</div>
                     </div>
                 </div>
             </div>
