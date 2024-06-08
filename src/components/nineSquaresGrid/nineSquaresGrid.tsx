@@ -59,6 +59,27 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
      middleUpValue: string,
      rightUpValue: string,
      * */
+
+    const horizontalAxisTitle = (type: 'left' | 'middle' | 'right') => {
+        let field = (datasource.fields[datasourceConfig.tableId] ?? []).find(item => item.id === datasourceConfig.horizontalField);
+        if (!field) return  ''
+        if (!field.property?.options) return ''
+        let optionIds = datasourceConfig.horizontalCategories[type]
+        let options = field.property.options.filter(item => !!optionIds.some(id => id === item.id));
+        if (options.length === 0) return  ''
+        return options.map(item => item.name).join('/');
+    }
+    const verticalAxisTitle = (type: 'up' | 'middle' | 'down') => {
+        let field = (datasource.fields[datasourceConfig.tableId] ?? []).find(item => item.id === datasourceConfig.verticalField);
+        if (!field) return  ''
+        if (!field.property?.options) return ''
+        let optionIds = datasourceConfig.verticalCategories[type]
+        let options = field.property.options.filter(item => !!optionIds.some(id => id === item.id));
+        if (options.length === 0) return  ''
+        return options.map(item => item.name).join('/');
+    }
+
+
     return (
         <div
             className="relative flex-1 h-screen grid-container grid"
@@ -87,21 +108,21 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label rotate-label">{textConfig.VupValue}</div>
+                        <div className="side-bar-label rotate-label">{verticalAxisTitle('up')}</div>
                     </div>
                     <div className="label-container"
                          style={{
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label rotate-label">{textConfig.VMiddleValue}</div>
+                        <div className="side-bar-label rotate-label">{verticalAxisTitle('middle')}</div>
                     </div>
                     <div className="label-container"
                          style={{
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label rotate-label">{textConfig.VDownValue }</div>
+                        <div className="side-bar-label rotate-label">{verticalAxisTitle('down') }</div>
                     </div>
                 </div>
             </div>
@@ -148,7 +169,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label">{textConfig.HLeftValue}</div>
+                        <div className="side-bar-label">{horizontalAxisTitle('left')}</div>
                     </div>
 
                     <div className="label-container"
@@ -156,14 +177,14 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label">{textConfig.HMiddleValue}</div>
+                        <div className="side-bar-label">{horizontalAxisTitle('middle')}</div>
                     </div>
                     <div className="label-container"
                          style={{
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
                          }}
                     >
-                        <div className="side-bar-label">{textConfig.HRightValue}</div>
+                        <div className="side-bar-label">{horizontalAxisTitle('right')}</div>
                     </div>
                 </div>
                 <div className="bottom-side-bar-row"

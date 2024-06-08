@@ -155,6 +155,11 @@
     padding: 0 !important;
 }
 
+.selection-icon {
+    width: 15px;
+    height: 15px;
+}
+
 .delete-icon {
     width: 15px;
     height: 15px;

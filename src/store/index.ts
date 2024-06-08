@@ -48,13 +48,17 @@ export interface IDatasourceConfigType {
   dataRange: string;
   personnel: string;
   horizontalField: string;
-  horizontalLeftCategories: string[];
-  horizontalMiddleCategories: string[];
-  horizontalRightCategories: string[];
+  horizontalCategories: {
+    left: string[],
+    middle: string[],
+    right: string[]
+  };
   verticalField: string;
-  verticalUpCategories: string[];
-  verticalMiddleCategories: string[];
-  verticalDownCategories: string[];
+  verticalCategories: {
+    up: string[],
+    middle: string[],
+    down: string[]
+  };
   group: string;
 }
 
@@ -70,13 +74,18 @@ export const useDatasourceConfigStore = create<IDatasourceConfigStore>((set) => 
     dataRange: '',
     personnel: '',
     horizontalField: '',
-    horizontalLeftCategories: [],
-    horizontalMiddleCategories: [],
-    horizontalRightCategories: [],
+    horizontalCategories: {
+      left: [''],
+      middle: [''],
+      right: ['']
+    },
+
     verticalField: '',
-    verticalUpCategories: [],
-    verticalMiddleCategories: [],
-    verticalDownCategories: [],
+    verticalCategories: {
+      up: [''],
+      middle: [''],
+      down: ['']
+    },
     group: ''
   },
   updateDatasourceConfig: (datasourceConfig) => set(() => ({ datasourceConfig })),

@@ -29,10 +29,14 @@ import {
     IconChevronDown
 } from '@douyinfe/semi-icons';
 import { useDatasourceConfigStore, useTextConfigStore, useDatasourceStore } from '../../store';
-import { flushSync } from "react-dom"
 
 import deleteIcon from '../../assets/icon_delete-trash_outlined.svg';
 import addIcon from '../../assets/icon_add_outlined.svg';
+import personIcon from '../../assets/icon_person.svg';
+import tableIcon from '../../assets/icon_table.svg';
+import selectOptionIcon from '../../assets/icon_choose.svg';
+
+
 import { useTranslation } from 'react-i18next';
 
 import './index.css';
@@ -71,6 +75,135 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         right: ['']
     })
 
+    const chooseTable = async (tableId: string) => {
+        console.log('on data source selected ', tableId, datasourceConfig)
+        let fields = [];
+        if (datasource.fields[tableId] && datasource.fields[tableId].length > 0) {
+            fields = datasource.fields[tableId];
+        } else {
+            const table = await base.getTable(tableId);
+            console.log('-----',table)
+            fields = await table.getFieldMetaList()
+        }
+        if (datasourceConfig.tableId !== tableId) {
+            datasourceConfig.horizontalField = ''
+            datasourceConfig.verticalField = ''
+            datasourceConfig.personnel = ''
+            datasourceConfig.tableId = tableId
+        }
+        datasource.fields[tableId] = [...fields.map(item => ({ ...item, disabled: false}))];
+        datasource.tableId = tableId
+        updateDatasource(datasource)
+        updateDatasourceConfig({...datasourceConfig})
+        setTableId(tableId)
+        setFields([...fields])
+        console.log(datasource.tableId, datasource.fields)
+    }
+
+    const choosePersonField = (personnel: string) => {
+        datasourceConfig.personnel = personnel;
+        let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+        console.log(selectedIds)
+        fields.forEach(item => {
+            item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+            console.log(item.disabled, item.id)
+        })
+        updateDatasourceConfig({...datasourceConfig})
+        setFields([...fields])
+        console.log('on personnel choose', personnel, datasourceConfig)
+    }
+
+    const chooseHorizontalAxisField = (horizontalField: string) => {
+        console.log('on horizontalAxis selected ', horizontalField, datasourceConfig)
+        datasourceConfig.horizontalField = horizontalField;
+        let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+        fields.forEach(item => {
+            item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+            console.log(item.disabled, item.id)
+        })
+        console.log('horizontalField-----',datasource.fields[datasource.tableId])
+        updateDatasourceConfig({...datasourceConfig})
+        setFields(fields)
+        let field = fields.find(item => item.id === datasourceConfig.horizontalField)
+        if (field && field.property?.options) {
+            console.log('----field::', field)
+            let options = field.property.options.map(item => ({ ...item, disabled: false}))
+            setHorizontalCategoryOptions(options)
+        }
+    }
+
+    const chooseVerticalAxisField = (verticalField: string) => {
+        console.log('on verticalAxis selected ', verticalField, datasourceConfig)
+        datasourceConfig.verticalField = verticalField;
+        let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+        fields.forEach(item => {
+            item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+            console.log(item.disabled, item.id)
+        })
+        updateDatasourceConfig({...datasourceConfig})
+        setFields(fields)
+        let field = fields.find(item => item.id === datasourceConfig.verticalField)
+        if (field) {
+            console.log('----field::', field)
+            let options = field.property.options.map(item => ({ ...item, disabled: false}))
+            setVerticalCategoryOptions(options)
+        }
+    }
+
+
+    const addVerticalCategory = (type: 'up' | 'middle' | 'down') => {
+        console.log('vertical category ',type,'   ' , verticalCategories[type])
+        verticalCategories[type].push('')
+        setVerticalCategories({...verticalCategories})
+        datasourceConfig.verticalCategories = {...verticalCategories}
+    }
+
+    const removeVerticalCategory = (type: 'up' | 'middle' | 'down', index: number) => {
+        if (verticalCategories[type].length <= 1) {
+            return
+        }
+        verticalCategories[type].splice(index, 1)
+        setVerticalCategories({...verticalCategories})
+        datasourceConfig.verticalCategories = {...verticalCategories}
+    }
+
+    const addHorizontalCategory = (type: 'left' | 'middle' | 'right') => {
+        console.log('add category::', type, "   ", horizontalCategories[type])
+        horizontalCategories[type].push('')
+        setHorizontalCategories({...horizontalCategories})
+        datasourceConfig.horizontalCategories = {...horizontalCategories}
+    }
+
+    const removeHorizontalCategory = (type: 'left' | 'middle' | 'right', index: number) => {
+        if (horizontalCategories[type].length <= 1) {
+            return
+        }
+        horizontalCategories[type].splice(index, 1)
+        setHorizontalCategories({...horizontalCategories})
+        datasourceConfig.horizontalCategories = {...horizontalCategories}
+    }
+
+    const renderPersonSelectedItem = optionNode => (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+            <img src={personIcon} alt="" className="selection-icon" style={{ opacity: optionNode.label ? 1 : 0 }} />
+            <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
+        </div>
+    );
+
+    const renderTableSelectedItem = optionNode => (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+            <img src={tableIcon} alt="" className="selection-icon" style={{ opacity: optionNode.label ? 1 : 0 }} />
+            <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
+        </div>
+    );
+
+    const renderSelectOptionSelectedItem = optionNode => (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+            <img src={selectOptionIcon} alt="" className="selection-icon" style={{ opacity: optionNode.label ? 1 : 0 }} />
+            <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
+        </div>
+    );
+
     const formApi = useRef<any>();
 
     // 样式配置数据
@@ -91,9 +224,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     };
 
     useEffect(() => {
-        flushSync(() => {
-            setTableId(datasource.tableId)
-        })
+        setTableId(datasource.tableId)
     }, []);
 
     useEffect(() => {
@@ -103,8 +234,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     // 类型与数据表单更改
     const handleDataSourceConfigFormValueChange = (values: any) => {
         console.log(values)
-        const newConfig = { ...datasourceConfig, ...values };
-        updateDatasourceConfig({ ...newConfig });
+        // const newConfig = { ...datasourceConfig, ...values };
+        // updateDatasourceConfig({ ...newConfig });
     };
 
     const handleTextConfigFormValueChange = (values: any) => {
@@ -115,17 +246,22 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     // 保存配置
     const saveConfig = () => {
-        dashboard.saveConfig({
-            dataConditions: [
-                {
-                    tableId: datasourceConfig.tableId,
-                },
-            ],
-            customConfig: {
-                datasourceConfig,
-                textConfig,
-            },
-        }).then();
+        datasourceConfig.horizontalCategories = {...horizontalCategories}
+        datasourceConfig.verticalCategories = {...verticalCategories}
+        updateDatasourceConfig({ ...datasourceConfig });
+
+        console.log('save config:::', datasource, datasourceConfig, textConfig)
+        // dashboard.saveConfig({
+        //     dataConditions: [
+        //         {
+        //             tableId: datasourceConfig.tableId,
+        //         },
+        //     ],
+        //     customConfig: {
+        //         datasourceConfig,
+        //         textConfig,
+        //     },
+        // }).then();
     };
 
     // test data
@@ -169,33 +305,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             label={{ text: t('data_source') }}
                                             style={{ width: 300 }}
                                             initValue={tableId}
-                                            onChange={async (selectValue) => {
-                                                console.log('on data source selected ', selectValue, datasourceConfig)
-                                                const tableId = selectValue as string;
-                                                let fields = [];
-                                                if (datasource.fields[tableId] && datasource.fields[tableId].length > 0) {
-                                                    fields = datasource.fields[tableId];
-                                                } else {
-                                                    const table = await base.getTable(tableId);
-                                                    console.log('-----',table)
-                                                    fields = await table.getFieldMetaList()
-                                                }
-                                                if (datasourceConfig.tableId !== tableId) {
-                                                    datasourceConfig.horizontalField = ''
-                                                    datasourceConfig.verticalField = ''
-                                                    datasourceConfig.personnel = ''
-                                                    datasourceConfig.tableId = tableId
-                                                }
-                                                flushSync(() => {
-                                                    datasource.fields[tableId] = [...fields.map(item => ({ ...item, disabled: false}))];
-                                                    datasource.tableId = tableId
-                                                    updateDatasource(datasource)
-                                                    updateDatasourceConfig(datasourceConfig)
-                                                    setTableId(tableId)
-                                                    setFields(fields)
-                                                })
-                                                console.log(datasource.tableId, datasource.fields)
-                                            }}
+                                            renderSelectedItem={renderTableSelectedItem}
+                                            onChange={ async (selectValue) => chooseTable(selectValue as string)}
                                             optionList={datasource.tables.map((source) => ({
                                                 value: source.tableId,
                                                 label: source.tableName,
@@ -211,6 +322,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 datasourceConfig.dataRange = selectedValue as string
                                                 console.log('on data range selected ', selectedValue, datasourceConfig)
                                             }}
+                                            renderSelectedItem={renderTableSelectedItem}
                                             optionList={tDataRange.map((range) => {
                                                 const { type, viewName, viewId } = range as any;
                                                 if (type === SourceType.ALL) {
@@ -235,20 +347,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             style={{ width: 300 }}
                                             remote={true}
                                             initValue={datasourceConfig.personnel}
-                                            onChange={async (selectValue) => {
-                                                datasourceConfig.personnel = selectValue as string;
-                                                let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
-                                                console.log(selectedIds)
-                                                fields.forEach(item => {
-                                                    item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
-                                                    console.log(item.disabled, item.id)
-                                                })
-                                                flushSync(() => {
-                                                    updateDatasourceConfig(datasourceConfig)
-                                                    setFields(fields)
-                                                    console.log('on personnel choose', selectValue, datasourceConfig)
-                                                })
-                                            }}
+                                            onChange={async (selectValue) => choosePersonField(selectValue as string)}
+                                            renderSelectedItem={renderPersonSelectedItem}
                                             optionList={fields.map((item) => {
                                                 const { id, name, disabled } = item as any;
                                                 return {
@@ -269,26 +369,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 style={{ width: '100%' }}
                                                 remote={true}
                                                 initValue={datasourceConfig.horizontalField}
-                                                onChange={async (selectValue) => {
-                                                    console.log('on horizontalAxis selected ', selectValue, datasourceConfig)
-                                                    datasourceConfig.horizontalField = selectValue as string;
-                                                    let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
-                                                    fields.forEach(item => {
-                                                        item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
-                                                        console.log(item.disabled, item.id)
-                                                    })
-                                                    flushSync(() => {
-                                                        console.log('horizontalField-----',datasource.fields[datasource.tableId])
-                                                        updateDatasourceConfig(datasourceConfig)
-                                                        setFields(fields)
-                                                        let field = fields.find(item => item.id === datasourceConfig.horizontalField)
-                                                        if (field) {
-                                                            console.log('----field::', field)
-                                                            let options = field.property.options.map(item => ({ ...item, disabled: false}))
-                                                            setHorizontalCategoryOptions(options)
-                                                        }
-                                                    })
-                                                }}
+                                                renderSelectedItem={renderSelectOptionSelectedItem}
+                                                onChange={async (selectValue) => chooseHorizontalAxisField(selectValue as string)}
                                                 optionList={fields.map((item) => {
                                                     const { id, name, disabled } = item as any;
                                                     return {
@@ -306,12 +388,20 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {horizontalCategories.left.map((id, index) => {
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
+                                                            field={id + index}
                                                             noLabel={true}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             initValue={id}
                                                             onChange={(selectValue) => {
                                                                 horizontalCategories.left[index] = selectValue as string
+                                                                let selectedIds = Object.values(horizontalCategories).flat().filter(id => id.length > 0)
+                                                                console.log(selectedIds, Object.values(horizontalCategories))
+                                                                horizontalCategoryOptions.forEach(item => {
+                                                                    item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+                                                                    console.log(item.disabled, item.id)
+                                                                })
+                                                                setHorizontalCategoryOptions([...horizontalCategoryOptions])
                                                             }}
                                                             optionList={horizontalCategoryOptions.map((item) => {
                                                                 const { id, name, disabled } = item as any;
@@ -323,25 +413,13 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             })}
                                                         />
                                                         <img src={deleteIcon} alt="" className="delete-icon action-container"
-                                                             onClick={ () => {
-                                                                 if (horizontalCategories.left.length <= 1) {
-                                                                     return
-                                                                 }
-                                                                 horizontalCategories.left.splice(index, 1)
-                                                                 flushSync(() => {
-                                                                     setHorizontalCategories(horizontalCategories)
-                                                                 })
-                                                             }}
+                                                             style={{ pointerEvents: horizontalCategories.left.length <= 1 && index === 0 ? 'none' : 'auto', opacity: horizontalCategories.left.length <= 1 && index === 0 ? 0.3 : 1  }}
+                                                             onClick={ () => removeHorizontalCategory('left', index)}
                                                         />
                                                     </div>)
                                                 })}
                                                 <div className="flex-row action-container"
-                                                     onClick={ () => {
-                                                         horizontalCategories.left.push('')
-                                                         flushSync(() => {
-                                                             setHorizontalCategories(horizontalCategories)
-                                                         })
-                                                     }}
+                                                     onClick={ () => addHorizontalCategory('left')}
                                                 >
                                                     <img src={addIcon} alt="" className="add-icon"/>
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
@@ -352,12 +430,19 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {horizontalCategories.middle.map((id, index) => {
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
+                                                            field=""
                                                             noLabel={true}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             initValue={id}
                                                             onChange={(selectValue) => {
                                                                 horizontalCategories.middle[index] = selectValue as string
+                                                                let selectedIds = Object.values(horizontalCategories).flat().filter(id => id.length > 0)
+                                                                horizontalCategoryOptions.forEach(item => {
+                                                                    item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+                                                                    console.log(item.disabled, item.id)
+                                                                })
+                                                                setHorizontalCategoryOptions([...horizontalCategoryOptions])
                                                             }}
                                                             optionList={horizontalCategoryOptions.map((item) => {
                                                                 const { id, name, disabled } = item as any;
@@ -369,25 +454,13 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             })}
                                                         />
                                                         <img src={deleteIcon} alt="" className="delete-icon action-container"
-                                                             onClick={ () => {
-                                                                 if (horizontalCategories.middle.length <= 1) {
-                                                                     return
-                                                                 }
-                                                                 horizontalCategories.middle.splice(index, 1)
-                                                                 flushSync(() => {
-                                                                     setHorizontalCategories(horizontalCategories)
-                                                                 })
-                                                             }}
+                                                             style={{ pointerEvents: horizontalCategories.middle.length <= 1 && index === 0 ? 'none' : 'auto', opacity: horizontalCategories.middle.length <= 1 && index === 0 ? 0.3 : 1  }}
+                                                             onClick={ () => removeHorizontalCategory('middle', index)}
                                                         />
                                                     </div>)
                                                 })}
                                                 <div className="flex-row action-container"
-                                                     onClick={() => {
-                                                        horizontalCategories.middle.push('')
-                                                        flushSync(() => {
-                                                            setHorizontalCategories(horizontalCategories)
-                                                        })
-                                                }}>
+                                                     onClick={() => addHorizontalCategory('middle')}>
                                                     <img src={addIcon} alt="" className="add-icon"/>
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                                 </div>
@@ -397,12 +470,19 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {horizontalCategories.right.map((id, index) => {
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
+                                                            field=""
                                                             noLabel={true}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             initValue={id}
                                                             onChange={(selectValue) => {
                                                                 horizontalCategories.right[index] = selectValue as string
+                                                                let selectedIds = Object.values(horizontalCategories).flat().filter(id => id.length > 0)
+                                                                horizontalCategoryOptions.forEach(item => {
+                                                                    item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+                                                                    console.log(item.disabled, item.id)
+                                                                })
+                                                                setHorizontalCategoryOptions([...horizontalCategoryOptions])
                                                             }}
                                                             optionList={horizontalCategoryOptions.map((item) => {
                                                                 const { id, name, disabled } = item as any;
@@ -414,25 +494,13 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             })}
                                                         />
                                                         <img src={deleteIcon} alt="" className="delete-icon action-container"
-                                                             onClick={ () => {
-                                                                 if (horizontalCategories.right.length <= 1) {
-                                                                     return
-                                                                 }
-                                                                 horizontalCategories.right.splice(index, 1)
-                                                                 flushSync(() => {
-                                                                     setHorizontalCategories(horizontalCategories)
-                                                                 })
-                                                             }}
+                                                             style={{ pointerEvents: horizontalCategories.right.length <= 1 && index === 0 ? 'none' : 'auto', opacity: horizontalCategories.right.length <= 1 && index === 0 ? 0.3 : 1  }}
+                                                             onClick={ () => removeHorizontalCategory('right', index)}
                                                         />
                                                     </div>)
                                                 })}
                                                 <div className="flex-row action-container"
-                                                     onClick={ () => {
-                                                         horizontalCategories.right.push('')
-                                                         flushSync(() => {
-                                                             setHorizontalCategories(horizontalCategories)
-                                                         })
-                                                     }}
+                                                     onClick={ () => addHorizontalCategory('right')}
                                                 >
                                                     <img src={addIcon} alt="" className="add-icon"/>
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
@@ -451,25 +519,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 style={{ width: '100%' }}
                                                 remote={true}
                                                 initValue={datasourceConfig.verticalField}
-                                                onChange={async (selectValue) => {
-                                                    console.log('on verticalAxis selected ', selectValue, datasourceConfig)
-                                                    datasourceConfig.verticalField = selectValue as string;
-                                                    let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
-                                                    fields.forEach(item => {
-                                                        item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
-                                                        console.log(item.disabled, item.id)
-                                                    })
-                                                    flushSync(() => {
-                                                        updateDatasourceConfig(datasourceConfig)
-                                                        setFields(fields)
-                                                        let field = fields.find(item => item.id === datasourceConfig.verticalField)
-                                                        if (field) {
-                                                            console.log('----field::', field)
-                                                            let options = field.property.options.map(item => ({ ...item, disabled: false}))
-                                                            setVerticalCategoryOptions(options)
-                                                        }
-                                                    })
-                                                }}
+                                                renderSelectedItem={renderSelectOptionSelectedItem}
+                                                onChange={async (selectValue) => chooseVerticalAxisField(selectValue as string)}
                                                 optionList={fields.map((item) => {
                                                     const { id, name, disabled } = item as any;
                                                     return {
@@ -487,12 +538,19 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {verticalCategories.up.map((id, index) => {
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
+                                                            field=""
                                                             noLabel={true}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             initValue={id}
                                                             onChange={(selectValue) => {
                                                                 verticalCategories.up[index] = selectValue as string
+                                                                let selectedIds = Object.values(verticalCategories).flat().filter(id => id.length > 0)
+                                                                verticalCategoryOptions.forEach(item => {
+                                                                    item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+                                                                    console.log(item.disabled, item.id)
+                                                                })
+                                                                setVerticalCategoryOptions([...verticalCategoryOptions])
                                                             }}
                                                             optionList={verticalCategoryOptions.map((item) => {
                                                                 const { id, name, disabled } = item as any;
@@ -504,24 +562,14 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             })}
                                                         />
                                                         <img src={deleteIcon} alt="" className="delete-icon action-container"
-                                                             onClick={ () => {
-                                                                 if (verticalCategories.up.length <= 1) {
-                                                                     return
-                                                                 }
-                                                                 verticalCategories.up.splice(index, 1)
-                                                                 flushSync(() => {
-                                                                     setVerticalCategories(verticalCategories)
-                                                                 })
-                                                             }}
+                                                             style={{ pointerEvents: verticalCategories.up.length <= 1 && index === 0 ? 'none' : 'auto', opacity: verticalCategories.up.length <= 1 && index === 0 ? 0.3 : 1  }}
+                                                             onClick={ () => removeVerticalCategory('up', index)}
                                                         />
                                                     </div>)
                                                 })}
                                                 <div className="flex-row action-container"
                                                      onClick={ () => {
-                                                         verticalCategories.up.push('')
-                                                         flushSync(() => {
-                                                             setVerticalCategories(verticalCategories)
-                                                         })
+                                                         addVerticalCategory('up')
                                                      }}
                                                 >
                                                     <img src={addIcon} alt="" className="add-icon"/>
@@ -533,12 +581,19 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {verticalCategories.middle.map((id, index) => {
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
+                                                            field=""
                                                             noLabel={true}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             initValue={id}
                                                             onChange={(selectValue) => {
                                                                 verticalCategories.middle[index] = selectValue as string
+                                                                let selectedIds = Object.values(verticalCategories).flat().filter(id => id.length > 0)
+                                                                verticalCategoryOptions.forEach(item => {
+                                                                    item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+                                                                    console.log(item.disabled, item.id)
+                                                                })
+                                                                setVerticalCategoryOptions([...verticalCategoryOptions])
                                                             }}
                                                             optionList={verticalCategoryOptions.map((item) => {
                                                                 const { id, name, disabled } = item as any;
@@ -550,25 +605,13 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             })}
                                                         />
                                                         <img src={deleteIcon} alt="" className="delete-icon action-container"
-                                                             onClick={ () => {
-                                                                 if (verticalCategories.middle.length <= 1) {
-                                                                     return
-                                                                 }
-                                                                 verticalCategories.middle.splice(index, 1)
-                                                                 flushSync(() => {
-                                                                     setVerticalCategories(verticalCategories)
-                                                                 })
-                                                             }}
+                                                             style={{ pointerEvents: verticalCategories.middle.length <= 1 && index === 0 ? 'none' : 'auto', opacity: verticalCategories.middle.length <= 1 && index === 0 ? 0.3 : 1  }}
+                                                             onClick={ () => removeVerticalCategory('middle', index)}
                                                         />
                                                     </div>)
                                                 })}
                                                 <div className="flex-row action-container"
-                                                     onClick={ () => {
-                                                         verticalCategories.middle.push('')
-                                                         flushSync(() => {
-                                                             setVerticalCategories(verticalCategories)
-                                                         })
-                                                     }}
+                                                     onClick={ () => addVerticalCategory('middle')}
                                                 >
                                                     <img src={addIcon} alt="" className="add-icon"/>
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
@@ -579,12 +622,19 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {verticalCategories.down.map((id, index) => {
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
+                                                            field=""
                                                             noLabel={true}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             initValue={id}
                                                             onChange={(selectValue) => {
                                                                 verticalCategories.down[index] = selectValue as string
+                                                                let selectedIds = Object.values(verticalCategories).flat().filter(id => id.length > 0)
+                                                                verticalCategoryOptions.forEach(item => {
+                                                                    item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+                                                                    console.log(item.disabled, item.id)
+                                                                })
+                                                                setVerticalCategoryOptions([...verticalCategoryOptions])
                                                             }}
                                                             optionList={verticalCategoryOptions.map((item) => {
                                                                 const { id, name, disabled } = item as any;
@@ -596,25 +646,13 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             })}
                                                         />
                                                         <img src={deleteIcon} alt="" className="delete-icon action-container"
-                                                             onClick={ () => {
-                                                                 if (verticalCategories.down.length <= 1) {
-                                                                     return
-                                                                 }
-                                                                 verticalCategories.down.splice(index, 1)
-                                                                 flushSync(() => {
-                                                                     setVerticalCategories(verticalCategories)
-                                                                 })
-                                                             }}
+                                                             style={{ pointerEvents: verticalCategories.down.length <= 1 && index === 0 ? 'none' : 'auto', opacity: verticalCategories.down.length <= 1 && index === 0 ? 0.3 : 1  }}
+                                                             onClick={ () => removeVerticalCategory('down', index)}
                                                         />
                                                     </div>)
                                                 })}
                                                 <div className="flex-row action-container"
-                                                     onClick={ () => {
-                                                         verticalCategories.down.push('')
-                                                         flushSync(() => {
-                                                             setVerticalCategories(verticalCategories)
-                                                         })
-                                                     }}
+                                                     onClick={ () => addVerticalCategory('down')}
                                                 >
                                                     <img src={addIcon} alt="" className="add-icon"/>
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
@@ -634,10 +672,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
                                                     console.log(item.disabled, item.id)
                                                 })
-                                                flushSync(() => {
-                                                    updateDatasourceConfig(datasourceConfig)
-                                                    setFields(fields)
-                                                })
+                                                updateDatasourceConfig({...datasourceConfig})
+                                                setFields([...fields])
                                             }}
                                             optionList={fields.map((item) => {
                                                 // console.log(item, datasourceConfig.allFields)
@@ -665,7 +701,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                             >
 
                                 <Form
-                                    initValues={{}}
+                                    initValues={textConfig}
                                     onValueChange={(values) => handleTextConfigFormValueChange(values)}
                                     getFormApi={(api) => (formApi.current = api)}
                                     autoComplete="off"
