@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState} from 'react';
 import {NineSquaresGrid} from "./components/nineSquaresGrid";
 import {ConfigPanel} from "./components/configPanel";
-import {base, dashboard, DashboardState, IDataRange} from "@lark-base-open/js-sdk";
+import {base, dashboard, DashboardState, IDataRange, IRecord, ITable} from "@lark-base-open/js-sdk";
 import {useDatasourceConfigStore, useDatasourceStore, useTextConfigStore} from './store';
 import {flushSync} from "react-dom"
 
@@ -16,7 +16,7 @@ function App() {
     const { datasource } = useDatasourceStore((state) => state);
 
     // 类型与数据
-    const { updateDatasourceConfig } = useDatasourceConfigStore((state) => state);
+    const { datasourceConfig, updateDatasourceConfig } = useDatasourceConfigStore((state) => state);
 
     // 样式配置数据
     const { updateTextConfig } = useTextConfigStore((state) => state);
@@ -53,32 +53,59 @@ function App() {
         });
     }, []);
 
+    async function loadAllRecordsForTable(table: ITable): Promise<IRecord[]> {
+        let allRecords: IRecord[] = [];
+        // 分页加载，每次加载 5000 条 直到加载完数据
+        const loadRecordsByPage = async (lastRecordId: string) => {
+            const { hasMore , records } = await table.getRecords({ pageSize: 5000 , pageToken: lastRecordId });
+            allRecords.push(...records)
+            if (hasMore) {
+                const last = allRecords[allRecords.length - 1];
+                await loadRecordsByPage(last.recordId)
+            }
+        }
+        await loadRecordsByPage('');
+        return allRecords;
+    }
+
+    async function prepareData(table: ITable) {
+        // 获取数据
+        const allRecords = await loadAllRecordsForTable(table)
+        console.log('加载完当前 table 所以记录', allRecords,)
+        // 根据配置面板数据准备数据
+
+        let personFieldId = datasourceConfig.personnel
+
+    }
+
     async function initConfigData(id: string | null) {
         console.log('-----------------------------------------------更新表格数据', id, dashboard.state);
         const tableIdList = await base.getTableList();
-        console.log('tablelist for feishu: ',tableIdList)
+        console.log('获取表 id 列表: ',tableIdList)
         const tableList = await Promise.all(getTableList(tableIdList));
-        console.log('tableList: ',tableList);
+        console.log('获取所有表: ',tableList);
         datasource.tables = [...tableList];
         const tableId = id ? id : tableList[0].tableId;
         datasource.tableId = tableId;
         const table = await base.getTable(tableId);
-        console.log('-----',table)
+        console.log('获取当前选中的表',table)
         const fields = await table.getFieldMetaList()
         datasource.fields[tableId] = [...fields];
-        console.log('datasource: ',datasource.fields);
-        console.log('isload: ',datasource, new Date().toISOString())
+        console.log('获取选中表的所有字段信息: ',datasource.fields);
         const ranges = await dashboard.getTableDataRange(tableId)
         datasource.dataRanges = ranges
-        console.log('table data range: ',ranges);
+        console.log('获取表数据范围: ',ranges);
+        // 如果不是创建面板，则根据 自定义配置组装数据
+        if (dashboard.state !== DashboardState.Create) {
+            await prepareData(table);
+        }
+        console.log('------------------------------------------------------数据已经准备好: ',datasource, new Date().toISOString())
         // 强制刷新
-        flushSync(() => {
-            setIsLoading(false)
-        })
-        return
+        setIsLoading(false)
     }
 
     useEffect(() => {
+        console.log('useEffect++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
         // 先获取保存的配置数据
         if (dashboard.state !== DashboardState.Create) {
             console.log('load config')
@@ -118,9 +145,6 @@ function App() {
   //
   //       {dashboard.state === DashboardState.Create || dashboard.state === DashboardState.Config ? (
   //           <ConfigPanel
-  //               tableSource={tableSource}
-  //               dataRange={dataRange}
-  //               categories={categories}
   //               getTableConfig={initConfigData}
   //             />
   //       ) : null}
@@ -132,12 +156,7 @@ function App() {
         {(
             isLoading ? (<div>加载中...</div>) : (<div className="flex h-full">
                 <NineSquaresGrid/>
-                <ConfigPanel
-                    tableSource={tableSource}
-                    dataRange={dataRange}
-                    categories={categories}
-                    getTableConfig={initConfigData}
-                />
+                <ConfigPanel/>
             </div>)
         )}
     </div>

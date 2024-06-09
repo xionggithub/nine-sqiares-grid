@@ -88,7 +88,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         if (datasourceConfig.tableId !== tableId) {
             datasourceConfig.horizontalField = ''
             datasourceConfig.verticalField = ''
-            datasourceConfig.personnel = ''
+            datasourceConfig.personnelField = ''
             datasourceConfig.tableId = tableId
         }
         datasource.fields[tableId] = [...fields.map(item => ({ ...item, disabled: false}))];
@@ -101,7 +101,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     }
 
     const choosePersonField = (personnel: string) => {
-        datasourceConfig.personnel = personnel;
+        datasourceConfig.personnelField = personnel;
         let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
         console.log(selectedIds)
         fields.forEach(item => {
@@ -273,7 +273,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     useEffect(() => {
         console.log('config panel useeffect', datasourceConfig, textConfig, datasource)
         setTableId(datasourceConfig.tableId)
-        let selectedFieldIds = [datasourceConfig.horizontalField ?? '', datasourceConfig.verticalField ?? '', datasourceConfig.personnel ?? '', datasourceConfig.group ?? '']
+        let selectedFieldIds = [datasourceConfig.horizontalField ?? '', datasourceConfig.verticalField ?? '', datasourceConfig.personnelField ?? '', datasourceConfig.groupField ?? '']
         setFields(datasource.fields[datasourceConfig.tableId].map(item => ({ ...item, disabled: selectedFieldIds.some(id => id === item.id)})))
         let horizontalConfig = { left: [...datasourceConfig.horizontalCategories.left], middle: [...datasourceConfig.horizontalCategories.middle], right: [...datasourceConfig.horizontalCategories.right] }
         setHorizontalCategories(horizontalConfig)
@@ -417,8 +417,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             label={{ text: t('personnel') }}
                                             style={{ width: 300 }}
                                             remote={true}
-                                            initValue={datasourceConfig.personnel}
-                                            defaultValue={datasourceConfig.personnel}
+                                            initValue={datasourceConfig.personnelField}
+                                            defaultValue={datasourceConfig.personnelField}
                                             onChange={async (selectValue) => choosePersonField(selectValue as string)}
                                             renderSelectedItem={renderPersonSelectedItem}
                                             optionList={fields.map((item) => {
@@ -748,9 +748,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             label={{ text: t('group') }}
                                             style={{ width: 300 }}
                                             remote={true}
-                                            initValue={datasourceConfig.group}
+                                            initValue={datasourceConfig.groupField}
                                             onChange={async (selectValue) => {
-                                                datasourceConfig.group = selectValue as string;
+                                                datasourceConfig.groupField = selectValue as string;
                                                 console.log(selectValue, 'gropu')
                                                 let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
                                                 fields.forEach(item => {
