@@ -333,13 +333,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         }).then();
     };
 
-    // test data
-    const tDataRange = [{
-        type: 0, viewName: '全部数据', viewId: '123'
-    }];
-
-    console.log(datasource.tableId, '--------------config panel----')
-
     return (
         <div
             className="border-[rgba(31, 35, 41, 0.15)] dark:border-[rgba(207,207,207, 0.15)] relative flex h-screen w-[350px] flex-col border-l-[0.5px]  bg-[--semi-color-bg-0]"
@@ -459,7 +452,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-card">
                                                 <div className="selection-card-title">{t('left')}</div>
                                                 {horizontalCategories.left.map((id, index) => {
-                                                    console.log('horizontalCategories left', id, index)
+                                                    // console.log('horizontalCategories left', id, index)
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
                                                             field={'horizontalLeft'+index}
@@ -503,7 +496,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-card">
                                                 <div className="selection-card-title">{t('middle')}</div>
                                                 {horizontalCategories.middle.map((id, index) => {
-                                                    console.log('horizontalCategories middle', id, index)
+                                                    // console.log('horizontalCategories middle', id, index)
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
                                                             field={'horizontalMiddle'+index}
@@ -545,7 +538,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-card">
                                                 <div className="selection-card-title">{t('right')}</div>
                                                 {horizontalCategories.right.map((id, index) => {
-                                                    console.log('horizontalCategories right', id, index)
+                                                    // console.log('horizontalCategories right', id, index)
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
                                                             field={'horizontalRight'+index}

@@ -19,7 +19,8 @@ import {
 } from '@douyinfe/semi-ui';
 
 import "./index.css"
-import {data} from "autoprefixer";
+import personIcon from '../../assets/icon_person.svg';
+import selectOptionIcon from "../../assets/icon_choose.svg";
 
 interface NineSquaresGridProps {
 
@@ -50,15 +51,159 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
     }, []);
 
     const gridContentConfig = [
-        { lightBgColor: '#F7EEC6', darkBgColor: '#CE9D31', valueKey: 'leftUpValue' },
-        { lightBgColor: '#D7F4D1', darkBgColor: '#55A450', valueKey: 'middleUpValue' },
-        { lightBgColor: '#A6E3A0', darkBgColor: '#316E33', valueKey: 'rightUpValue' },
-        { lightBgColor: '#FAE4E3', darkBgColor: '#E25A4B', valueKey: 'leftMiddleValue' },
-        { lightBgColor: '#F7EEC6', darkBgColor: '#CE9D31', valueKey: 'middleMiddleValue' },
-        { lightBgColor: '#D7F4D1', darkBgColor: '#55A450', valueKey: 'rightMiddleValue' },
-        { lightBgColor: '#F4C9C5', darkBgColor: '#BC3624', valueKey: 'leftDownValue' },
-        { lightBgColor: '#FAE4E3', darkBgColor: '#E25A4B', valueKey: 'middleDownValue' },
-        { lightBgColor: '#F7EEC6', darkBgColor: '#CE9D31', valueKey: 'rightDownValue' },
+        {
+            theme: {
+                light: {
+                    textColor: '#1F2329',
+                    bgColor: '#F7EEC6',
+                    titleColor: '#CE9D31',
+                    leftBorderColor: '#CE9D31',
+                },
+                dark: {
+                    textColor: '#FFFFFF',
+                    bgColor: '#CE9D31',
+                    titleColor: '#F7EEC6',
+                    leftBorderColor: '#F7EEC6'
+                }
+            },
+            valueKey: 'leftUpValue'
+        },
+        {
+            theme: {
+                light: {
+                    textColor: '#1F2329',
+                    bgColor: '#D7F4D1',
+                    titleColor: '#55A450',
+                    leftBorderColor: '#55A450'
+                },
+                dark: {
+                    textColor: '#FFFFFF',
+                    bgColor: '#55A450',
+                    titleColor: '#D7F4D1',
+                    leftBorderColor: '#D7F4D1'
+                }
+            },
+             valueKey: 'middleUpValue'
+        },
+        {
+            theme: {
+                light: {
+                    textColor: '#1F2329',
+                    bgColor: '#A6E3A0',
+                    titleColor: '#316E63',
+                    leftBorderColor: '#316E63'
+                },
+                dark: {
+                    textColor: '#FFFFFF',
+                    bgColor: '#316E33',
+                    titleColor: '#A6E3A0',
+                    leftBorderColor: '#A6E3A0'
+                }
+            },
+            valueKey: 'rightUpValue'
+        },
+        {
+            theme: {
+                light: {
+                    textColor: '#1F2329',
+                    bgColor: '#FAE4E3',
+                    titleColor: '#E25A4B',
+                    leftBorderColor: '#E25A4B'
+                },
+                dark: {
+                    textColor: '#FFFFFF',
+                    bgColor: '#E25A4B',
+                    titleColor: '#FAE4E3',
+                    leftBorderColor: '#FAE4E3'
+                }
+            },
+             valueKey: 'leftMiddleValue'
+        },
+        {
+            theme: {
+                light: {
+                    textColor: '#1F2329',
+                    bgColor: '#F7EEC6',
+                    titleColor: '#CE9D31',
+                    leftBorderColor: '#CE9D31'
+                },
+                dark: {
+                    textColor: '#FFFFFF',
+                    bgColor: '#CE9D31',
+                    titleColor: '#F7EEC6',
+                    leftBorderColor: '#F7EEC6'
+                }
+            },
+            valueKey: 'middleMiddleValue'
+        },
+        {
+            theme: {
+                light: {
+                    textColor: '#1F2329',
+                    bgColor: '#D7F4D1',
+                    titleColor: '#55A450',
+                    leftBorderColor: '#55A450'
+                },
+                dark: {
+                    textColor: '#FFFFFF',
+                    bgColor: '#55A450',
+                    titleColor: '#D7F4D1',
+                    leftBorderColor: '#D7F4D1'
+                }
+            },
+            valueKey: 'rightMiddleValue'
+        },
+        {
+            theme: {
+                light: {
+                    textColor: '#1F2329',
+                    bgColor: '#F4C9C5',
+                    titleColor: '#BC3624',
+                    leftBorderColor: '#BC3624'
+                },
+                dark: {
+                    textColor: '#FFFFFF',
+                    bgColor: '#BC3624',
+                    titleColor: '#F4C9C5',
+                    leftBorderColor: '#F4C9C5'
+                }
+            },
+            valueKey: 'leftDownValue'
+        },
+        {
+            theme: {
+                light: {
+                    textColor: '#1F2329',
+                    bgColor: '#FAE4E3',
+                    titleColor: '#E25A4B',
+                    leftBorderColor: '#E25A4B'
+                },
+                dark: {
+                    textColor: '#FFFFFF',
+                    bgColor: '#E25A4B',
+                    titleColor: '#FAE4E3',
+                    leftBorderColor: '#FAE4E3'
+                }
+            },
+            valueKey: 'middleDownValue'
+        },
+        {
+            theme: {
+                light: {
+                    textColor: '#1F2329',
+                    bgColor: '#F7EEC6',
+                    titleColor: '#CE9D31',
+                    leftBorderColor: '#CE9D31'
+                },
+                dark: {
+                    textColor: '#FFFFFF',
+                    bgColor: '#CE9D31',
+                    titleColor: '#F7EEC6',
+                    leftBorderColor: '#F7EEC6'
+                }
+            },
+            valueKey: 'rightDownValue'
+        },
     ]
     /**
      * HLeftValue: string,
@@ -148,7 +293,8 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                 <div className="left-side-bar-column">
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
+                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
                         <div className="side-bar-label rotate-label">{verticalAxisTitle()}</div>
@@ -157,21 +303,25 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                 <div className="left-side-bar-column three-row-grid">
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
+                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
                         <div className="side-bar-label rotate-label">{verticalAxisCategoryTitle('up')}</div>
                     </div>
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
+                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
                         <div className="side-bar-label rotate-label">{verticalAxisCategoryTitle('middle')}</div>
                     </div>
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
+                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
+
                          }}
                     >
                         <div className="side-bar-label rotate-label">{verticalAxisCategoryTitle('down') }</div>
@@ -185,12 +335,13 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                     return <div className="cell"
                                 key={index}
                         style={{
-                            backgroundColor: datasourceConfig.theme === 'light' ? item.lightBgColor : item.darkBgColor
+                            backgroundColor: datasourceConfig.theme === 'light' ? item.theme.light.bgColor : item.theme.dark.bgColor
                         }}
                     >
                         <div className="cell-header"
                              style={{
-                                 borderBottom:  datasourceConfig.theme === 'light' ?  '1px solid #1F23291A' : '1px solid #FFFFFF'
+                                 borderBottom:  datasourceConfig.theme === 'light' ?  '1px solid #1F23291A' : '1px solid #FFFFFF',
+                                 color: datasourceConfig.theme === 'light' ?  item.theme.light.textColor :  item.theme.dark.textColor
                              }}
                         >
                             <div className='cell-header-left-text'>
@@ -201,19 +352,24 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                             </div>
                         </div>
 
-                        <div className="cell-content">
-                            { (datasource[item.valueKey]??[]).map(group => {
-                                return <div>
-                                    <div>
-                                        {group.title}
+                        <div className="cell-content-scroll">
+                            <div className="cell-content">
+                                { (datasource[item.valueKey]??[]).map(group => {
+                                    return <div className="flex-column">
+                                        <div className="cell-content-category" style={{ color: datasourceConfig.theme === 'light' ?  item.theme.light.titleColor :  item.theme.dark.titleColor }}>
+                                            {group.category}
+                                        </div>
+                                        <div className="cell-content-group" style={{ color: datasourceConfig.theme === 'light' ?  item.theme.light.textColor :  item.theme.dark.textColor, borderColor: datasourceConfig.theme === 'light' ?  item.theme.light.leftBorderColor :  item.theme.dark.leftBorderColor, }}>
+                                            {group.persons.map(person => {
+                                                return <div>
+                                                    <img src={personIcon} alt="" className="selection-icon" />
+                                                    <div>{person}</div>
+                                                </div>
+                                            })}
+                                        </div>
                                     </div>
-                                    <div className="cell-content-group">
-                                        {group.list.map(person => {
-                                            return <div></div>
-                                        })}
-                                    </div>
-                                </div>
-                            }) }
+                                }) }
+                            </div>
                         </div>
                     </div>
                 }) }
@@ -224,7 +380,8 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                 <div className="bottom-side-bar-row three-column-grid">
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
+                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
                         <div className="side-bar-label">{horizontalAxisCategoryTitle('left')}</div>
@@ -232,14 +389,16 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
 
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
+                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
                         <div className="side-bar-label">{horizontalAxisCategoryTitle('middle')}</div>
                     </div>
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
+                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
                         <div className="side-bar-label">{horizontalAxisCategoryTitle('right')}</div>
@@ -249,7 +408,8 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                 >
                     <div className="label-container"
                          style={{
-                        backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43'
+                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                     }}>
                         <div className="side-bar-label">{horizontalAxisTitle()}</div>
                     </div>

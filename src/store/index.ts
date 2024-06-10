@@ -7,15 +7,15 @@ export interface IDatasourceType {
   tableId: string;
   fields: { [key: string]: any[] };
   dataRanges: { type:string; viewId:string; viewName: string; viewType: number; }[]
-  leftDownValue: any[],
-  middleDownValue: any[],
-  rightDownValue: any[],
-  leftMiddleValue: any[],
-  middleMiddleValue: any[],
-  rightMiddleValue: any[],
-  leftUpValue: any[],
-  middleUpValue: any[],
-  rightUpValue: any[],
+  leftDownValue: { category: string, persons: string[] }[],
+  middleDownValue: { category: string, persons: string[] }[],
+  rightDownValue: { category: string, persons: string[] }[],
+  leftMiddleValue: { category: string, persons: string[] }[],
+  middleMiddleValue: { category: string, persons: string[] }[],
+  rightMiddleValue: { category: string, persons: string[] }[],
+  leftUpValue: { category: string, persons: string[] }[],
+  middleUpValue: { category: string, persons: string[] }[],
+  rightUpValue: { category: string, persons: string[] }[],
 }
 
 interface IDatasourceStore {
