@@ -271,7 +271,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     };
 
     useEffect(() => {
-        console.log('config panel useeffect', datasourceConfig, textConfig, datasource)
+        // console.log('config panel useeffect', datasourceConfig, textConfig, datasource)
         setTableId(datasourceConfig.tableId)
         let selectedFieldIds = [datasourceConfig.horizontalField ?? '', datasourceConfig.verticalField ?? '', datasourceConfig.personnelField ?? '', datasourceConfig.groupField ?? '']
         setFields(datasource.fields[datasourceConfig.tableId].map(item => ({ ...item, disabled: selectedFieldIds.some(id => id === item.id)})))
@@ -282,14 +282,14 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         setVerticalCategories(verticalConfig)
 
         let field = datasource.fields[datasourceConfig.tableId].find(item => item.id === datasourceConfig.verticalField)
-        console.log(field, '11')
+        // console.log(field, '11')
         if (field) {
             let options = field.property.options.map(item => ({ ...item, disabled: (Object.values(datasourceConfig.verticalCategories)).flat().some(id => id === item.id)}))
             console.log(options)
             setVerticalCategoryOptions([...options])
         }
         let field1 = datasource.fields[datasourceConfig.tableId].find(item => item.id === datasourceConfig.horizontalField)
-        console.log(field1, '22')
+        // console.log(field1, '22')
         if (field1) {
             let options = field1.property.options.map(item => ({ ...item, disabled: (Object.values(datasourceConfig.horizontalCategories)).flat().some(id => id === item.id)}))
             console.log(options)

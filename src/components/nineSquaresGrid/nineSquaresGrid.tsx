@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDatasourceConfigStore, useTextConfigStore, useDatasourceStore } from '../../store';
 import {
     base,

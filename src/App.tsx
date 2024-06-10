@@ -1,14 +1,28 @@
-import {useCallback, useEffect, useState} from 'react';
-import {NineSquaresGrid} from "./components/nineSquaresGrid";
-import {ConfigPanel} from "./components/configPanel";
-import {base, dashboard, DashboardState, IDataRange, IRecord, ITable} from "@lark-base-open/js-sdk";
-import {useDatasourceConfigStore, useDatasourceStore, useTextConfigStore} from './store';
+import { useCallback, useEffect, useState } from 'react';
+import { NineSquaresGrid } from "./components/nineSquaresGrid";
+import { ConfigPanel } from "./components/configPanel";
+import { base, dashboard, DashboardState, IDataRange, IRecord, ITable } from "@lark-base-open/js-sdk";
+import { useDatasourceConfigStore, useDatasourceStore, useTextConfigStore } from './store';
 
-export interface ITableSource {
+interface IDatasourceConfigCacheType {
     tableId: string;
-    tableName: string;
+    theme: 'light' | 'dark' | 'primary';
+    dataRange: string;
+    personnelField: string;
+    horizontalField: string;
+    horizontalCategories: {
+        left: string[],
+        middle: string[],
+        right: string[]
+    };
+    verticalField: string;
+    verticalCategories: {
+        up: string[],
+        middle: string[],
+        down: string[]
+    };
+    groupField: string;
 }
-
 
 function App() {
 
@@ -20,14 +34,26 @@ function App() {
     // 样式配置数据
     const { textConfig, updateTextConfig } = useTextConfigStore((state) => state);
 
-    // 表格列表
-    const [tableSource, setTableSource] = useState<ITableSource[]>([]);
+    let datasourceConfigCache: IDatasourceConfigCacheType = {
+        tableId: '',
+        theme: 'light',
+        dataRange: '',
+        personnelField: '',
+        horizontalField: '',
+        horizontalCategories: {
+            left: [''],
+            middle: [''],
+            right: ['']
+        },
 
-    // 数据范围列表
-    const [dataRange, setDataRange] = useState<IDataRange[]>([]);
-
-    // 列名
-    const [categories, setCategories] = useState<any>([]);
+        verticalField: '',
+        verticalCategories: {
+            up: [''],
+            middle: [''],
+            down: ['']
+        },
+        groupField: ''
+    };
 
     const [isLoading, setIsLoading] = useState(true)
 
@@ -75,7 +101,7 @@ function App() {
     ): IRecord[] {
         let filteredRecord = []
         if (verticalField) {
-            let optionIds = datasourceConfig.verticalCategories[verticalType] ?? [];
+            let optionIds = datasourceConfigCache.verticalCategories[verticalType] ?? [];
             filteredRecord = allRecords.filter(item => optionIds.some(id => {
                 const itemFieldInfo = item.fields[horizontalField.id]
                 const itemId = itemFieldInfo ? itemFieldInfo['id'] : ''
@@ -83,7 +109,7 @@ function App() {
             }))
         }
         if (horizontalField) {
-            let optionIds = datasourceConfig.horizontalCategories[horizontalType] ?? [];
+            let optionIds = datasourceConfigCache.horizontalCategories[horizontalType] ?? [];
             filteredRecord = allRecords.filter(item => optionIds.some(id => {
                 const itemFieldInfo = item.fields[horizontalField.id]
                 const itemId = itemFieldInfo ? itemFieldInfo['id'] : ''
@@ -163,12 +189,12 @@ function App() {
         console.log('加载完当前 table 所以记录 ', allRecords,)
         // 根据配置面板数据准备数据
         // 数据根据 四个字段进行组装显示
-        let personField = fields.find(item => item.id === datasourceConfig.personnelField)
-        let groupField = fields.find(item => item.id === datasourceConfig.groupField)
-        let verticalField = fields.find(item => item.id === datasourceConfig.verticalField)
-        let horizontalField = fields.find(item => item.id === datasourceConfig.horizontalField)
+        let personField = fields.find(item => item.id === datasourceConfigCache.personnelField)
+        let groupField = fields.find(item => item.id === datasourceConfigCache.groupField)
+        let verticalField = fields.find(item => item.id === datasourceConfigCache.verticalField)
+        let horizontalField = fields.find(item => item.id === datasourceConfigCache.horizontalField)
         const groupText = groupTextsFor(allRecords, groupField)
-        console.log(personField, groupField, verticalField, horizontalField, datasourceConfig, groupText)
+        console.log(personField, groupField, verticalField, horizontalField, datasourceConfigCache, groupText)
         // 九个格子的数据未分组的数据数组
         let leftUpList = filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'left');
         let leftUpGroupList = groupRecordsByInfo(leftUpList, groupField, groupText);
@@ -218,6 +244,7 @@ function App() {
         const tableId = id ? id : tableList[0].tableId;
         datasource.tableId = tableId;
         datasourceConfig.tableId = tableId
+        datasourceConfigCache.tableId = tableId
         const table = await base.getTable(tableId);
         // console.log('获取当前选中的表',table)
         const fields = await table.getFieldMetaList()
@@ -244,7 +271,8 @@ function App() {
                 console.log('获取到 config start========：', config, textConfig, datasourceConfig, {...datasourceConfig, ...config.customConfig.datasourceConfig});
                 updateDatasourceConfig({...datasourceConfig, ...config.customConfig.datasourceConfig})
                 updateTextConfig({...textConfig, ...config.customConfig.textConfig})
-                console.log('获取到 config end=====：', config, textConfig, datasourceConfig);
+                datasourceConfigCache = {...JSON.parse(JSON.stringify(config.customConfig.datasourceConfig))}
+                console.log('获取到 config end=====：', config, datasourceConfigCache);
                 console.log(useDatasourceConfigStore, '======================================')
                 initConfigData(config.customConfig.datasourceConfig.tableId).then();
             })
