@@ -3,6 +3,8 @@ import { NineSquaresGrid } from "./components/nineSquaresGrid";
 import { ConfigPanel } from "./components/configPanel";
 import { base, dashboard, DashboardState, IDataRange, IRecord, ITable } from "@lark-base-open/js-sdk";
 import { useDatasourceConfigStore, useDatasourceStore, useTextConfigStore } from './store';
+import {data} from "autoprefixer";
+import keyCode from "@douyinfe/semi-foundation/lib/es/utils/keyCode";
 
 interface IDatasourceConfigCacheType {
     tableId: string;
@@ -26,7 +28,7 @@ interface IDatasourceConfigCacheType {
 
 function App() {
 
-    const { datasource } = useDatasourceStore((state) => state);
+    const { datasource, updateDatasource } = useDatasourceStore((state) => state);
 
     // 类型与数据
     const { datasourceConfig, updateDatasourceConfig } = useDatasourceConfigStore((state) => state);
@@ -132,36 +134,43 @@ function App() {
         }
         let groupList: { category: string, persons: IRecord[] }[] = []
         groupTexts.forEach(text => {
-                let filteredList = records.filter(item => {
-                    const itemFieldInfo = item.fields[groupField.id]
-                    const itemText = itemFieldInfo ? itemFieldInfo['text'] : ''
-                    return text === itemText
-                })
-                groupList.push({ category: text, persons: filteredList })
+            let filteredList = records.filter(item => {
+                let itemFieldInfo = ((item.fields[groupField.id]) instanceof Array) ? (item.fields[groupField.id] as any[])[0] : (item.fields[groupField.id]);
+                const itemText = itemFieldInfo ? itemFieldInfo['text'] : ''
+                return text === itemText
+            })
+            groupList.push({ category: text, persons: filteredList })
         });
         return groupList
+    }
+
+    function fieldTextKey(type: number): string {
+        if (type === 11) {
+            // user
+            return "name";
+        }
+        return 'text'
     }
 
     function mapRecordByDisplayInfo(groupedRecords: { category: string, persons: IRecord[] }[],
                                     personnelField: any | null): { category: string, persons: string[] }[] {
         let displayInfo: { category: string, persons: string[] }[] = [];
-        groupedRecords.forEach(group => {
+        groupedRecords.filter(group => group.persons.length > 0).forEach(group => {
            let list = [];
            group.persons.forEach(item => {
                let itemFieldInfo = ((item.fields[personnelField.id]) instanceof Array) ? (item.fields[personnelField.id] as any[])[0] : (item.fields[personnelField.id]);
-               const itemText = itemFieldInfo ? itemFieldInfo['text'] : ''
+               const fieldKey = fieldTextKey(personnelField.type);
+               const itemText = itemFieldInfo ? itemFieldInfo[fieldKey] : ''
                if (itemText) list.push(itemText)
            })
             displayInfo.push({ category: group.category, persons: list })
         });
-        return displayInfo;
+        return displayInfo.filter(item => item.persons.length > 0);
     }
 
     function groupTextsFor(records: IRecord[],
                            groupField: any | null
                            ): string[] {
-        console.log(groupField)
-
         if (!groupField) {
             return [];
         }
@@ -172,12 +181,10 @@ function App() {
         records.forEach(item => {
             let fieldInfo = ((item.fields[groupField.id]) instanceof Array) ? (item.fields[groupField.id] as any[])[0] : (item.fields[groupField.id]);
             let text = fieldInfo ? fieldInfo['text']: '';
-            console.log('group text---------',item, groupField.id, fieldInfo)
             if (text?.length) {
                 map[text] = text;
             }
         })
-        console.log(map)
         return Object.keys(map);
     }
 
@@ -231,7 +238,7 @@ function App() {
         let rightDownList = filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'left');
         let rightDownGroupList = groupRecordsByInfo(rightDownList, groupField, groupText)
         datasource.rightDownValue = mapRecordByDisplayInfo(rightDownGroupList, personField)
-
+        updateDatasource({...datasource})
     }
 
     async function initConfigData(id: string | null) {
@@ -263,38 +270,26 @@ function App() {
     }
 
     useEffect(() => {
-        console.log('useEffect++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-        // 先获取保存的配置数据
-        if (dashboard.state !== DashboardState.Create) {
-            console.log('load config')
-            dashboard.getConfig().then((config) => {
-                console.log('获取到 config start========：', config, textConfig, datasourceConfig, {...datasourceConfig, ...config.customConfig.datasourceConfig});
-                updateDatasourceConfig({...datasourceConfig, ...config.customConfig.datasourceConfig})
-                updateTextConfig({...textConfig, ...config.customConfig.textConfig})
-                datasourceConfigCache = {...JSON.parse(JSON.stringify(config.customConfig.datasourceConfig))}
-                console.log('获取到 config end=====：', config, datasourceConfigCache);
-                console.log(useDatasourceConfigStore, '======================================')
-                initConfigData(config.customConfig.datasourceConfig.tableId).then();
-            })
-        } else {
-            initConfigData(null).then();
-        }
-    }, []);
-
-    useEffect(() => {
         async function getConfig() {
-            // const config = await dashboard.getConfig();
-            // const { typeConfig, styleConfig } = config.customConfig as any;
-            // updateDatasourceConfig(typeConfig);
-            // updateTextConfig(styleConfig);
-            // initConfigData(typeConfig.tableId).then();
-            // console.log('tableMeta---->', tableRanges, categories);
+            // 先获取保存的配置数据
+            if (dashboard.state !== DashboardState.Create) {
+                console.log('load config')
+                dashboard.getConfig().then((config) => {
+                    console.log('获取到 config start========：', config, textConfig, datasourceConfig, {...datasourceConfig, ...config.customConfig.datasourceConfig});
+                    updateDatasourceConfig({...datasourceConfig, ...config.customConfig.datasourceConfig})
+                    updateTextConfig({...textConfig, ...config.customConfig.textConfig})
+                    datasourceConfigCache = {...JSON.parse(JSON.stringify(config.customConfig.datasourceConfig))}
+                    console.log('获取到 config end=====：', config, datasourceConfigCache);
+                    initConfigData(config.customConfig.datasourceConfig.tableId).then();
+                })
+            } else {
+                initConfigData(null).then();
+            }
         }
         getConfig().then();
         dashboard.onConfigChange(getConfig);
         // 监控数据变化
         dashboard.onDataChange(getConfig);
-        console.log('lister change;:::')
     }, []);
 
 

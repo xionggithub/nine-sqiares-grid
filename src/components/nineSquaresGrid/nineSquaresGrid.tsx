@@ -355,13 +355,13 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                         <div className="cell-content-scroll">
                             <div className="cell-content">
                                 { (datasource[item.valueKey]??[]).map(group => {
-                                    return <div className="flex-column">
+                                    return <div className="flex-column" style={{ rowGap: '6px' }}>
                                         <div className="cell-content-category" style={{ color: datasourceConfig.theme === 'light' ?  item.theme.light.titleColor :  item.theme.dark.titleColor }}>
                                             {group.category}
                                         </div>
                                         <div className="cell-content-group" style={{ color: datasourceConfig.theme === 'light' ?  item.theme.light.textColor :  item.theme.dark.textColor, borderColor: datasourceConfig.theme === 'light' ?  item.theme.light.leftBorderColor :  item.theme.dark.leftBorderColor, }}>
                                             {group.persons.map(person => {
-                                                return <div>
+                                                return <div className='flex-row'>
                                                     <img src={personIcon} alt="" className="selection-icon" />
                                                     <div>{person}</div>
                                                 </div>
