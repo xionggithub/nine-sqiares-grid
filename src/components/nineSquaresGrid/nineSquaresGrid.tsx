@@ -227,18 +227,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
         return datasource.fields[datasource.tableId].find(item => item.id === datasourceConfig.horizontalField)?.name ?? ""
     }
 
-    const horizontalAxisCategoryTitle = (type: 'left' | 'middle' | 'right') => {
-        let text = '';
-        if (type === 'left') {
-            text = textConfig.HLeftValue
-        } else if (type === 'middle') {
-            text = textConfig.HMiddleValue
-        } else if (type === 'right') {
-            text = textConfig.HRightValue
-        }
-        if (text.length > 0) {
-            return  text;
-        }
+    const horizontalAxisCategoryMainTitle = (type: 'left' | 'middle' | 'right') => {
         let field = (datasource.fields[datasourceConfig.tableId] ?? []).find(item => item.id === datasourceConfig.horizontalField);
         if (!field) return  ''
         if (!field.property?.options) return ''
@@ -248,22 +237,25 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
         return options.map(item => item.name).join('/');
     }
 
-    const verticalAxisTitle = () => {
-        return  datasource.fields[datasource.tableId].find(item => item.id === datasourceConfig.verticalField)?.name ?? ""
-    }
-
-    const verticalAxisCategoryTitle = (type: 'up' | 'middle' | 'down') => {
-        let text = '';
-        if (type === 'up') {
-            text = textConfig.VUpValue
+    const horizontalAxisCategoryTitle = (type: 'left' | 'middle' | 'right') => {
+        let text = horizontalAxisCategoryMainTitle(type) + ': ';
+        if (type === 'left') {
+            text += textConfig.HLeftValue
         } else if (type === 'middle') {
-            text = textConfig.VMiddleValue
-        } else if (type === 'down') {
-            text = textConfig.VDownValue
+            text += textConfig.HMiddleValue
+        } else if (type === 'right') {
+            text += textConfig.HRightValue
         }
         if (text.length > 0) {
             return  text;
         }
+    }
+
+    const verticalAxisTitle = () => {
+        return  datasource.fields[datasource.tableId].find(item => item.id === datasourceConfig.verticalField)?.name ?? ""
+    }
+
+    const verticalAxisCategoryMainTitle = (type: 'up' | 'middle' | 'down') => {
         let field = (datasource.fields[datasourceConfig.tableId] ?? []).find(item => item.id === datasourceConfig.verticalField);
         if (!field) return  ''
         if (!field.property?.options) return ''
@@ -271,6 +263,21 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
         let options = field.property.options.filter(item => !!optionIds.some(id => id === item.id));
         if (options.length === 0) return  ''
         return options.map(item => item.name).join('/');
+    }
+
+    const verticalAxisCategoryTitle = (type: 'up' | 'middle' | 'down') => {
+        let text = verticalAxisCategoryMainTitle(type) + ': ';
+        if (type === 'up') {
+            text += textConfig.VUpValue
+        } else if (type === 'middle') {
+            text += textConfig.VMiddleValue
+        } else if (type === 'down') {
+            text += textConfig.VDownValue
+        }
+        if (text.length > 0) {
+            return  text;
+        }
+
     }
 
     const cellTitle = (index: number) => {
@@ -348,13 +355,13 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                                 { cellTitle(index) }
                             </div>
                             <div className='cell-header-right-text'>
-
+                                {(datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).total} {(datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).percent}%
                             </div>
                         </div>
 
                         <div className="cell-content-scroll">
                             <div className="cell-content">
-                                { (datasource[item.valueKey]??[]).map(group => {
+                                { (datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).list.map(group => {
                                     return <div className="flex-column" style={{ rowGap: '6px' }}>
                                         <div className="cell-content-category" style={{ color: datasourceConfig.theme === 'light' ?  item.theme.light.titleColor :  item.theme.dark.titleColor }}>
                                             {group.category}

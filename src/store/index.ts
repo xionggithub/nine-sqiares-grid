@@ -6,16 +6,17 @@ export interface IDatasourceType {
   //选中
   tableId: string;
   fields: { [key: string]: any[] };
+  totalRowCount: number;
   dataRanges: { type:string; viewId:string; viewName: string; viewType: number; }[]
-  leftDownValue: { category: string, persons: string[] }[],
-  middleDownValue: { category: string, persons: string[] }[],
-  rightDownValue: { category: string, persons: string[] }[],
-  leftMiddleValue: { category: string, persons: string[] }[],
-  middleMiddleValue: { category: string, persons: string[] }[],
-  rightMiddleValue: { category: string, persons: string[] }[],
-  leftUpValue: { category: string, persons: string[] }[],
-  middleUpValue: { category: string, persons: string[] }[],
-  rightUpValue: { category: string, persons: string[] }[],
+  leftDownValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
+  middleDownValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
+  rightDownValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
+  leftMiddleValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
+  middleMiddleValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
+  rightMiddleValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
+  leftUpValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
+  middleUpValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
+  rightUpValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
 }
 
 interface IDatasourceStore {
@@ -28,16 +29,17 @@ export const useDatasourceStore = create<IDatasourceStore>((set) => ({
     tables: [],
     tableId: '',
     fields: {},
+    totalRowCount: 0,
     dataRanges: [],
-    leftDownValue: [],
-    middleDownValue: [],
-    rightDownValue: [],
-    leftMiddleValue: [],
-    middleMiddleValue: [],
-    rightMiddleValue: [],
-    leftUpValue: [],
-    middleUpValue: [],
-    rightUpValue: [],
+    leftDownValue: { total: 0, percent: 0, list: [] },
+    middleDownValue: { total: 0, percent: 0, list: [] },
+    rightDownValue: { total: 0, percent: 0, list: [] },
+    leftMiddleValue: { total: 0, percent: 0, list: [] },
+    middleMiddleValue: { total: 0, percent: 0, list: [] },
+    rightMiddleValue: { total: 0, percent: 0, list: [] },
+    leftUpValue: { total: 0, percent: 0, list: [] },
+    middleUpValue: { total: 0, percent: 0, list: [] },
+    rightUpValue: { total: 0, percent: 0, list: [] },
   },
   updateDatasource: (datasource) => set(() => ({ datasource })),
 }));

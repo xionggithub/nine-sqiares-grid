@@ -21,13 +21,7 @@ import {
     Button,
     Divider
 } from '@douyinfe/semi-ui';
-import {
-    IconAlignLeft,
-    IconAlignRight,
-    IconAlignCenter,
-    IconFont,
-    IconChevronDown
-} from '@douyinfe/semi-icons';
+
 import { useDatasourceConfigStore, useTextConfigStore, useDatasourceStore } from '../../store';
 
 import deleteIcon from '../../assets/icon_delete-trash_outlined.svg';

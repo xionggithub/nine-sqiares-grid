@@ -1,10 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
-import { NineSquaresGrid } from "./components/nineSquaresGrid";
-import { ConfigPanel } from "./components/configPanel";
-import { base, dashboard, DashboardState, IDataRange, IRecord, ITable } from "@lark-base-open/js-sdk";
-import { useDatasourceConfigStore, useDatasourceStore, useTextConfigStore } from './store';
-import {data} from "autoprefixer";
-import keyCode from "@douyinfe/semi-foundation/lib/es/utils/keyCode";
+import {useCallback, useEffect, useState} from 'react';
+import {NineSquaresGrid} from "./components/nineSquaresGrid";
+import {ConfigPanel} from "./components/configPanel";
+import {base, dashboard, DashboardState, IRecord, ITable} from "@lark-base-open/js-sdk";
+import {useDatasourceConfigStore, useDatasourceStore, useTextConfigStore} from './store';
 
 interface IDatasourceConfigCacheType {
     tableId: string;
@@ -153,7 +151,7 @@ function App() {
     }
 
     function mapRecordByDisplayInfo(groupedRecords: { category: string, persons: IRecord[] }[],
-                                    personnelField: any | null): { category: string, persons: string[] }[] {
+                                    personnelField: any | null): { list: { category: string, persons: string[] }[], total: number, percent: number } {
         let displayInfo: { category: string, persons: string[] }[] = [];
         groupedRecords.filter(group => group.persons.length > 0).forEach(group => {
            let list = [];
@@ -165,7 +163,9 @@ function App() {
            })
             displayInfo.push({ category: group.category, persons: list })
         });
-        return displayInfo.filter(item => item.persons.length > 0);
+        const list = displayInfo.filter(item => item.persons.length > 0)
+        const total = list.map(item => item.persons).flat().length
+        return { total, percent: Math.floor((total*100)/datasource.totalRowCount), list };
     }
 
     function groupTextsFor(records: IRecord[],
@@ -194,6 +194,7 @@ function App() {
         // 获取数据
         const allRecords = await loadAllRecordsForTable(table)
         console.log('加载完当前 table 所以记录 ', allRecords,)
+        datasource.totalRowCount = allRecords.length
         // 根据配置面板数据准备数据
         // 数据根据 四个字段进行组装显示
         let personField = fields.find(item => item.id === datasourceConfigCache.personnelField)
@@ -201,7 +202,7 @@ function App() {
         let verticalField = fields.find(item => item.id === datasourceConfigCache.verticalField)
         let horizontalField = fields.find(item => item.id === datasourceConfigCache.horizontalField)
         const groupText = groupTextsFor(allRecords, groupField)
-        console.log(personField, groupField, verticalField, horizontalField, datasourceConfigCache, groupText)
+        // console.log(personField, groupField, verticalField, horizontalField, datasourceConfigCache, groupText)
         // 九个格子的数据未分组的数据数组
         let leftUpList = filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'left');
         let leftUpGroupList = groupRecordsByInfo(leftUpList, groupField, groupText);
@@ -257,9 +258,8 @@ function App() {
         const fields = await table.getFieldMetaList()
         datasource.fields[tableId] = [...fields];
         // console.log('获取选中表的所有字段信息: ',datasource.fields);
-        const ranges = await dashboard.getTableDataRange(tableId)
-        datasource.dataRanges = ranges
-        console.log('获取表数据范围: ',ranges);
+        datasource.dataRanges = await dashboard.getTableDataRange(tableId)
+        // console.log('获取表数据范围: ',ranges);
         // 如果不是创建面板，则根据 自定义配置组装数据
         if (dashboard.state !== DashboardState.Create) {
             await prepareData(table);
@@ -292,27 +292,13 @@ function App() {
         dashboard.onDataChange(getConfig);
     }, []);
 
-
-  //release
-
-  // return (
-  //   <div className="flex h-full">
-  //       <NineSquaresGrid/>
-  //
-  //       {dashboard.state === DashboardState.Create || dashboard.state === DashboardState.Config ? (
-  //           <ConfigPanel
-  //               getTableConfig={initConfigData}
-  //             />
-  //       ) : null}
-  //   </div>
-  // )
-
-
     return <div>
         {(
             isLoading ? (<div>加载中...</div>) : (<div className="flex h-full">
                 <NineSquaresGrid/>
-                <ConfigPanel/>
+                {dashboard.state === DashboardState.Create || dashboard.state === DashboardState.Config ? (
+                    <ConfigPanel/>
+                ) : null}
             </div>)
         )}
     </div>
