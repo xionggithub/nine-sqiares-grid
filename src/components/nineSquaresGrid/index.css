@@ -113,12 +113,20 @@
     margin-left: 0;
     height: 100%;
     line-height: 33px;
+    text-align: left;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
 }
 .cell-header-right-text {
     height: 100%;
     margin-left: auto;
     margin-right: 0;
     line-height: 33px;
+    text-align: right;
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
 }
 
 .cell-content {
@@ -150,4 +158,17 @@
     width: 100%;
     height: max-content;
     border-left: 3px solid transparent;
+}
+
+.person-label {
+    font-family: "PingFang SC";
+    width: max-content;
+    max-width: 100%;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    height: 22px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

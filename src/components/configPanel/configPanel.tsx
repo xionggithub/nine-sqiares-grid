@@ -449,11 +449,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     // console.log('horizontalCategories left', id, index)
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
-                                                            field={'horizontalLeft'+index}
+                                                            field={'horizontalLeftValues'+index}
                                                             noLabel={true}
                                                             key={id}
                                                             style={{ width: '100%' }}
                                                             remote={true}
+                                                            initValue={id}
                                                             defaultValue={id}
                                                             onChange={(selectValue) => {
                                                                 horizontalCategories.left[index] = selectValue as string
@@ -493,11 +494,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     // console.log('horizontalCategories middle', id, index)
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
-                                                            field={'horizontalMiddle'+index}
+                                                            field={'horizontalMiddleValue'+index}
                                                             noLabel={true}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             key={id}
+                                                            initValue={id}
                                                             defaultValue={id}
                                                             onChange={(selectValue) => {
                                                                 horizontalCategories.middle[index] = selectValue as string
@@ -535,11 +537,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     // console.log('horizontalCategories right', id, index)
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
-                                                            field={'horizontalRight'+index}
+                                                            field={'horizontalRightValue'+index}
                                                             noLabel={true}
                                                             key={id}
                                                             style={{ width: '100%' }}
                                                             remote={true}
+                                                            initValue={id}
                                                             defaultValue={id}
                                                             onChange={(selectValue) => {
                                                                 horizontalCategories.right[index] = selectValue as string
@@ -604,13 +607,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {verticalCategories.up.map((id, index) => {
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
-                                                            field={'verticalUp'+index}
+                                                            field={'verticalUpValue'+index}
                                                             noLabel={true}
                                                             key={index}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             initValue={id}
-                                                            defaultValue={id}
                                                             onChange={(selectValue) => {
                                                                 verticalCategories.up[index] = selectValue as string
                                                                 let selectedIds = Object.values(verticalCategories).flat().filter(id => id.length > 0)
@@ -649,12 +651,11 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {verticalCategories.middle.map((id, index) => {
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
-                                                            field={'verticalMiddle'+index}
+                                                            field={'verticalMiddleValue'+index}
                                                             noLabel={true}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             initValue={id}
-                                                            defaultValue={id}
                                                             onChange={(selectValue) => {
                                                                 verticalCategories.middle[index] = selectValue as string
                                                                 let selectedIds = Object.values(verticalCategories).flat().filter(id => id.length > 0)
@@ -691,12 +692,11 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {verticalCategories.down.map((id, index) => {
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
-                                                            field={'verticalDown'+index}
+                                                            field={'verticalDownValue'+index}
                                                             noLabel={true}
                                                             style={{ width: '100%' }}
-                                                            remote={true}
+                                                            id={id}
                                                             initValue={id}
-                                                            defaultValue={id}
                                                             onChange={(selectValue) => {
                                                                 verticalCategories.down[index] = selectValue as string
                                                                 let selectedIds = Object.values(verticalCategories).flat().filter(id => id.length > 0)
@@ -747,6 +747,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 updateDatasourceConfig({...datasourceConfig})
                                                 setFields([...fields])
                                             }}
+                                            renderSelectedItem={renderSelectOptionSelectedItem}
                                             optionList={fields.map((item) => {
                                                 const { id, name, disabled } = item as any;
                                                 return {

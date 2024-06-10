@@ -370,7 +370,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                                             {group.persons.map(person => {
                                                 return <div className='flex-row'>
                                                     <img src={personIcon} alt="" className="selection-icon" />
-                                                    <div>{person}</div>
+                                                    <div className='person-label'>{person}</div>
                                                 </div>
                                             })}
                                         </div>
