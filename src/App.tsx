@@ -127,6 +127,7 @@ function App() {
                                 groupTexts: string[]
 
     ): { category: string, persons: IRecord[] }[] {
+        console.log('group record-----------------------',records, groupTexts)
         if (!groupField) {
             return [{ category: '', persons: records }]
         }
@@ -220,11 +221,11 @@ function App() {
         let leftMiddleGroupList = groupRecordsByInfo(leftMiddleList, groupField, groupText)
         datasource.leftMiddleValue = mapRecordByDisplayInfo(leftMiddleGroupList, personField)
 
-        let middleMiddleList = filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'left');
+        let middleMiddleList = filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'middle');
         let middleMiddleGroupList = groupRecordsByInfo(middleMiddleList, groupField, groupText)
         datasource.middleMiddleValue = mapRecordByDisplayInfo(middleMiddleGroupList, personField)
 
-        let rightMiddleList = filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'left');
+        let rightMiddleList = filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'right');
         let rightMiddleGroupList = groupRecordsByInfo(rightMiddleList, groupField, groupText)
         datasource.rightMiddleValue = mapRecordByDisplayInfo(rightMiddleGroupList, personField)
 
@@ -232,11 +233,11 @@ function App() {
         let leftDownGroupList = groupRecordsByInfo(leftDownList, groupField, groupText)
         datasource.leftDownValue = mapRecordByDisplayInfo(leftDownGroupList, personField)
 
-        let middleDownList = filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'left');
+        let middleDownList = filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'middle');
         let middleDownGroupList = groupRecordsByInfo(middleDownList, groupField, groupText)
         datasource.middleDownValue = mapRecordByDisplayInfo(middleDownGroupList, personField)
 
-        let rightDownList = filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'left');
+        let rightDownList = filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'right');
         let rightDownGroupList = groupRecordsByInfo(rightDownList, groupField, groupText)
         datasource.rightDownValue = mapRecordByDisplayInfo(rightDownGroupList, personField)
         updateDatasource({...datasource})
