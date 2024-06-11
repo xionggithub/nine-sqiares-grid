@@ -158,6 +158,11 @@
     width: 100%;
     height: max-content;
     border-left: 3px solid transparent;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 8px;
+    column-gap: 8px;
 }
 
 .person-label {
