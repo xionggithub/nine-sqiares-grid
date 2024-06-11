@@ -102,20 +102,24 @@ function App() {
         let filteredRecord = []
         if (verticalField) {
             let optionIds = datasourceConfigCache.verticalCategories[verticalType] ?? [];
+            console.log(verticalType, optionIds)
             filteredRecord = allRecords.filter(item => optionIds.some(id => {
-                const itemFieldInfo = item.fields[horizontalField.id]
+                let itemFieldInfo = ((item.fields[verticalField.id]) instanceof Array) ? (item.fields[verticalField.id] as any[])[0] : (item.fields[verticalField.id]);
                 const itemId = itemFieldInfo ? itemFieldInfo['id'] : ''
                 return id === itemId
             }))
         }
+        console.log(JSON.parse(JSON.stringify(filteredRecord)))
         if (horizontalField) {
             let optionIds = datasourceConfigCache.horizontalCategories[horizontalType] ?? [];
-            filteredRecord = allRecords.filter(item => optionIds.some(id => {
-                const itemFieldInfo = item.fields[horizontalField.id]
+            console.log(horizontalType,optionIds)
+            filteredRecord = filteredRecord.filter(item => optionIds.some(id => {
+                let itemFieldInfo = ((item.fields[horizontalField.id]) instanceof Array) ? (item.fields[horizontalField.id] as any[])[0] : (item.fields[horizontalField.id]);
                 const itemId = itemFieldInfo ? itemFieldInfo['id'] : ''
                 return id === itemId
             }))
         }
+        console.log(JSON.parse(JSON.stringify(filteredRecord)))
         if (!verticalField || !horizontalField) {
             console.log('组装数据错误，缺失横轴或则竖轴字段')
         }
@@ -127,7 +131,6 @@ function App() {
                                 groupTexts: string[]
 
     ): { category: string, persons: IRecord[] }[] {
-        console.log('group record-----------------------',records, groupTexts)
         if (!groupField) {
             return [{ category: '', persons: records }]
         }
@@ -153,6 +156,7 @@ function App() {
 
     function mapRecordByDisplayInfo(groupedRecords: { category: string, persons: IRecord[] }[],
                                     personnelField: any | null): { list: { category: string, persons: string[] }[], total: number, percent: number } {
+        console.log('--------',groupedRecords, personnelField)
         let displayInfo: { category: string, persons: string[] }[] = [];
         groupedRecords.filter(group => group.persons.length > 0).forEach(group => {
            let list = [];
@@ -166,6 +170,7 @@ function App() {
         });
         const list = displayInfo.filter(item => item.persons.length > 0)
         const total = list.map(item => item.persons).flat().length
+        console.log(list, displayInfo, total)
         return { total, percent: Math.floor((total*100)/datasource.totalRowCount), list };
     }
 
@@ -207,6 +212,7 @@ function App() {
         // 九个格子的数据未分组的数据数组
         let leftUpList = filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'left');
         let leftUpGroupList = groupRecordsByInfo(leftUpList, groupField, groupText);
+        console.log('group record-----------------------',leftUpList)
         datasource.leftUpValue = mapRecordByDisplayInfo(leftUpGroupList, personField)
 
         let middleUpList = filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'middle');
@@ -219,6 +225,7 @@ function App() {
 
         let leftMiddleList = filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'left');
         let leftMiddleGroupList = groupRecordsByInfo(leftMiddleList, groupField, groupText)
+        console.log('group record-----------------------',leftMiddleList)
         datasource.leftMiddleValue = mapRecordByDisplayInfo(leftMiddleGroupList, personField)
 
         let middleMiddleList = filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'middle');
@@ -231,6 +238,7 @@ function App() {
 
         let leftDownList = filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'left');
         let leftDownGroupList = groupRecordsByInfo(leftDownList, groupField, groupText)
+        console.log('group record-----------------------',leftDownList)
         datasource.leftDownValue = mapRecordByDisplayInfo(leftDownGroupList, personField)
 
         let middleDownList = filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'middle');
@@ -295,7 +303,9 @@ function App() {
 
     return <div>
         {(
-            isLoading ? (<div>加载中...</div>) : (<div className="flex h-full">
+            isLoading ? (<div style={{ width: '100%', height: '100%', display: 'grid', alignItems: 'center', justifyItems: 'center' }}>
+                <div style={{textAlign: 'center', fontSize: '30px'}}>加载中...</div>
+            </div>) : (<div className="flex h-full">
                 <NineSquaresGrid/>
                 {dashboard.state === DashboardState.Create || dashboard.state === DashboardState.Config ? (
                     <ConfigPanel/>

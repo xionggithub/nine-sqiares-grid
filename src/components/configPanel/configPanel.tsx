@@ -145,7 +145,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                 options[options.length-1].disabled = true
                 horizontalCategories.right = [options[options.length -1].id];
             }
-            setHorizontalCategoryOptions([...options])
+            setHorizontalCategoryOptions([...options, ...[{ id: '', name: 'none' }]])
             setHorizontalCategories({...horizontalCategories})
         }
     }
@@ -186,7 +186,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                 options[options.length-1].disabled = true
                 verticalCategories.down = [options[options.length -1].id];
             }
-            setVerticalCategoryOptions([...options])
+            setVerticalCategoryOptions([...options, ...[{ id: '', name: 'none' }]])
             setVerticalCategories({...verticalCategories})
         }
     }
@@ -470,7 +470,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                 const { id, name, disabled } = item as any;
                                                                 return {
                                                                     value: id,
-                                                                    label: name,
+                                                                    label: id === '' ? t(name) : name,
                                                                     disabled: disabled
                                                                 };
                                                             })}
@@ -514,7 +514,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                 const { id, name, disabled } = item as any;
                                                                 return {
                                                                     value: id,
-                                                                    label: name,
+                                                                    label: id === '' ? t(name) : name,
                                                                     disabled: disabled
                                                                 };
                                                             })}
@@ -557,7 +557,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                 const { id, name, disabled } = item as any;
                                                                 return {
                                                                     value: id,
-                                                                    label: name,
+                                                                    label: id === '' ? t(name) : name,
                                                                     disabled: disabled
                                                                 };
                                                             })}
@@ -609,7 +609,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                         <Form.Select
                                                             field={'verticalUpValue'+index}
                                                             noLabel={true}
-                                                            key={index}
+                                                            key={id}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             initValue={id}
@@ -626,7 +626,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                 const { id, name, disabled } = item as any;
                                                                 return {
                                                                     value: id,
-                                                                    label: name,
+                                                                    label: id === '' ? t(name) : name,
                                                                     disabled: disabled
                                                                 };
                                                             })}
@@ -653,6 +653,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                         <Form.Select
                                                             field={'verticalMiddleValue'+index}
                                                             noLabel={true}
+                                                            key={id}
                                                             style={{ width: '100%' }}
                                                             remote={true}
                                                             initValue={id}
@@ -669,7 +670,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                 const { id, name, disabled } = item as any;
                                                                 return {
                                                                     value: id,
-                                                                    label: name,
+                                                                    label: id === '' ? t(name) : name,
                                                                     disabled: disabled
                                                                 };
                                                             })}
@@ -695,6 +696,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             field={'verticalDownValue'+index}
                                                             noLabel={true}
                                                             style={{ width: '100%' }}
+                                                            key={id}
                                                             id={id}
                                                             initValue={id}
                                                             onChange={(selectValue) => {
@@ -710,7 +712,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                 const { id, name, disabled } = item as any;
                                                                 return {
                                                                     value: id,
-                                                                    label: name,
+                                                                    label: id === '' ? t(name) : name,
                                                                     disabled: disabled
                                                                 };
                                                             })}
