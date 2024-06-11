@@ -181,7 +181,7 @@ function App() {
             return [];
         }
         if (groupField.type === 3) {
-            return (groupField.property?.options ?? []).map(item => item.text);
+            return (groupField.property?.options ?? []).map(item => (item.name ? item.name : item.text));
         }
         let map = {};
         records.forEach(item => {
@@ -208,11 +208,10 @@ function App() {
         let verticalField = fields.find(item => item.id === datasourceConfigCache.verticalField)
         let horizontalField = fields.find(item => item.id === datasourceConfigCache.horizontalField)
         const groupText = groupTextsFor(allRecords, groupField)
-        // console.log(personField, groupField, verticalField, horizontalField, datasourceConfigCache, groupText)
+        console.log(personField, groupField, verticalField, horizontalField, datasourceConfigCache, groupText)
         // 九个格子的数据未分组的数据数组
         let leftUpList = filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'left');
         let leftUpGroupList = groupRecordsByInfo(leftUpList, groupField, groupText);
-        console.log('group record-----------------------',leftUpList)
         datasource.leftUpValue = mapRecordByDisplayInfo(leftUpGroupList, personField)
 
         let middleUpList = filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'middle');
@@ -225,7 +224,6 @@ function App() {
 
         let leftMiddleList = filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'left');
         let leftMiddleGroupList = groupRecordsByInfo(leftMiddleList, groupField, groupText)
-        console.log('group record-----------------------',leftMiddleList)
         datasource.leftMiddleValue = mapRecordByDisplayInfo(leftMiddleGroupList, personField)
 
         let middleMiddleList = filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'middle');
@@ -238,7 +236,6 @@ function App() {
 
         let leftDownList = filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'left');
         let leftDownGroupList = groupRecordsByInfo(leftDownList, groupField, groupText)
-        console.log('group record-----------------------',leftDownList)
         datasource.leftDownValue = mapRecordByDisplayInfo(leftDownGroupList, personField)
 
         let middleDownList = filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'middle');
