@@ -753,7 +753,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 const { id, name, disabled } = item as any;
                                                 return {
                                                     value: id,
-                                                    label: name,
+                                                    label: id === '' ? t(name) : name,
                                                     disabled: disabled
                                                 };
                                             })}
