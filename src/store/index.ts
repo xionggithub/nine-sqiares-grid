@@ -5,6 +5,7 @@ export interface IDatasourceType {
   tables: any[];
   //选中
   tableId: string;
+  theme: 'light' | 'dark' | 'primary';
   fields: { [key: string]: any[] };
   totalRowCount: number;
   dataRanges: { type:string; viewId:string; viewName: string; viewType: number; }[]
@@ -29,6 +30,7 @@ export const useDatasourceStore = create<IDatasourceStore>((set) => ({
     tables: [],
     tableId: '',
     fields: {},
+    theme: 'light',
     totalRowCount: 0,
     dataRanges: [],
     leftDownValue: { total: 0, percent: 0, list: [] },
@@ -48,7 +50,6 @@ export const useDatasourceStore = create<IDatasourceStore>((set) => ({
 
 export interface IDatasourceConfigType {
   tableId: string;
-  theme: 'light' | 'dark' | 'primary';
   dataRange: string;
   personnelField: string;
   horizontalField: string;
@@ -74,7 +75,6 @@ interface IDatasourceConfigStore {
 export const useDatasourceConfigStore = create<IDatasourceConfigStore>((set) => ({
   datasourceConfig: {
     tableId: '',
-    theme: 'light',
     dataRange: '',
     personnelField: '',
     horizontalField: '',

@@ -1,12 +1,11 @@
-import {useCallback, useEffect, useState} from 'react';
-import {NineSquaresGrid} from "./components/nineSquaresGrid";
-import {ConfigPanel} from "./components/configPanel";
-import {base, dashboard, DashboardState, IRecord, ITable} from "@lark-base-open/js-sdk";
-import {useDatasourceConfigStore, useDatasourceStore, useTextConfigStore} from './store';
+import { useCallback, useEffect, useState } from 'react';
+import { NineSquaresGrid } from "./components/nineSquaresGrid";
+import { ConfigPanel } from "./components/configPanel";
+import { base, dashboard, DashboardState, IRecord, ITable, bitable } from "@lark-base-open/js-sdk";
+import { useDatasourceConfigStore, useDatasourceStore, useTextConfigStore } from './store';
 
 interface IDatasourceConfigCacheType {
     tableId: string;
-    theme: 'light' | 'dark' | 'primary';
     dataRange: string;
     personnelField: string;
     horizontalField: string;
@@ -36,7 +35,6 @@ function App() {
 
     let datasourceConfigCache: IDatasourceConfigCacheType = {
         tableId: '',
-        theme: 'light',
         dataRange: '',
         personnelField: '',
         horizontalField: '',
@@ -250,6 +248,14 @@ function App() {
 
     async function initConfigData(id: string | null) {
         console.log('-----------------------------------------------更新表格数据', id, dashboard.state);
+        //LIGHT = "LIGHT", DARK = "DARK"
+        const theme = await bitable.bridge.getTheme()
+        if (theme === 'LIGHT') {
+            datasource.theme = 'light'
+        } else {
+            datasource.theme = 'dark'
+        }
+        console.log(theme, '++++++++++++++++++')
         const tableIdList = await base.getTableList();
         // console.log('获取表 id 列表: ',tableIdList)
         const tableList = await Promise.all(getTableList(tableIdList));
@@ -277,6 +283,15 @@ function App() {
     }
 
     useEffect(() => {
+        bitable.bridge.onThemeChange((event) => {
+            console.log('theme change', event.data.theme);
+            if (event.data.theme === 'LIGHT') {
+                datasource.theme = 'light'
+            } else {
+                datasource.theme = 'dark'
+            }
+            updateDatasource({ ...datasource })
+        });
         async function getConfig() {
             // 先获取保存的配置数据
             if (dashboard.state !== DashboardState.Create) {

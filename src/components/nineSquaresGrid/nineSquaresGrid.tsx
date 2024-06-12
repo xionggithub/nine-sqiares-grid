@@ -287,8 +287,8 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                 <div className="left-side-bar-column">
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
-                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
+                             backgroundColor: datasource.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
                         <div className="side-bar-label side-bar-label-vertical rotate-label">{verticalAxisTitle()}</div>
@@ -297,24 +297,24 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                 <div className="left-side-bar-column three-row-grid">
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
-                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
+                             backgroundColor: datasource.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
                         <div className="side-bar-label side-bar-label-vertical rotate-label">{verticalAxisCategoryTitle('up')}</div>
                     </div>
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
-                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
+                             backgroundColor: datasource.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
                         <div className="side-bar-label side-bar-label-vertical rotate-label">{verticalAxisCategoryTitle('middle')}</div>
                     </div>
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
-                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
+                             backgroundColor: datasource.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
 
                          }}
                     >
@@ -329,13 +329,13 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                     return <div className="cell"
                                 key={index}
                         style={{
-                            backgroundColor: datasourceConfig.theme === 'light' ? item.theme.light.bgColor : item.theme.dark.bgColor
+                            backgroundColor: datasource.theme === 'light' ? item.theme.light.bgColor : item.theme.dark.bgColor
                         }}
                     >
                         <div className="cell-header"
                              style={{
-                                 borderBottom:  datasourceConfig.theme === 'light' ?  '1px solid #1F23291A' : '1px solid #FFFFFF',
-                                 color: datasourceConfig.theme === 'light' ?  item.theme.light.textColor :  item.theme.dark.textColor
+                                 borderBottom:  datasource.theme === 'light' ?  '1px solid #1F23291A' : '1px solid #FFFFFF',
+                                 color: datasource.theme === 'light' ?  item.theme.light.textColor :  item.theme.dark.textColor
                              }}
                         >
                             <div className='cell-header-left-text'>
@@ -350,10 +350,10 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                             <div className="cell-content">
                                 { (datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).list.map((group, index) => {
                                     return <div className="flex-column" style={{ rowGap: '6px' }} key={group.category + 'key' + index}>
-                                        <div className="cell-content-category" style={{ color: datasourceConfig.theme === 'light' ?  item.theme.light.titleColor :  item.theme.dark.titleColor }}>
+                                        { group.category.length > 0 ? (<div className="cell-content-category" style={{ color: datasource.theme === 'light' ?  item.theme.light.titleColor :  item.theme.dark.titleColor }}>
                                             {group.category}
-                                        </div>
-                                        <div className="cell-content-group" style={{ color: datasourceConfig.theme === 'light' ?  item.theme.light.textColor :  item.theme.dark.textColor, borderColor: datasourceConfig.theme === 'light' ?  item.theme.light.leftBorderColor :  item.theme.dark.leftBorderColor, }}>
+                                        </div>) : '' }
+                                        <div className="cell-content-group" style={{ color: datasource.theme === 'light' ?  item.theme.light.textColor :  item.theme.dark.textColor, borderColor: group.category.length > 0 ? (datasource.theme === 'light' ?  item.theme.light.leftBorderColor :  item.theme.dark.leftBorderColor) : '', }}>
                                             {group.persons.map((person, subIndex) => {
                                                 return <div className='flex-row' key={person + 'key' + subIndex}>
                                                     <img src={personIcon} alt="" className="selection-icon" />
@@ -374,8 +374,8 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                 <div className="bottom-side-bar-row three-column-grid">
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
-                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
+                             backgroundColor: datasource.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
                         <div className="side-bar-label">{horizontalAxisCategoryTitle('left')}</div>
@@ -383,16 +383,16 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
 
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
-                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
+                             backgroundColor: datasource.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
                         <div className="side-bar-label">{horizontalAxisCategoryTitle('middle')}</div>
                     </div>
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
-                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
+                             backgroundColor: datasource.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
                         <div className="side-bar-label">{horizontalAxisCategoryTitle('right')}</div>
@@ -402,8 +402,8 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                 >
                     <div className="label-container"
                          style={{
-                             backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
-                             color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
+                             backgroundColor: datasource.theme === 'light' ? '#EFF4FF' : '#383C43',
+                             color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}>
                         <div className="side-bar-label">{horizontalAxisTitle()}</div>
                     </div>
