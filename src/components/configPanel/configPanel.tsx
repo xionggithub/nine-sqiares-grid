@@ -90,7 +90,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         updateDatasource(datasource)
         updateDatasourceConfig({...datasourceConfig})
         setTableId(tableId)
-        setFields([...fields])
+        setFields([...[...fields, ...[{ id: '', name: 'none' }]]])
         console.log(datasource.tableId, datasource.fields)
     }
 
@@ -103,7 +103,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             console.log(item.disabled, item.id)
         })
         updateDatasourceConfig({...datasourceConfig})
-        setFields([...fields])
+        setFields([...fields, ...[{ id: '', name: 'none' }]])
         console.log('on personnel choose', personnel, datasourceConfig)
     }
 
@@ -121,7 +121,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         })
         console.log('horizontalField-----',datasource.fields[datasource.tableId])
         updateDatasourceConfig({...datasourceConfig})
-        setFields(fields)
+        setFields([...fields, ...[{ id: '', name: 'none' }]])
         let field = fields.find(item => item.id === datasourceConfig.horizontalField)
         if (field && field.property?.options) {
             console.log('----field::', field)
@@ -163,7 +163,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             console.log(item.disabled, item.id)
         })
         updateDatasourceConfig({...datasourceConfig})
-        setFields(fields)
+        setFields([...fields, ...[{ id: '', name: 'none' }]])
         let field = fields.find(item => item.id === datasourceConfig.verticalField)
         if (field) {
             console.log('----field::', field)
@@ -252,7 +252,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         (state) => state,
     );
 
-    const { Option } = Form.Select;
 
     const switchTheme = (theme: string) => {
         const body = document.body;
@@ -268,7 +267,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         // console.log('config panel useeffect', datasourceConfig, textConfig, datasource)
         setTableId(datasourceConfig.tableId)
         let selectedFieldIds = [datasourceConfig.horizontalField ?? '', datasourceConfig.verticalField ?? '', datasourceConfig.personnelField ?? '', datasourceConfig.groupField ?? '']
-        setFields(datasource.fields[datasourceConfig.tableId].map(item => ({ ...item, disabled: selectedFieldIds.some(id => id === item.id)})))
+        setFields([...datasource.fields[datasourceConfig.tableId].map(item => ({ ...item, disabled: selectedFieldIds.some(id => id === item.id)})), ...[{ id: '', name: 'none' }]])
         let horizontalConfig = { left: [...datasourceConfig.horizontalCategories.left], middle: [...datasourceConfig.horizontalCategories.middle], right: [...datasourceConfig.horizontalCategories.right] }
         setHorizontalCategories(horizontalConfig)
 
@@ -747,7 +746,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     console.log(item.disabled, item.id)
                                                 })
                                                 updateDatasourceConfig({...datasourceConfig})
-                                                setFields([...fields])
+                                                setFields([...fields, ...[{ id: '', name: 'none' }]])
                                             }}
                                             renderSelectedItem={renderSelectOptionSelectedItem}
                                             optionList={fields.map((item) => {
