@@ -74,7 +74,14 @@
     font-weight: 400;
     font-family: "PingFang SC";
     line-height: 22px;
-    padding-bottom: 8px;
+}
+
+.semi-form-field-label-text {
+    font-size: 14px !important;
+    font-weight: 400;
+    color: var(--semi-color-text-0) !important;
+    font-family: "PingFang SC";
+    line-height: 22px !important;
 }
 
 .form-list {

@@ -1,26 +1,21 @@
 import {
     dashboard,
-    bridge,
     ThemeModeType,
     SourceType,
     IDataRange,
-    FieldType,
-    DashboardState, base,
+    DashboardState,
+    base,
 } from '@lark-base-open/js-sdk';
-import {useEffect, useRef, FC, useState} from 'react';
+import { useEffect, useRef, FC, useState } from 'react';
 import {
     Tabs,
     TabPane,
     Form,
-    Select,
-    Input,
-    Slider,
-    InputNumber,
-    RadioGroup,
-    Radio,
     Button,
-    Divider
+    Divider,
+    Select
 } from '@douyinfe/semi-ui';
+import { IconTick } from '@douyinfe/semi-icons';
 
 import { useDatasourceConfigStore, useTextConfigStore, useDatasourceStore } from '../../store';
 
@@ -44,6 +39,7 @@ interface IConfigPanelPropsType {
 export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const { t, i18n } = useTranslation();
+    const [inputValue, setInputValue] = useState('');
 
     // 类型与数据
     const { datasourceConfig, updateDatasourceConfig } = useDatasourceConfigStore((state) => state);
@@ -224,6 +220,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         datasourceConfig.horizontalCategories = {...horizontalCategories}
     }
 
+    // custom options style
     const renderPersonSelectedItem = optionNode => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
             <img src={personIcon} alt="" className="selection-icon" style={{ opacity: optionNode.label ? 1 : 0 }} />
@@ -237,6 +234,48 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
         </div>
     );
+
+    const classNames = (options: { [key: string]: boolean }) => {
+        let cls = [];
+        Object.keys(options).forEach(key => {
+           if (options[key]) {
+               cls.push(key)
+           }
+        });
+        return cls;
+    }
+    const renderTableOptionItem = renderProps => {
+        const {
+            disabled,
+            selected,
+            label,
+            value,
+            focused,
+            className,
+            style,
+            onMouseEnter,
+            onClick,
+            empty,
+            emptyContent,
+            ...rest
+        } = renderProps;
+
+        const optionCls = classNames({
+            ['custom-option-render']: true,
+            ['custom-option-render-focused']: focused,
+            ['custom-option-render-disabled']: disabled,
+            ['custom-option-render-selected']: selected,
+        });
+        // const searchWords = [inputValue];
+        return (
+            <div style={{ ...style, ...{ display: 'flex', flexDirection: 'row', padding: '8px 12px', cursor:'pointer', alignItems: 'center' } }} className={optionCls} onClick={() => onClick()} onMouseEnter={e => onMouseEnter()}>
+                <img src={tableIcon} alt="" className="selection-icon" style={{ opacity: label ? 1 : 0 }} />
+                <span style={{ marginLeft: 8 }}>{label}</span>
+                { selected ? (<IconTick style={{ marginLeft: 'auto', marginRight: '0' }}>
+                </IconTick>) : '' }
+            </div>
+        );
+    };
 
     const renderSelectOptionSelectedItem = optionNode => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -366,6 +405,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 value: source.tableId,
                                                 label: source.tableName,
                                             }))}
+                                            renderOptionItem={renderTableOptionItem}
                                         />
 
                                         <Form.Select
@@ -395,6 +435,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     };
                                                 }
                                             })}
+                                            renderOptionItem={renderTableOptionItem}
                                         />
 
                                         <Divider dashed={false} />
@@ -412,36 +453,37 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 const { id, name, disabled } = item as any;
                                                 return {
                                                     value: id,
-                                                    label: name,
+                                                    label: id === '' ? t(name) : name,
                                                     disabled: disabled
                                                 };
                                             })}
                                         />
 
-                                        <div className="selection-title">{t('horizontalAxis')}</div>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <div className="selection-title" style={{ marginBottom: '8px' }}>{t('horizontalAxis')}</div>
 
-                                        <div className="selection-card">
-                                            <div className="selection-card-title">{t('chooseField')}</div>
-                                            <Form.Select
-                                                field="horizontalField"
-                                                noLabel={true}
-                                                style={{ width: '100%' }}
-                                                remote={true}
-                                                initValue={datasourceConfig.horizontalField}
-                                                defaultValue={datasourceConfig.horizontalField}
-                                                renderSelectedItem={renderSelectOptionSelectedItem}
-                                                onChange={async (selectValue) => chooseHorizontalAxisField(selectValue as string)}
-                                                optionList={fields.map((item) => {
-                                                    const { id, name, disabled } = item as any;
-                                                    return {
-                                                        value: id,
-                                                        label: name,
-                                                        disabled: disabled
-                                                    };
-                                                })}
-                                            />
+                                            <div className="selection-card">
+                                                <div className="selection-card-title">{t('chooseField')}</div>
+                                                <Form.Select
+                                                    field="horizontalField"
+                                                    noLabel={true}
+                                                    style={{ width: '100%' }}
+                                                    remote={true}
+                                                    initValue={datasourceConfig.horizontalField}
+                                                    defaultValue={datasourceConfig.horizontalField}
+                                                    renderSelectedItem={renderSelectOptionSelectedItem}
+                                                    onChange={async (selectValue) => chooseHorizontalAxisField(selectValue as string)}
+                                                    optionList={fields.map((item) => {
+                                                        const { id, name, disabled } = item as any;
+                                                        return {
+                                                            value: id,
+                                                            label: id === '' ? t(name) : name,
+                                                            disabled: disabled
+                                                        };
+                                                    })}
+                                                />
+                                            </div>
                                         </div>
-
                                         <div className="selection-list">
                                             <div className="selection-card">
                                                 <div className="selection-card-title">{t('left')}</div>
@@ -578,27 +620,29 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         </div>
 
 
-                                        <div className="selection-title">{t('verticalAxis')}</div>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <div className="selection-title" style={{ marginBottom: '8px' }}>{t('verticalAxis')}</div>
 
-                                        <div className="selection-card">
-                                            <div className="selection-card-title">{t('chooseField')}</div>
-                                            <Form.Select
-                                                field="verticalField"
-                                                noLabel={true}
-                                                style={{ width: '100%' }}
-                                                remote={true}
-                                                initValue={datasourceConfig.verticalField}
-                                                renderSelectedItem={renderSelectOptionSelectedItem}
-                                                onChange={async (selectValue) => chooseVerticalAxisField(selectValue as string)}
-                                                optionList={fields.map((item) => {
-                                                    const { id, name, disabled } = item as any;
-                                                    return {
-                                                        value: id,
-                                                        label: name,
-                                                        disabled: disabled
-                                                    };
-                                                })}
-                                            />
+                                            <div className="selection-card">
+                                                <div className="selection-card-title">{t('chooseField')}</div>
+                                                <Form.Select
+                                                    field="verticalField"
+                                                    noLabel={true}
+                                                    style={{ width: '100%' }}
+                                                    remote={true}
+                                                    initValue={datasourceConfig.verticalField}
+                                                    renderSelectedItem={renderSelectOptionSelectedItem}
+                                                    onChange={async (selectValue) => chooseVerticalAxisField(selectValue as string)}
+                                                    optionList={fields.map((item) => {
+                                                        const { id, name, disabled } = item as any;
+                                                        return {
+                                                            value: id,
+                                                            label: id === '' ? t(name) : name,
+                                                            disabled: disabled
+                                                        };
+                                                    })}
+                                                />
+                                            </div>
                                         </div>
 
                                         <div className="selection-list margin-top-tw margin-bottom-tw">
@@ -754,7 +798,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 const { id, name, disabled } = item as any;
                                                 return {
                                                     value: id,
-                                                    label: id === '' ? t(name) : name,
+                                                    label: id === '' ? t((name === 'none') ? 'noneGroup' : name) : name,
                                                     disabled: disabled
                                                 };
                                             })}

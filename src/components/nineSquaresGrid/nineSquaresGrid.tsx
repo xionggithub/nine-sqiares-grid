@@ -355,7 +355,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                                 { cellTitle(index) }
                             </div>
                             <div className='cell-header-right-text'>
-                                {(datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).total} {(datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).percent}%
+                                {(datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).total}, {(datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).percent}%
                             </div>
                         </div>
 
