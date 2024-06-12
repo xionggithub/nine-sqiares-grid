@@ -372,6 +372,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             field="dataRange"
                                             label={{ text: t('data_range') }}
                                             style={{ width: 300 }}
+                                            key={datasourceConfig.dataRange}
                                             remote={true}
                                             initValue={datasourceConfig.dataRange}
                                             defaultValue={datasourceConfig.dataRange}

@@ -304,7 +304,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
-                        <div className="side-bar-label rotate-label">{verticalAxisTitle()}</div>
+                        <div className="side-bar-label side-bar-label-vertical rotate-label">{verticalAxisTitle()}</div>
                     </div>
                 </div>
                 <div className="left-side-bar-column three-row-grid">
@@ -314,7 +314,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
-                        <div className="side-bar-label rotate-label">{verticalAxisCategoryTitle('up')}</div>
+                        <div className="side-bar-label side-bar-label-vertical rotate-label">{verticalAxisCategoryTitle('up')}</div>
                     </div>
                     <div className="label-container"
                          style={{
@@ -322,7 +322,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
-                        <div className="side-bar-label rotate-label">{verticalAxisCategoryTitle('middle')}</div>
+                        <div className="side-bar-label side-bar-label-vertical rotate-label">{verticalAxisCategoryTitle('middle')}</div>
                     </div>
                     <div className="label-container"
                          style={{
@@ -361,14 +361,14 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
 
                         <div className="cell-content-scroll">
                             <div className="cell-content">
-                                { (datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).list.map(group => {
-                                    return <div className="flex-column" style={{ rowGap: '6px' }}>
+                                { (datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).list.map((group, index) => {
+                                    return <div className="flex-column" style={{ rowGap: '6px' }} key={group.category + 'key' + index}>
                                         <div className="cell-content-category" style={{ color: datasourceConfig.theme === 'light' ?  item.theme.light.titleColor :  item.theme.dark.titleColor }}>
                                             {group.category}
                                         </div>
                                         <div className="cell-content-group" style={{ color: datasourceConfig.theme === 'light' ?  item.theme.light.textColor :  item.theme.dark.textColor, borderColor: datasourceConfig.theme === 'light' ?  item.theme.light.leftBorderColor :  item.theme.dark.leftBorderColor, }}>
-                                            {group.persons.map(person => {
-                                                return <div className='flex-row'>
+                                            {group.persons.map((person, subIndex) => {
+                                                return <div className='flex-row' key={person + 'key' + subIndex}>
                                                     <img src={personIcon} alt="" className="selection-icon" />
                                                     <div className='person-label'>{person}</div>
                                                 </div>

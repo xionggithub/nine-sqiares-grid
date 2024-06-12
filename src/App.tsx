@@ -253,19 +253,20 @@ function App() {
         const tableIdList = await base.getTableList();
         // console.log('获取表 id 列表: ',tableIdList)
         const tableList = await Promise.all(getTableList(tableIdList));
-        // console.log('获取所有表: ',tableList);
+        console.log('获取所有表: ',tableList);
         datasource.tables = [...tableList];
         const tableId = id ? id : tableList[0].tableId;
         datasource.tableId = tableId;
         datasourceConfig.tableId = tableId
         datasourceConfigCache.tableId = tableId
         const table = await base.getTable(tableId);
-        // console.log('获取当前选中的表',table)
+        console.log('获取当前选中的表',table)
         const fields = await table.getFieldMetaList()
         datasource.fields[tableId] = [...fields];
         // console.log('获取选中表的所有字段信息: ',datasource.fields);
         datasource.dataRanges = await dashboard.getTableDataRange(tableId)
-        // console.log('获取表数据范围: ',ranges);
+        datasourceConfig.dataRange = 'All';
+        console.log('获取表数据范围: ',datasource.dataRanges);
         // 如果不是创建面板，则根据 自定义配置组装数据
         if (dashboard.state !== DashboardState.Create) {
             await prepareData(table);

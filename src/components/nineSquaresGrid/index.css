@@ -67,16 +67,19 @@
     grid-template-columns: 1fr 1fr 1fr;
 }
 
+.side-bar-label-vertical {
+    position: absolute;
+}
 .side-bar-label {
-    position: absolute;;
     font-family: "PingFang SC";
-    width: max-content;
+    max-width: 100%;
     font-weight: 500;
     font-size: 14px;
     line-height: 22px;
     height: 22px;
     text-align: center;
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .label-container {
@@ -86,6 +89,8 @@
     align-items: center;
     justify-items: center;
     overflow: hidden;
+    padding: 0 10px;
+    box-sizing: border-box;
 }
 
 .rotate-label {
