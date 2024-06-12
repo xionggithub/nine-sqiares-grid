@@ -1,26 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useDatasourceConfigStore, useTextConfigStore, useDatasourceStore } from '../../store';
-import {
-    base,
-    IAttachmentField,
-    dashboard,
-    DashboardState,
-} from '@lark-base-open/js-sdk';
-import {
-    Tabs,
-    TabPane,
-    Form,
-    Select,
-    Slider,
-    InputNumber,
-    RadioGroup,
-    Radio,
-    Button,
-} from '@douyinfe/semi-ui';
+import {useEffect} from 'react';
+import {useDatasourceConfigStore, useDatasourceStore, useTextConfigStore} from '../../store';
+import {dashboard, DashboardState,} from '@lark-base-open/js-sdk';
 
 import "./index.css"
 import personIcon from '../../assets/icon_person.svg';
-import selectOptionIcon from "../../assets/icon_choose.svg";
 
 interface NineSquaresGridProps {
 
@@ -31,6 +14,10 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
     const { datasourceConfig } = useDatasourceConfigStore((state) => state);
     const { textConfig } = useTextConfigStore((state) => state);
     const { datasource } = useDatasourceStore((state) => state);
+
+    const isMobile = () => {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
 
     const cellTitleKeyList = [
         "leftUpValue",
@@ -286,7 +273,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
 
     return (
         <div
-            className="relative flex-1 h-screen grid-container grid"
+            className={ isMobile() ? 'relative flex-1 h-screen grid-container-phone grid' : 'relative flex-1 h-screen grid-container grid' }
             style={{
                 borderTop:
                     dashboard.state === DashboardState.View ? 'none' : '0.5px solid ',
@@ -296,7 +283,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                         : 'rgba(31, 35, 41, 0.15)',
             }}
         >
-            <div className="grid left-side-bar">
+            { isMobile() ? '' : (<div className="grid left-side-bar">
                 <div className="left-side-bar-column">
                     <div className="label-container"
                          style={{
@@ -334,7 +321,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                         <div className="side-bar-label rotate-label">{verticalAxisCategoryTitle('down') }</div>
                     </div>
                 </div>
-            </div>
+            </div>) }
 
 
             <div className="grid grid-content">
@@ -383,7 +370,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
             </div>
 
 
-            <div className="grid bottom-side-bar">
+            { isMobile() ? '' : (<div className="grid bottom-side-bar">
                 <div className="bottom-side-bar-row three-column-grid">
                     <div className="label-container"
                          style={{
@@ -417,11 +404,11 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                          style={{
                              backgroundColor: datasourceConfig.theme === 'light' ? '#EFF4FF' : '#383C43',
                              color: datasourceConfig.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
-                    }}>
+                         }}>
                         <div className="side-bar-label">{horizontalAxisTitle()}</div>
                     </div>
                 </div>
-            </div>
+            </div>)}
         </div>
     )
 }
