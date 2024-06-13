@@ -5,7 +5,7 @@ import {
     SourceType,
     IDataRange,
     DashboardState,
-    base, ITable, IRecord,
+    base,
 } from '@lark-base-open/js-sdk';
 import React from "react"
 import { useEffect, useRef, FC, useState } from 'react';
@@ -172,7 +172,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             console.log(item.disabled, item.id)
         })
         console.log('horizontalField-----',datasource.fields[datasource.tableId])
-        updateDatasourceConfig({...datasourceConfig})
         setFields(addNoneForList(fields))
         let field = fields.find(item => item.id === datasourceConfig.horizontalField)
         if (field && field.property?.options) {
@@ -197,10 +196,13 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                 options[options.length-1].disabled = true
                 horizontalCategories.right = [options[options.length -1].id];
             }
+            datasourceConfig.horizontalCategories = { ...horizontalCategories }
             setHorizontalCategoryOptions(addNoneForList(options))
             setHorizontalCategories({...horizontalCategories})
         }
+        console.log('chooseHorizontalAxisField++++++++++++++++++++++++==+++++++++++++++datasourceConfig', datasourceConfig)
         datasourceConfigCache = {...datasourceConfig}
+        updateDatasourceConfig({...datasourceConfig})
         dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
             updateDatasource({...datasource})
         })
@@ -218,7 +220,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
             console.log(item.disabled, item.id)
         })
-        updateDatasourceConfig({...datasourceConfig})
         setFields(addNoneForList(fields))
         let field = fields.find(item => item.id === datasourceConfig.verticalField)
         if (field) {
@@ -245,7 +246,26 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             setVerticalCategoryOptions(addNoneForList(options))
             setVerticalCategories({...verticalCategories})
         }
+        datasourceConfig.verticalCategories = { ...verticalCategories }
+        console.log('chooseVerticalAxisField----------------------------------------datasourceConfig', datasourceConfig)
         datasourceConfigCache = {...datasourceConfig}
+        updateDatasourceConfig({...datasourceConfig})
+        dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
+            updateDatasource({...datasource})
+        })
+    }
+
+    const onGroupChange = (selectValue) => {
+        datasourceConfig.groupField = selectValue as string;
+        console.log(selectValue, 'gropu')
+        let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+        fields.forEach(item => {
+            item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+            console.log(item.disabled, item.id)
+        })
+        datasourceConfigCache = {...datasourceConfig}
+        updateDatasourceConfig({...datasourceConfig})
+        setFields(addNoneForList(fields))
         dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
             updateDatasource({...datasource})
         })
@@ -917,17 +937,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 style={{ width: 300,...textColorStyle() }}
                                                 remote={true}
                                                 initValue={datasourceConfig.groupField}
-                                                onChange={async (selectValue) => {
-                                                    datasourceConfig.groupField = selectValue as string;
-                                                    console.log(selectValue, 'gropu')
-                                                    let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
-                                                    fields.forEach(item => {
-                                                        item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
-                                                        console.log(item.disabled, item.id)
-                                                    })
-                                                    updateDatasourceConfig({...datasourceConfig})
-                                                    setFields(addNoneForList(fields))
-                                                }}
+                                                onChange={async (selectValue) => onGroupChange(selectValue)}
                                                 renderSelectedItem={renderSelectOptionSelectedItem}
                                                 optionList={fields.map((item) => {
                                                     const { id, name, disabled } = item as any;
