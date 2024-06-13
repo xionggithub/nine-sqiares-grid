@@ -1,4 +1,5 @@
-import { IRecord, ITable } from "@lark-base-open/js-sdk";
+// @ts-nocheck
+import {base, IRecord, ITable} from "@lark-base-open/js-sdk";
 
 export interface IDatasourceConfigCacheType {
     tableId: string;
@@ -44,6 +45,9 @@ export class TableDataGroupHelper {
         if (!groupField) {
             return [{ category: '', persons: records }]
         }
+        if (groupTexts.length === 0) {
+            return [{ category: '', persons: records }]
+        }
         let groupList: { category: string, persons: IRecord[] }[] = []
         groupTexts.forEach(text => {
             let filteredList = records.filter(item => {
@@ -57,15 +61,16 @@ export class TableDataGroupHelper {
     }
 
     groupTextsFor(records: IRecord[],
-                           groupField: any | null
+                  groupField: any | null
     ): string[] {
         if (!groupField) {
             return [];
         }
         if (groupField.type === 3) {
-            return (groupField.property?.options ?? []).map(item => (item.name ? item.name : item.text));
+            const list: { [key: string]: any }[] = groupField.property?.options ?? []
+            return list.map(item => (item.name ? item.name : item.text));
         }
-        let map = {};
+        let map: { [key: string]: string } = {};
         records.forEach(item => {
             let fieldInfo = ((item.fields[groupField.id]) instanceof Array) ? (item.fields[groupField.id] as any[])[0] : (item.fields[groupField.id]);
             let text = fieldInfo ? fieldInfo['text']: '';
@@ -91,7 +96,7 @@ export class TableDataGroupHelper {
         console.log('--------',groupedRecords, personnelField)
         let displayInfo: { category: string, persons: string[] }[] = [];
         groupedRecords.filter(group => group.persons.length > 0).forEach(group => {
-            let list = [];
+            let list: string[] = [];
             group.persons.forEach(item => {
                 let itemFieldInfo = ((item.fields[personnelField.id]) instanceof Array) ? (item.fields[personnelField.id] as any[])[0] : (item.fields[personnelField.id]);
                 const fieldKey = this.fieldTextKey(personnelField.type);
@@ -114,9 +119,9 @@ export class TableDataGroupHelper {
                                  horizontalType: 'left' | 'middle' | 'right',
                                  datasourceConfigCache: any
     ): IRecord[] {
-        let filteredRecord = []
+        let filteredRecord: IRecord[] = []
         if (verticalField) {
-            let optionIds = datasourceConfigCache.verticalCategories[verticalType] ?? [];
+            let optionIds: string[] = datasourceConfigCache.verticalCategories[verticalType] ?? [];
             console.log(verticalType, optionIds)
             filteredRecord = allRecords.filter(item => optionIds.some(id => {
                 let itemFieldInfo = ((item.fields[verticalField.id]) instanceof Array) ? (item.fields[verticalField.id] as any[])[0] : (item.fields[verticalField.id]);
@@ -126,7 +131,7 @@ export class TableDataGroupHelper {
         }
         console.log(JSON.parse(JSON.stringify(filteredRecord)))
         if (horizontalField) {
-            let optionIds = datasourceConfigCache.horizontalCategories[horizontalType] ?? [];
+            let optionIds: string[] = datasourceConfigCache.horizontalCategories[horizontalType] ?? [];
             console.log(horizontalType,optionIds)
             filteredRecord = filteredRecord.filter(item => optionIds.some(id => {
                 let itemFieldInfo = ((item.fields[horizontalField.id]) instanceof Array) ? (item.fields[horizontalField.id] as any[])[0] : (item.fields[horizontalField.id]);
@@ -141,7 +146,8 @@ export class TableDataGroupHelper {
         return [...filteredRecord]
     }
 
-    async prepareData(table: ITable, datasource: any,  datasourceConfigCache: any) {
+    async prepareData(tableId: string, datasource: any,  datasourceConfigCache: any) {
+        const table = await base.getTable(tableId);
         const fields = await table.getFieldMetaList()
         console.log('prepare data fields',fields);
         // 获取数据

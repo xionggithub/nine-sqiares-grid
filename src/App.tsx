@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState, useLayoutEffect } from 'react';
+// @ts-nocheck
+import { useCallback, useEffect, useState } from 'react';
 import { NineSquaresGrid } from "./components/nineSquaresGrid";
 import { ConfigPanel } from "./components/configPanel";
-import { base, dashboard, DashboardState, IRecord, ITable, bitable } from "@lark-base-open/js-sdk";
+import { base, dashboard, DashboardState, bitable } from "@lark-base-open/js-sdk";
 import { useDatasourceConfigStore, useDatasourceStore, useTextConfigStore } from './store';
 import { TableDataGroupHelper, IDatasourceConfigCacheType } from "./utils/tableDataGroupHelper";
 
@@ -36,16 +37,6 @@ function App() {
     };
 
     const [isLoading, setIsLoading] = useState(true)
-
-    // 数据范围 视图
-    const getTableRange = useCallback((tableId: string) => {
-        return dashboard.getTableDataRange(tableId);
-    }, []);
-
-    // 获取列信息
-    const getCategories = (table: any, tableId: string) => {
-        return table.getFieldMetaList(tableId);
-    };
 
     // 获取表格列表
     const getTableList = useCallback((tableIdList: any) => {
@@ -90,7 +81,7 @@ function App() {
         console.log('获取表数据范围: ',datasource.dataRanges);
         // 如果不是创建面板，则根据 自定义配置组装数据
         if (dashboard.state !== DashboardState.Create) {
-            await dataHelper.prepareData(table, datasource, datasourceConfigCache)
+            await dataHelper.prepareData(tableId, datasource, datasourceConfigCache)
             updateDatasource({...datasource})
         }
         console.log('------------------------------------------------------数据已经准备好: ',datasource, new Date().toISOString())

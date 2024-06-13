@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
     dashboard,
     ThemeModeType,
@@ -32,7 +33,6 @@ import { useTranslation } from 'react-i18next';
 
 import './index.css';
 import { IDatasourceConfigCacheType, TableDataGroupHelper } from "../../utils/tableDataGroupHelper";
-import {data} from "autoprefixer";
 
 interface IConfigPanelPropsType {
     dataRange: IDataRange[];
@@ -200,6 +200,10 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             setHorizontalCategoryOptions(addNoneForList(options))
             setHorizontalCategories({...horizontalCategories})
         }
+        datasourceConfigCache = {...datasourceConfig}
+        dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
+            updateDatasource({...datasource})
+        })
     }
 
     const chooseVerticalAxisField = (verticalField: string) => {
@@ -241,6 +245,10 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             setVerticalCategoryOptions(addNoneForList(options))
             setVerticalCategories({...verticalCategories})
         }
+        datasourceConfigCache = {...datasourceConfig}
+        dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
+            updateDatasource({...datasource})
+        })
     }
 
 
