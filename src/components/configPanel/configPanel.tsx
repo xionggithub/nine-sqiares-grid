@@ -31,6 +31,8 @@ import selectOptionIcon from '../../assets/icon_choose.svg';
 import { useTranslation } from 'react-i18next';
 
 import './index.css';
+import { IDatasourceConfigCacheType, TableDataGroupHelper } from "../../utils/tableDataGroupHelper";
+import {data} from "autoprefixer";
 
 interface IConfigPanelPropsType {
     dataRange: IDataRange[];
@@ -64,27 +66,34 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         right: ['']
     })
 
+    let datasourceConfigCache: IDatasourceConfigCacheType = {
+        tableId: '',
+        dataRange: '',
+        personnelField: '',
+        horizontalField: '',
+        horizontalCategories: {
+            left: [''],
+            middle: [''],
+            right: ['']
+        },
+
+        verticalField: '',
+        verticalCategories: {
+            up: [''],
+            middle: [''],
+            down: ['']
+        },
+        groupField: ''
+    };
+
     const addNoneForList = (list: any[]) => {
         if (list.find(item => item.id==="" && item.name === 'none')) {
-            return;
+            return list
         }
         return [...list, ...[{ id: '', name: 'none' }]]
     }
 
-    async function loadAllRecordsForTable(table: ITable): Promise<IRecord[]> {
-        let allRecords: IRecord[] = [];
-        // 分页加载，每次加载 5000 条 直到加载完数据
-        const loadRecordsByPage = async (lastRecordId: string) => {
-            const { hasMore , records } = await table.getRecords({ pageSize: 5000 , pageToken: lastRecordId });
-            allRecords.push(...records)
-            if (hasMore) {
-                const last = allRecords[allRecords.length - 1];
-                await loadRecordsByPage(last.recordId)
-            }
-        }
-        await loadRecordsByPage('');
-        return allRecords;
-    }
+    const dataHelper = new TableDataGroupHelper()
 
     const chooseTable = async (tableId: string) => {
         console.log('on data source selected ', tableId, datasourceConfig)
@@ -95,14 +104,13 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             const table = await base.getTable(tableId);
             console.log('-----',table)
             fields = await table.getFieldMetaList()
-
         }
         let allRecords = []
         if (datasource.allRecords[tableId] && datasource.allRecords[tableId].length > 0) {
             allRecords = datasource.allRecords[tableId];
         } else {
             const table = await base.getTable(tableId);
-            allRecords = await loadAllRecordsForTable(table)
+            allRecords = await dataHelper.loadAllRecordsForTable(table)
         }
         if (datasourceConfig.tableId !== tableId) {
             datasourceConfig.horizontalField = ''
@@ -119,14 +127,23 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                 down: ['']
             }
             datasourceConfig.tableId = tableId
+            datasource.leftDownValue =  { total: 0, percent: 0, list: [] }
+            datasource.middleDownValue = { total: 0, percent: 0, list: [] }
+            datasource.rightDownValue = { total: 0, percent: 0, list: [] }
+            datasource.leftMiddleValue = { total: 0, percent: 0, list: [] }
+            datasource.middleMiddleValue = { total: 0, percent: 0, list: [] }
+            datasource.rightMiddleValue = { total: 0, percent: 0, list: [] }
+            datasource.leftUpValue = { total: 0, percent: 0, list: [] }
+            datasource.middleUpValue = { total: 0, percent: 0, list: [] }
+            datasource.rightUpValue = { total: 0, percent: 0, list: [] }
         }
         datasource.fields[tableId] = [...fields.map(item => ({ ...item, disabled: false}))];
         datasource.tableId = tableId
         datasource.allRecords[tableId] = allRecords
+        console.log(datasource, datasourceConfig, fields)
         updateDatasource(datasource)
         updateDatasourceConfig({...datasourceConfig})
         setFields(addNoneForList(fields))
-        console.log(datasource, datasourceConfig)
     }
 
     const choosePersonField = (personnel: string) => {

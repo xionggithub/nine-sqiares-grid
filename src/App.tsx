@@ -3,26 +3,7 @@ import { NineSquaresGrid } from "./components/nineSquaresGrid";
 import { ConfigPanel } from "./components/configPanel";
 import { base, dashboard, DashboardState, IRecord, ITable, bitable } from "@lark-base-open/js-sdk";
 import { useDatasourceConfigStore, useDatasourceStore, useTextConfigStore } from './store';
-import { TableDataGroupHelper } from "./utils/tableDataGroupHelper";
-
-interface IDatasourceConfigCacheType {
-    tableId: string;
-    dataRange: string;
-    personnelField: string;
-    horizontalField: string;
-    horizontalCategories: {
-        left: string[],
-        middle: string[],
-        right: string[]
-    };
-    verticalField: string;
-    verticalCategories: {
-        up: string[],
-        middle: string[],
-        down: string[]
-    };
-    groupField: string;
-}
+import { TableDataGroupHelper, IDatasourceConfigCacheType } from "./utils/tableDataGroupHelper";
 
 function App() {
 
@@ -77,118 +58,7 @@ function App() {
         });
     }, []);
 
-    function filterRecordsByInfo(allRecords: IRecord[],
-                                 verticalField: any | null,
-                                 verticalType: 'up' | 'middle' | 'down',
-                                 horizontalField: any | null,
-                                 horizontalType: 'left' | 'middle' | 'right',
-    ): IRecord[] {
-        let filteredRecord = []
-        if (verticalField) {
-            let optionIds = datasourceConfigCache.verticalCategories[verticalType] ?? [];
-            console.log(verticalType, optionIds)
-            filteredRecord = allRecords.filter(item => optionIds.some(id => {
-                let itemFieldInfo = ((item.fields[verticalField.id]) instanceof Array) ? (item.fields[verticalField.id] as any[])[0] : (item.fields[verticalField.id]);
-                const itemId = itemFieldInfo ? itemFieldInfo['id'] : ''
-                return id === itemId
-            }))
-        }
-        console.log(JSON.parse(JSON.stringify(filteredRecord)))
-        if (horizontalField) {
-            let optionIds = datasourceConfigCache.horizontalCategories[horizontalType] ?? [];
-            console.log(horizontalType,optionIds)
-            filteredRecord = filteredRecord.filter(item => optionIds.some(id => {
-                let itemFieldInfo = ((item.fields[horizontalField.id]) instanceof Array) ? (item.fields[horizontalField.id] as any[])[0] : (item.fields[horizontalField.id]);
-                const itemId = itemFieldInfo ? itemFieldInfo['id'] : ''
-                return id === itemId
-            }))
-        }
-        console.log(JSON.parse(JSON.stringify(filteredRecord)))
-        if (!verticalField || !horizontalField) {
-            console.log('组装数据错误，缺失横轴或则竖轴字段')
-        }
-        return [...filteredRecord]
-    }
-
-    // function groupRecordsByInfo(records: IRecord[],
-    //                             groupField: any | null,
-    //                             groupTexts: string[]
-    //
-    // ): { category: string, persons: IRecord[] }[] {
-    //     if (!groupField) {
-    //         return [{ category: '', persons: records }]
-    //     }
-    //     let groupList: { category: string, persons: IRecord[] }[] = []
-    //     groupTexts.forEach(text => {
-    //         let filteredList = records.filter(item => {
-    //             let itemFieldInfo = ((item.fields[groupField.id]) instanceof Array) ? (item.fields[groupField.id] as any[])[0] : (item.fields[groupField.id]);
-    //             const itemText = itemFieldInfo ? itemFieldInfo['text'] : ''
-    //             return text === itemText
-    //         })
-    //         groupList.push({ category: text, persons: filteredList })
-    //     });
-    //     return groupList
-    // }
-
-
-
-
     const dataHelper = new TableDataGroupHelper()
-
-    async function prepareData(table: ITable) {
-        const fields = await table.getFieldMetaList()
-        console.log('prepare data fields',fields);
-        // 获取数据
-        const allRecords = await  dataHelper.loadAllRecordsForTable(table)
-        console.log('加载完当前 table 所以记录 ', allRecords,)
-        datasource.totalRowCount = allRecords.length
-        datasource.allRecords[table.id] = allRecords
-        // 根据配置面板数据准备数据
-        // 数据根据 四个字段进行组装显示
-        let personField = fields.find(item => item.id === datasourceConfigCache.personnelField)
-        let groupField = fields.find(item => item.id === datasourceConfigCache.groupField)
-        let verticalField = fields.find(item => item.id === datasourceConfigCache.verticalField)
-        let horizontalField = fields.find(item => item.id === datasourceConfigCache.horizontalField)
-        const groupText = dataHelper.groupTextsFor(allRecords, groupField)
-        console.log(personField, groupField, verticalField, horizontalField, datasourceConfigCache, groupText)
-        // 九个格子的数据未分组的数据数组
-        let leftUpList = filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'left');
-        let leftUpGroupList = dataHelper.groupRecordsByInfo(leftUpList, groupField, groupText);
-        datasource.leftUpValue = dataHelper.mapRecordByDisplayInfo(leftUpGroupList, personField, datasource)
-
-        let middleUpList = filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'middle');
-        let middleUpGroupList = dataHelper.groupRecordsByInfo(middleUpList, groupField, groupText)
-        datasource.middleUpValue = dataHelper.mapRecordByDisplayInfo(middleUpGroupList, personField, datasource)
-
-        let rightUpList = filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'right');
-        let rightUpGroupList = dataHelper.groupRecordsByInfo(rightUpList, groupField, groupText)
-        datasource.rightUpValue = dataHelper.mapRecordByDisplayInfo(rightUpGroupList, personField, datasource)
-
-        let leftMiddleList = filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'left');
-        let leftMiddleGroupList = dataHelper.groupRecordsByInfo(leftMiddleList, groupField, groupText)
-        datasource.leftMiddleValue = dataHelper.mapRecordByDisplayInfo(leftMiddleGroupList, personField, datasource)
-
-        let middleMiddleList = filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'middle');
-        let middleMiddleGroupList = dataHelper.groupRecordsByInfo(middleMiddleList, groupField, groupText)
-        datasource.middleMiddleValue = dataHelper.mapRecordByDisplayInfo(middleMiddleGroupList, personField, datasource)
-
-        let rightMiddleList = filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'right');
-        let rightMiddleGroupList = dataHelper.groupRecordsByInfo(rightMiddleList, groupField, groupText)
-        datasource.rightMiddleValue = dataHelper.mapRecordByDisplayInfo(rightMiddleGroupList, personField, datasource)
-
-        let leftDownList = filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'left');
-        let leftDownGroupList = dataHelper.groupRecordsByInfo(leftDownList, groupField, groupText)
-        datasource.leftDownValue = dataHelper.mapRecordByDisplayInfo(leftDownGroupList, personField, datasource)
-
-        let middleDownList = filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'middle');
-        let middleDownGroupList = dataHelper.groupRecordsByInfo(middleDownList, groupField, groupText)
-        datasource.middleDownValue = dataHelper.mapRecordByDisplayInfo(middleDownGroupList, personField, datasource)
-
-        let rightDownList = filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'right');
-        let rightDownGroupList = dataHelper.groupRecordsByInfo(rightDownList, groupField, groupText)
-        datasource.rightDownValue = dataHelper.mapRecordByDisplayInfo(rightDownGroupList, personField, datasource)
-        updateDatasource({...datasource})
-    }
 
     async function initConfigData(id: string | null) {
         console.log('-----------------------------------------------更新表格数据', id, dashboard.state);
@@ -220,7 +90,8 @@ function App() {
         console.log('获取表数据范围: ',datasource.dataRanges);
         // 如果不是创建面板，则根据 自定义配置组装数据
         if (dashboard.state !== DashboardState.Create) {
-            await prepareData(table);
+            await dataHelper.prepareData(table, datasource, datasourceConfigCache)
+            updateDatasource({...datasource})
         }
         console.log('------------------------------------------------------数据已经准备好: ',datasource, new Date().toISOString())
         // 强制刷新
