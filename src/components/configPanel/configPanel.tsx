@@ -4,7 +4,7 @@ import {
     SourceType,
     IDataRange,
     DashboardState,
-    base,
+    base, ITable, IRecord,
 } from '@lark-base-open/js-sdk';
 import React from "react"
 import { useEffect, useRef, FC, useState } from 'react';
@@ -47,9 +47,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     const { datasourceConfig, updateDatasourceConfig } = useDatasourceConfigStore((state) => state);
     const { datasource, updateDatasource } = useDatasourceStore((state) => state);
 
-
-    // 保存 选择的表
-    const [tableId, setTableId] = useState('')
     // 保存选择表的字段数据
     const [fields, setFields] = useState([])
     // 保存竖轴选择完字段后子分类的选项数据
@@ -74,6 +71,21 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         return [...list, ...[{ id: '', name: 'none' }]]
     }
 
+    async function loadAllRecordsForTable(table: ITable): Promise<IRecord[]> {
+        let allRecords: IRecord[] = [];
+        // 分页加载，每次加载 5000 条 直到加载完数据
+        const loadRecordsByPage = async (lastRecordId: string) => {
+            const { hasMore , records } = await table.getRecords({ pageSize: 5000 , pageToken: lastRecordId });
+            allRecords.push(...records)
+            if (hasMore) {
+                const last = allRecords[allRecords.length - 1];
+                await loadRecordsByPage(last.recordId)
+            }
+        }
+        await loadRecordsByPage('');
+        return allRecords;
+    }
+
     const chooseTable = async (tableId: string) => {
         console.log('on data source selected ', tableId, datasourceConfig)
         let fields = [];
@@ -83,20 +95,38 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             const table = await base.getTable(tableId);
             console.log('-----',table)
             fields = await table.getFieldMetaList()
+
+        }
+        let allRecords = []
+        if (datasource.allRecords[tableId] && datasource.allRecords[tableId].length > 0) {
+            allRecords = datasource.allRecords[tableId];
+        } else {
+            const table = await base.getTable(tableId);
+            allRecords = await loadAllRecordsForTable(table)
         }
         if (datasourceConfig.tableId !== tableId) {
             datasourceConfig.horizontalField = ''
             datasourceConfig.verticalField = ''
             datasourceConfig.personnelField = ''
+            datasourceConfig.horizontalCategories = {
+                left: [''],
+                middle: [''],
+                right: ['']
+            }
+            datasourceConfig.verticalCategories = {
+                up: [''],
+                middle: [''],
+                down: ['']
+            }
             datasourceConfig.tableId = tableId
         }
         datasource.fields[tableId] = [...fields.map(item => ({ ...item, disabled: false}))];
         datasource.tableId = tableId
+        datasource.allRecords[tableId] = allRecords
         updateDatasource(datasource)
         updateDatasourceConfig({...datasourceConfig})
-        setTableId(tableId)
         setFields(addNoneForList(fields))
-        console.log(datasource.tableId, datasource.fields)
+        console.log(datasource, datasourceConfig)
     }
 
     const choosePersonField = (personnel: string) => {
@@ -313,7 +343,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     useEffect(() => {
         // console.log('config panel useeffect', datasourceConfig, textConfig, datasource)
-        setTableId(datasourceConfig.tableId)
         let selectedFieldIds = [datasourceConfig.horizontalField ?? '', datasourceConfig.verticalField ?? '', datasourceConfig.personnelField ?? '', datasourceConfig.groupField ?? '']
         setFields(addNoneForList(datasource.fields[datasourceConfig.tableId].map(item => ({ ...item, disabled: selectedFieldIds.some(id => id === item.id)}))))
         let horizontalConfig = { left: [...datasourceConfig.horizontalCategories.left], middle: [...datasourceConfig.horizontalCategories.middle], right: [...datasourceConfig.horizontalCategories.right] }
@@ -344,9 +373,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     // 类型与数据表单更改
     const handleDataSourceConfigFormValueChange = (values: any) => {
-        console.log('handleDataSourceConfigFormValueChange',values)
-        // const newConfig = { ...datasourceConfig, ...values };
-        // updateDatasourceConfig({ ...newConfig });
+        console.log('handleDataSourceConfigFormValueChange',values, datasourceConfig)
     };
 
     const handleTextConfigFormValueChange = (values: any) => {

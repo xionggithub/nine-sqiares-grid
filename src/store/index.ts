@@ -7,6 +7,7 @@ export interface IDatasourceType {
   tableId: string;
   theme: 'light' | 'dark' | 'primary';
   fields: { [key: string]: any[] };
+  allRecords: { [key: string]: { [key: string]: any[] }[] },
   totalRowCount: number;
   dataRanges: { type:string; viewId:string; viewName: string; viewType: number; }[]
   leftDownValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
@@ -30,6 +31,7 @@ export const useDatasourceStore = create<IDatasourceStore>((set) => ({
     tables: [],
     tableId: '',
     fields: {},
+    allRecords: {},
     theme: 'light',
     totalRowCount: 0,
     dataRanges: [],
