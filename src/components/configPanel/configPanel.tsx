@@ -544,8 +544,13 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             remote={true}
                                                             initValue={id}
                                                             defaultValue={id}
-                                                            onChange={(selectValue) => {
-                                                                horizontalCategories.left[index] = selectValue as string
+                                                            onSelect={ (selectValue) => {
+                                                                const value = selectValue as string;
+                                                                if (value === horizontalCategories.left[index]) {
+                                                                    horizontalCategories.left[index] = ''
+                                                                } else {
+                                                                    horizontalCategories.left[index] = value
+                                                                }
                                                                 let selectedIds = Object.values(horizontalCategories).flat().filter(id => id.length > 0)
                                                                 console.log(selectedIds, Object.values(horizontalCategories))
                                                                 horizontalCategoryOptions.forEach(item => {
@@ -559,7 +564,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                 return {
                                                                     value: id,
                                                                     label: id === '' ? t(name) : name,
-                                                                    disabled: disabled
+                                                                    disabled: id === horizontalCategories.left[index] ? false : disabled
                                                                 };
                                                             })}
                                                         />
@@ -589,9 +594,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             key={id}
                                                             initValue={id}
                                                             defaultValue={id}
-                                                            onChange={(selectValue) => {
-                                                                horizontalCategories.middle[index] = selectValue as string
+                                                            onSelect={ (selectValue) => {
+                                                                const value = selectValue as string;
+                                                                if (value === horizontalCategories.middle[index]) {
+                                                                    horizontalCategories.middle[index] = ''
+                                                                } else {
+                                                                    horizontalCategories.middle[index] = value
+                                                                }
                                                                 let selectedIds = Object.values(horizontalCategories).flat().filter(id => id.length > 0)
+                                                                console.log(selectedIds, Object.values(horizontalCategories))
                                                                 horizontalCategoryOptions.forEach(item => {
                                                                     item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
                                                                     console.log(item.disabled, item.id)
@@ -603,7 +614,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                 return {
                                                                     value: id,
                                                                     label: id === '' ? t(name) : name,
-                                                                    disabled: disabled
+                                                                    disabled: id === horizontalCategories.middle[index]? false : disabled
                                                                 };
                                                             })}
                                                         />
@@ -632,9 +643,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             remote={true}
                                                             initValue={id}
                                                             defaultValue={id}
-                                                            onChange={(selectValue) => {
-                                                                horizontalCategories.right[index] = selectValue as string
+                                                            onSelect={ (selectValue) => {
+                                                                const value = selectValue as string;
+                                                                if (value === horizontalCategories.right[index]) {
+                                                                    horizontalCategories.right[index] = ''
+                                                                } else {
+                                                                    horizontalCategories.right[index] = value
+                                                                }
                                                                 let selectedIds = Object.values(horizontalCategories).flat().filter(id => id.length > 0)
+                                                                console.log(selectedIds, Object.values(horizontalCategories))
                                                                 horizontalCategoryOptions.forEach(item => {
                                                                     item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
                                                                     console.log(item.disabled, item.id)
@@ -646,7 +663,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                 return {
                                                                     value: id,
                                                                     label: id === '' ? t(name) : name,
-                                                                    disabled: disabled
+                                                                    disabled: id === horizontalCategories.right[index]? false : disabled
                                                                 };
                                                             })}
                                                         />
@@ -703,9 +720,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
                                                             initValue={id}
-                                                            onChange={(selectValue) => {
-                                                                verticalCategories.up[index] = selectValue as string
+                                                            onSelect={ (selectValue) => {
+                                                                const value = selectValue as string;
+                                                                if (value === verticalCategories.up[index]) {
+                                                                    verticalCategories.up[index] = ''
+                                                                } else {
+                                                                    verticalCategories.up[index] = value
+                                                                }
                                                                 let selectedIds = Object.values(verticalCategories).flat().filter(id => id.length > 0)
+                                                                console.log(selectedIds, Object.values(verticalCategories))
                                                                 verticalCategoryOptions.forEach(item => {
                                                                     item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
                                                                     console.log(item.disabled, item.id)
@@ -717,7 +740,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                 return {
                                                                     value: id,
                                                                     label: id === '' ? t(name) : name,
-                                                                    disabled: disabled
+                                                                    disabled: id === verticalCategories.up[index] ? false : disabled
                                                                 };
                                                             })}
                                                         />
@@ -747,9 +770,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
                                                             initValue={id}
-                                                            onChange={(selectValue) => {
-                                                                verticalCategories.middle[index] = selectValue as string
+                                                            onSelect={ (selectValue) => {
+                                                                const value = selectValue as string;
+                                                                if (value === verticalCategories.middle[index]) {
+                                                                    verticalCategories.middle[index] = ''
+                                                                } else {
+                                                                    verticalCategories.middle[index] = value
+                                                                }
                                                                 let selectedIds = Object.values(verticalCategories).flat().filter(id => id.length > 0)
+                                                                console.log(selectedIds, Object.values(verticalCategories))
                                                                 verticalCategoryOptions.forEach(item => {
                                                                     item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
                                                                     console.log(item.disabled, item.id)
@@ -761,7 +790,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                 return {
                                                                     value: id,
                                                                     label: id === '' ? t(name) : name,
-                                                                    disabled: disabled
+                                                                    disabled: id === verticalCategories.middle[index] ? false : disabled
                                                                 };
                                                             })}
                                                         />
@@ -789,9 +818,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             key={id}
                                                             id={id}
                                                             initValue={id}
-                                                            onChange={(selectValue) => {
-                                                                verticalCategories.down[index] = selectValue as string
+                                                            onSelect={ (selectValue) => {
+                                                                const value = selectValue as string;
+                                                                if (value === verticalCategories.down[index]) {
+                                                                    verticalCategories.down[index] = ''
+                                                                } else {
+                                                                    verticalCategories.down[index] = value
+                                                                }
                                                                 let selectedIds = Object.values(verticalCategories).flat().filter(id => id.length > 0)
+                                                                console.log(selectedIds, Object.values(verticalCategories))
                                                                 verticalCategoryOptions.forEach(item => {
                                                                     item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
                                                                     console.log(item.disabled, item.id)
@@ -803,7 +838,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                 return {
                                                                     value: id,
                                                                     label: id === '' ? t(name) : name,
-                                                                    disabled: disabled
+                                                                    disabled: id === verticalCategories.down[index] ? false : disabled
                                                                 };
                                                             })}
                                                         />
