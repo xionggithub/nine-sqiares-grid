@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useLayoutEffect } from 'react';
 import { NineSquaresGrid } from "./components/nineSquaresGrid";
 import { ConfigPanel } from "./components/configPanel";
 import { base, dashboard, DashboardState, IRecord, ITable, bitable } from "@lark-base-open/js-sdk";
@@ -256,6 +256,7 @@ function App() {
             datasource.theme = 'dark'
         }
         console.log(theme, '++++++++++++++++++')
+        updateTheme(theme.toLocaleLowerCase())
         const tableIdList = await base.getTableList();
         // console.log('获取表 id 列表: ',tableIdList)
         const tableList = await Promise.all(getTableList(tableIdList));
@@ -282,6 +283,10 @@ function App() {
         setIsLoading(false)
     }
 
+    function updateTheme(theme: string) {
+        document.body.setAttribute('theme-mode', theme);
+    }
+
     useEffect(() => {
         bitable.bridge.onThemeChange((event) => {
             console.log('theme change', event.data.theme);
@@ -290,6 +295,7 @@ function App() {
             } else {
                 datasource.theme = 'dark'
             }
+            updateTheme(event.data.theme.toLocaleLowerCase())
             updateDatasource({ ...datasource })
         });
         async function getConfig() {

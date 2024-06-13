@@ -6,11 +6,13 @@ import {
     DashboardState,
     base,
 } from '@lark-base-open/js-sdk';
+import React from "react"
 import { useEffect, useRef, FC, useState } from 'react';
 import {
     Tabs,
     TabPane,
     Form,
+    Input,
     Button,
     Divider,
     Select
@@ -29,7 +31,6 @@ import selectOptionIcon from '../../assets/icon_choose.svg';
 import { useTranslation } from 'react-i18next';
 
 import './index.css';
-import {f} from "vite/dist/node/types.d-aGj9QkWt";
 
 interface IConfigPanelPropsType {
     dataRange: IDataRange[];
@@ -230,14 +231,14 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     // custom options style
     const renderPersonSelectedItem = optionNode => (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center',...textColorStyle() }}>
             <img src={personIcon} alt="" className="selection-icon" style={{ opacity: optionNode.label ? 1 : 0 }} />
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
         </div>
     );
 
     const renderTableSelectedItem = optionNode => (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', ...textColorStyle() }}>
             <img src={tableIcon} alt="" className="selection-icon" style={{ opacity: optionNode.label ? 1 : 0 }} />
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
         </div>
@@ -276,7 +277,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         });
         // const searchWords = [inputValue];
         return (
-            <div style={{ ...style, ...{ display: 'flex', flexDirection: 'row', padding: '8px 12px', cursor:'pointer', alignItems: 'center' } }} className={optionCls} onClick={() => onClick()} onMouseEnter={e => onMouseEnter()}>
+            <div style={{ ...style, ...{ display: 'flex', flexDirection: 'row', padding: '8px 12px', cursor:'pointer', alignItems: 'center',...textColorStyle() } }} className={optionCls} onClick={() => onClick()} onMouseEnter={e => onMouseEnter()}>
                 <img src={tableIcon} alt="" className="selection-icon" style={{ opacity: label ? 1 : 0 }} />
                 <span style={{ marginLeft: 8 }}>{label}</span>
                 { selected ? (<IconTick style={{ marginLeft: 'auto', marginRight: '0' }}>
@@ -286,7 +287,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     };
 
     const renderSelectOptionSelectedItem = optionNode => (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', ...textColorStyle() }}>
             <img src={selectOptionIcon} alt="" className="selection-icon" style={{ opacity: optionNode.label ? 1 : 0 }} />
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
         </div>
@@ -373,6 +374,31 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         }).then();
     };
 
+    const panelBgColorStyle = () => {
+        return {
+            backgroundColor: datasource.theme === 'light' ? '#FFFFFF' : '#292929'
+        }
+    }
+
+    const bgColorStyle = () => {
+        return {
+            backgroundColor: datasource.theme === 'light' ? '#EFF4FF' : '#292929'
+        }
+    }
+
+    const textColorStyle = () => {
+        return {
+            color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
+        }
+    }
+
+    const cardColorStyle = () => {
+        return {
+            backgroundColor: datasource.theme === 'light' ? '#F5F6F7' : '#1F2329',
+            borderColor: datasource.theme === 'light' ? '#DEE0E3' : '#1F2329'
+        }
+    }
+
     return (
         <div
             className="border-[rgba(31, 35, 41, 0.15)] dark:border-[rgba(207,207,207, 0.15)] relative flex h-screen w-[350px] flex-col border-l-[0.5px]  bg-[--semi-color-bg-0]"
@@ -380,15 +406,19 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                 borderTop:
                     dashboard.state === DashboardState.View ? 'none' : '0.5px solid ',
                 borderColor:
-                    datasourceConfig.theme === 'light'
+                    datasource.theme === 'light'
                         ? 'rgba(207,207,207, 0.15)'
                         : 'rgba(31, 35, 41, 0.15)',
+                ...panelBgColorStyle(),
+                ...textColorStyle()
             }}
         >
             <div className="relative flex-1">
                 {
-                    <Tabs type="line">
-                        <TabPane tab={t('tab_name1')} itemKey="1">
+                    <Tabs type="line" contentStyle={ {...textColorStyle()}}>
+                        <TabPane tab={t('tab_name1')} itemKey="1"
+                                 style={{...textColorStyle()}}
+                        >
                             <div
                                 className="overflow-y-scroll px-[20px] pb-[48px] pt-[20px]"
                                 style={{
@@ -402,75 +432,83 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                     autoComplete="off"
                                 >
                                     <div className="flex-column form-list">
-                                        <Form.Select
-                                            field="tableId"
-                                            label={{ text: t('data_source') }}
-                                            style={{ width: 300 }}
-                                            initValue={datasourceConfig.tableId}
-                                            renderSelectedItem={renderTableSelectedItem}
-                                            onChange={ async (selectValue) => chooseTable(selectValue as string)}
-                                            optionList={datasource.tables.map((source) => ({
-                                                value: source.tableId,
-                                                label: source.tableName,
-                                            }))}
-                                            renderOptionItem={renderTableOptionItem}
-                                        />
+                                        <div className="selection-field">
+                                            <div className="selection-title" style={{ marginBottom: '8px' }}>{t('data_source')}</div>
+                                            <Form.Select
+                                                field="tableId"
+                                                noLabel={true}
+                                                style={{ width: 300, ...textColorStyle() }}
+                                                initValue={datasourceConfig.tableId}
+                                                renderSelectedItem={renderTableSelectedItem}
+                                                onChange={ async (selectValue) => chooseTable(selectValue as string)}
+                                                optionList={datasource.tables.map((source) => ({
+                                                    value: source.tableId,
+                                                    label: source.tableName,
+                                                }))}
+                                                renderOptionItem={renderTableOptionItem}
+                                            />
+                                        </div>
 
-                                        <Form.Select
-                                            field="dataRange"
-                                            label={{ text: t('data_range') }}
-                                            style={{ width: 300 }}
-                                            key={datasourceConfig.dataRange}
-                                            remote={true}
-                                            initValue={datasourceConfig.dataRange}
-                                            defaultValue={datasourceConfig.dataRange}
-                                            onChange={(selectedValue) => {
-                                                datasourceConfig.dataRange = selectedValue as string
-                                                console.log('on data range selected ', selectedValue, datasourceConfig)
-                                            }}
-                                            renderSelectedItem={renderTableSelectedItem}
-                                            optionList={datasource.dataRanges.map((range) => {
-                                                const { type, viewName, viewId } = range as any;
-                                                if (type === SourceType.ALL) {
+                                        <div className="selection-field">
+                                            <div className="selection-title" style={{ marginBottom: '8px' }}>{t('data_range')}</div>
+                                            <Form.Select
+                                                field="dataRange"
+                                                noLabel={true}
+                                                style={{ width: 300, ...textColorStyle() }}
+                                                key={datasourceConfig.dataRange}
+                                                remote={true}
+                                                initValue={datasourceConfig.dataRange}
+                                                defaultValue={datasourceConfig.dataRange}
+                                                onChange={(selectedValue) => {
+                                                    datasourceConfig.dataRange = selectedValue as string
+                                                    console.log('on data range selected ', selectedValue, datasourceConfig)
+                                                }}
+                                                renderSelectedItem={renderTableSelectedItem}
+                                                optionList={datasource.dataRanges.map((range) => {
+                                                    const { type, viewName, viewId } = range as any;
+                                                    if (type === SourceType.ALL) {
+                                                        return {
+                                                            value: 'All',
+                                                            label: t('view_all'),
+                                                        };
+                                                    } else {
+                                                        return {
+                                                            value: viewId,
+                                                            label: viewName,
+                                                        };
+                                                    }
+                                                })}
+                                                renderOptionItem={renderTableOptionItem}
+                                            />
+                                        </div>
+
+                                        <Divider dashed={false} style={cardColorStyle()} />
+
+                                        <div className="selection-field">
+                                            <div className="selection-title" style={{ marginBottom: '8px' }}>{t('personnel')}</div>
+                                            <Form.Select
+                                                field="personnel"
+                                                noLabel={true}
+                                                style={{ width: 300,...textColorStyle() }}
+                                                remote={true}
+                                                initValue={datasourceConfig.personnelField}
+                                                defaultValue={datasourceConfig.personnelField}
+                                                onChange={async (selectValue) => choosePersonField(selectValue as string)}
+                                                renderSelectedItem={renderPersonSelectedItem}
+                                                optionList={fields.map((item) => {
+                                                    const { id, name, disabled } = item as any;
                                                     return {
-                                                        value: 'All',
-                                                        label: t('view_all'),
+                                                        value: id,
+                                                        label: id === '' ? t(name) : name,
+                                                        disabled: disabled
                                                     };
-                                                } else {
-                                                    return {
-                                                        value: viewId,
-                                                        label: viewName,
-                                                    };
-                                                }
-                                            })}
-                                            renderOptionItem={renderTableOptionItem}
-                                        />
+                                                })}
+                                            />
+                                        </div>
 
-                                        <Divider dashed={false} />
-
-                                        <Form.Select
-                                            field="personnel"
-                                            label={{ text: t('personnel') }}
-                                            style={{ width: 300 }}
-                                            remote={true}
-                                            initValue={datasourceConfig.personnelField}
-                                            defaultValue={datasourceConfig.personnelField}
-                                            onChange={async (selectValue) => choosePersonField(selectValue as string)}
-                                            renderSelectedItem={renderPersonSelectedItem}
-                                            optionList={fields.map((item) => {
-                                                const { id, name, disabled } = item as any;
-                                                return {
-                                                    value: id,
-                                                    label: id === '' ? t(name) : name,
-                                                    disabled: disabled
-                                                };
-                                            })}
-                                        />
-
-                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                        <div className="selection-field">
                                             <div className="selection-title" style={{ marginBottom: '8px' }}>{t('horizontalAxis')}</div>
-
-                                            <div className="selection-card">
+                                            <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
                                                 <div className="selection-card-title">{t('chooseField')}</div>
                                                 <Form.Select
                                                     field="horizontalField"
@@ -493,8 +531,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             </div>
                                         </div>
                                         <div className="selection-list">
-                                            <div className="selection-card">
-                                                <div className="selection-card-title">{t('left')}</div>
+                                            <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
+                                                <div className="selection-card-title" style={textColorStyle()}>{t('left')}</div>
                                                 {horizontalCategories.left.map((id, index) => {
                                                     // console.log('horizontalCategories left', id, index)
                                                     return (<div className="delete-able-select-container">
@@ -502,7 +540,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             field={'horizontalLeftValues'+index}
                                                             noLabel={true}
                                                             key={id}
-                                                            style={{ width: '100%' }}
+                                                            style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
                                                             initValue={id}
                                                             defaultValue={id}
@@ -538,15 +576,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                                 </div>
                                             </div>
-                                            <div className="selection-card">
-                                                <div className="selection-card-title">{t('middle')}</div>
+                                            <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
+                                                <div className="selection-card-title" style={textColorStyle()}>{t('middle')}</div>
                                                 {horizontalCategories.middle.map((id, index) => {
                                                     // console.log('horizontalCategories middle', id, index)
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
                                                             field={'horizontalMiddleValue'+index}
                                                             noLabel={true}
-                                                            style={{ width: '100%' }}
+                                                            style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
                                                             key={id}
                                                             initValue={id}
@@ -581,8 +619,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                                 </div>
                                             </div>
-                                            <div className="selection-card">
-                                                <div className="selection-card-title">{t('right')}</div>
+                                            <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
+                                                <div className="selection-card-title" style={textColorStyle()}>{t('right')}</div>
                                                 {horizontalCategories.right.map((id, index) => {
                                                     // console.log('horizontalCategories right', id, index)
                                                     return (<div className="delete-able-select-container">
@@ -590,7 +628,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             field={'horizontalRightValue'+index}
                                                             noLabel={true}
                                                             key={id}
-                                                            style={{ width: '100%' }}
+                                                            style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
                                                             initValue={id}
                                                             defaultValue={id}
@@ -629,14 +667,14 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
 
                                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                            <div className="selection-title" style={{ marginBottom: '8px' }}>{t('verticalAxis')}</div>
+                                            <div className="selection-title" style={{ marginBottom: '8px',...textColorStyle() }}>{t('verticalAxis')}</div>
 
-                                            <div className="selection-card">
-                                                <div className="selection-card-title">{t('chooseField')}</div>
+                                            <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
+                                                <div className="selection-card-title" style={textColorStyle()}>{t('chooseField')}</div>
                                                 <Form.Select
                                                     field="verticalField"
                                                     noLabel={true}
-                                                    style={{ width: '100%' }}
+                                                    style={{ width: '100%',...textColorStyle() }}
                                                     remote={true}
                                                     initValue={datasourceConfig.verticalField}
                                                     renderSelectedItem={renderSelectOptionSelectedItem}
@@ -654,15 +692,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         </div>
 
                                         <div className="selection-list margin-top-tw margin-bottom-tw">
-                                            <div className="selection-card">
-                                                <div className="selection-card-title">{t('up')}</div>
+                                            <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
+                                                <div className="selection-card-title" style={textColorStyle()}>{t('up')}</div>
                                                 {verticalCategories.up.map((id, index) => {
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
                                                             field={'verticalUpValue'+index}
                                                             noLabel={true}
                                                             key={id}
-                                                            style={{ width: '100%' }}
+                                                            style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
                                                             initValue={id}
                                                             onChange={(selectValue) => {
@@ -698,15 +736,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                                 </div>
                                             </div>
-                                            <div className="selection-card">
-                                                <div className="selection-card-title">{t('middle')}</div>
+                                            <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
+                                                <div className="selection-card-title" style={textColorStyle()}>{t('middle')}</div>
                                                 {verticalCategories.middle.map((id, index) => {
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
                                                             field={'verticalMiddleValue'+index}
                                                             noLabel={true}
                                                             key={id}
-                                                            style={{ width: '100%' }}
+                                                            style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
                                                             initValue={id}
                                                             onChange={(selectValue) => {
@@ -740,14 +778,14 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     <div className="selection-card-bottom-text">{t('addCategory')}</div>
                                                 </div>
                                             </div>
-                                            <div className="selection-card">
-                                                <div className="selection-card-title">{t('down')}</div>
+                                            <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
+                                                <div className="selection-card-title" style={textColorStyle()}>{t('down')}</div>
                                                 {verticalCategories.down.map((id, index) => {
                                                     return (<div className="delete-able-select-container">
                                                         <Form.Select
                                                             field={'verticalDownValue'+index}
                                                             noLabel={true}
-                                                            style={{ width: '100%' }}
+                                                            style={{ width: '100%',...textColorStyle() }}
                                                             key={id}
                                                             id={id}
                                                             initValue={id}
@@ -784,33 +822,36 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             </div>
                                         </div>
 
-                                        <Form.Select
-                                            field="group"
-                                            label={{ text: t('group') }}
-                                            style={{ width: 300 }}
-                                            remote={true}
-                                            initValue={datasourceConfig.groupField}
-                                            onChange={async (selectValue) => {
-                                                datasourceConfig.groupField = selectValue as string;
-                                                console.log(selectValue, 'gropu')
-                                                let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
-                                                fields.forEach(item => {
-                                                    item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
-                                                    console.log(item.disabled, item.id)
-                                                })
-                                                updateDatasourceConfig({...datasourceConfig})
-                                                setFields(addNoneForList(fields))
-                                            }}
-                                            renderSelectedItem={renderSelectOptionSelectedItem}
-                                            optionList={fields.map((item) => {
-                                                const { id, name, disabled } = item as any;
-                                                return {
-                                                    value: id,
-                                                    label: id === '' ? t((name === 'none') ? 'noneGroup' : name) : name,
-                                                    disabled: disabled
-                                                };
-                                            })}
-                                        />
+                                        <div className="selection-field">
+                                            <div className="selection-title" style={{ marginBottom: '8px' }}>{t('group')}</div>
+                                            <Form.Select
+                                                field="group"
+                                                noLabel={true}
+                                                style={{ width: 300,...textColorStyle() }}
+                                                remote={true}
+                                                initValue={datasourceConfig.groupField}
+                                                onChange={async (selectValue) => {
+                                                    datasourceConfig.groupField = selectValue as string;
+                                                    console.log(selectValue, 'gropu')
+                                                    let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+                                                    fields.forEach(item => {
+                                                        item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
+                                                        console.log(item.disabled, item.id)
+                                                    })
+                                                    updateDatasourceConfig({...datasourceConfig})
+                                                    setFields(addNoneForList(fields))
+                                                }}
+                                                renderSelectedItem={renderSelectOptionSelectedItem}
+                                                optionList={fields.map((item) => {
+                                                    const { id, name, disabled } = item as any;
+                                                    return {
+                                                        value: id,
+                                                        label: id === '' ? t((name === 'none') ? 'noneGroup' : name) : name,
+                                                        disabled: disabled
+                                                    };
+                                                })}
+                                            />
+                                        </div>
                                     </div>
                                 </Form>
                             </div>
@@ -820,7 +861,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
                         <TabPane tab={t('tab_name2')} itemKey="2">
                             <div
-                                className="flex flex-col gap-[16px] overflow-y-scroll px-[20px] pb-[48px] pt-[20px]"
+                                className="flex flex-col gap-[16px] overflow-y-scroll pb-[48px] pt-[20px]"
                                 style={{
                                     height: `calc(100vh - 125px)`,
                                 }}
@@ -833,33 +874,31 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                     autoComplete="off"
                                 >
 
-                                    <div className="selection-title">{t('horizontalAxisCategory')}</div>
-
-                                    <div className="selection-card">
-                                        <Form.Input field='HLeftValue' label={ t('left')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
-                                        <Form.Input field='HMiddleValue' label={ t('middle')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
-                                        <Form.Input field='HRightValue' label={ t('right')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                    <div className="selection-title margin-top-tw" style={textColorStyle()}>{t('horizontalAxisCategory')}</div>
+                                    <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
+                                        <Form.Input field='HLeftValue' label={ t('left')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                        <Form.Input field='HMiddleValue' label={ t('middle')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                        <Form.Input field='HRightValue' label={ t('right')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
                                     </div>
 
-                                    <div className="selection-title">{t('verticalAxisCategory')}</div>
-
-                                    <div className="selection-card">
-                                        <Form.Input field='VUpValue' label={ t('up')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
-                                        <Form.Input field='VMiddleValue' label={ t('middle')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
-                                        <Form.Input field='VDownValue' label={ t('down')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                    <div className="selection-title margin-top-tw" style={textColorStyle()}>{t('verticalAxisCategory')}</div>
+                                    <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
+                                        <Form.Input field='VUpValue' label={ t('up')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                        <Form.Input field='VMiddleValue' label={ t('middle')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                        <Form.Input field='VDownValue' label={ t('down')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
                                     </div>
 
-                                    <div className="selection-title">{t('cellTitle')}</div>
-                                    <div className="selection-card">
-                                        <Form.Input field='leftDownValue' label={ t('leftDown')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
-                                        <Form.Input field='middleDownValue' label={ t('middleDown')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
-                                        <Form.Input field='rightDownValue' label={ t('rightDown')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
-                                        <Form.Input field='leftMiddleValue' label={ t('leftMiddle')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
-                                        <Form.Input field='middleMiddleValue' label={ t('middleMiddle')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
-                                        <Form.Input field='rightMiddleValue' label={ t('rightMiddle')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
-                                        <Form.Input field='leftUpValue' label={ t('leftUp')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
-                                        <Form.Input field='middleUpValue' label={ t('middleUp')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
-                                        <Form.Input field='rightUpValue' label={ t('rightUp')} style={{ width: '100%' }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                    <div className="selection-title margin-top-tw" style={textColorStyle()}>{t('cellTitle')}</div>
+                                    <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
+                                        <Form.Input field='leftDownValue' label={ t('leftDown')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                        <Form.Input field='middleDownValue' label={ t('middleDown')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                        <Form.Input field='rightDownValue' label={ t('rightDown')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                        <Form.Input field='leftMiddleValue' label={ t('leftMiddle')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                        <Form.Input field='middleMiddleValue' label={ t('middleMiddle')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                        <Form.Input field='rightMiddleValue' label={ t('rightMiddle')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                        <Form.Input field='leftUpValue' label={ t('leftUp')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                        <Form.Input field='middleUpValue' label={ t('middleUp')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
+                                        <Form.Input field='rightUpValue' label={ t('rightUp')} style={{ width: '100%',...textColorStyle() }} placeholder={t('pleaseEnterText')}></Form.Input>
                                     </div>
                                 </Form>
                             </div>
@@ -867,7 +906,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                     </Tabs>
                 }
             </div>
-            <div className="relative h-[72px] w-[340px] bg-[--semi-color-bg-0]">
+            <div className="relative h-[72px] w-[340px] bg-[--semi-color-bg-0]"
+                 style={{
+                     ...bgColorStyle(),
+                     ...textColorStyle()
+                 }}
+            >
                 <Button
                     className="fixed bottom-[10px] right-[10px] w-[80px] bg-[var(--semi-color-primary)]"
                     theme="solid"

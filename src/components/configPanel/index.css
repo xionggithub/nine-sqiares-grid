@@ -74,6 +74,7 @@
     font-weight: 400;
     font-family: "PingFang SC";
     line-height: 22px;
+    margin-bottom: 8px;
 }
 
 .semi-form-field-label-text {
@@ -93,6 +94,10 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+.selection-field {
+    display: flex;
+    flex-direction: column;
 }
 
 .selection-card {
