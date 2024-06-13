@@ -941,9 +941,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                     </Tabs>
                 }
             </div>
-            <div className="relative h-[72px] w-[340px] bg-[--semi-color-bg-0]"
+            <div className="relative h-[72px] w-[340px]"
                  style={{
-                     ...bgColorStyle(),
                      ...textColorStyle()
                  }}
             >

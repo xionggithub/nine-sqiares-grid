@@ -225,17 +225,15 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
     }
 
     const horizontalAxisCategoryTitle = (type: 'left' | 'middle' | 'right') => {
-        let text = horizontalAxisCategoryMainTitle(type) + ': ';
+        let text = horizontalAxisCategoryMainTitle(type);
         if (type === 'left') {
-            text += textConfig.HLeftValue
+            text += textConfig.HLeftValue.length > 0 ? (':' +  textConfig.HLeftValue) : ''
         } else if (type === 'middle') {
-            text += textConfig.HMiddleValue
+            text += textConfig.HMiddleValue.length > 0 ? (':' +  textConfig.HMiddleValue) : ''
         } else if (type === 'right') {
-            text += textConfig.HRightValue
+            text += textConfig.HRightValue.length > 0 ? (':' +  textConfig.HRightValue) : ''
         }
-        if (text.length > 0) {
-            return  text;
-        }
+        return  text;
     }
 
     const verticalAxisTitle = () => {
@@ -253,18 +251,15 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
     }
 
     const verticalAxisCategoryTitle = (type: 'up' | 'middle' | 'down') => {
-        let text = verticalAxisCategoryMainTitle(type) + ': ';
+        let text = verticalAxisCategoryMainTitle(type);
         if (type === 'up') {
-            text += textConfig.VUpValue
+            text += textConfig.VUpValue.length > 0 ? (':' + textConfig.VUpValue) : ''
         } else if (type === 'middle') {
-            text += textConfig.VMiddleValue
+            text += textConfig.VMiddleValue.length > 0 ? (':' +  textConfig.VMiddleValue) : ''
         } else if (type === 'down') {
-            text += textConfig.VDownValue
+            text += textConfig.VDownValue.length > 0 ? (':' +  textConfig.VDownValue) : ''
         }
-        if (text.length > 0) {
-            return  text;
-        }
-
+        return  text;
     }
 
     const cellTitle = (index: number) => {
