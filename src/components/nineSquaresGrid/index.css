@@ -175,6 +175,8 @@
     width: 100%;
     height: max-content;
     border-left: 3px solid transparent;
+    border-bottom-left-radius: 2px;
+    border-top-left-radius: 2px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

@@ -595,6 +595,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     field="horizontalField"
                                                     noLabel={true}
                                                     style={{ width: '100%' }}
+                                                    filter={searchLabel}
                                                     remote={true}
                                                     initValue={datasourceConfig.horizontalField}
                                                     defaultValue={datasourceConfig.horizontalField}
@@ -772,6 +773,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 <Form.Select
                                                     field="verticalField"
                                                     noLabel={true}
+                                                    filter={searchLabel}
                                                     style={{ width: '100%',...textColorStyle() }}
                                                     remote={true}
                                                     initValue={datasourceConfig.verticalField}
@@ -943,6 +945,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <Form.Select
                                                 field="group"
                                                 noLabel={true}
+                                                filter={searchLabel}
                                                 style={{ width: 300,...textColorStyle() }}
                                                 remote={true}
                                                 initValue={datasourceConfig.groupField}
