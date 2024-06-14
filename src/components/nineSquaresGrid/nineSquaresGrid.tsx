@@ -193,23 +193,6 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
             valueKey: 'rightDownValue'
         },
     ]
-    /**
-     * HLeftValue: string,
-     HMiddleValue: string,
-     HRightValue: string,
-     VupValue: string,
-     VMiddleValue: string,
-     VDownValue: string,
-     leftDownValue: string,
-     middleDownValue: string,
-     rightDownValue: string,
-     leftMiddleValue: string,
-     middleMiddleValue: string,
-     rightMiddleValue: string,
-     leftUpValue: string,
-     middleUpValue: string,
-     rightUpValue: string,
-     * */
 
     const horizontalAxisTitle = () => {
         return datasource.fields[datasource.tableId].find(item => item.id === datasourceConfig.horizontalField)?.name ?? ""
@@ -228,11 +211,11 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
     const horizontalAxisCategoryTitle = (type: 'left' | 'middle' | 'right') => {
         let text = horizontalAxisCategoryMainTitle(type);
         if (type === 'left') {
-            text += textConfig.HLeftValue.length > 0 ? (':' +  textConfig.HLeftValue) : ''
+            text += textConfig.HLeftValue.length > 0 ? (' ' +  textConfig.HLeftValue) : ''
         } else if (type === 'middle') {
-            text += textConfig.HMiddleValue.length > 0 ? (':' +  textConfig.HMiddleValue) : ''
+            text += textConfig.HMiddleValue.length > 0 ? (' ' +  textConfig.HMiddleValue) : ''
         } else if (type === 'right') {
-            text += textConfig.HRightValue.length > 0 ? (':' +  textConfig.HRightValue) : ''
+            text += textConfig.HRightValue.length > 0 ? (' ' +  textConfig.HRightValue) : ''
         }
         return  text;
     }
@@ -254,11 +237,11 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
     const verticalAxisCategoryTitle = (type: 'up' | 'middle' | 'down') => {
         let text = verticalAxisCategoryMainTitle(type);
         if (type === 'up') {
-            text += textConfig.VUpValue.length > 0 ? (':' + textConfig.VUpValue) : ''
+            text += textConfig.VUpValue.length > 0 ? (' ' + textConfig.VUpValue) : ''
         } else if (type === 'middle') {
-            text += textConfig.VMiddleValue.length > 0 ? (':' +  textConfig.VMiddleValue) : ''
+            text += textConfig.VMiddleValue.length > 0 ? (' ' +  textConfig.VMiddleValue) : ''
         } else if (type === 'down') {
-            text += textConfig.VDownValue.length > 0 ? (':' +  textConfig.VDownValue) : ''
+            text += textConfig.VDownValue.length > 0 ? (' ' +  textConfig.VDownValue) : ''
         }
         return  text;
     }
@@ -287,7 +270,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
-                        <div className="side-bar-label side-bar-label-vertical rotate-label">{verticalAxisTitle()}</div>
+                        <div className="side-bar-label side-bar-label-vertical rotate-label text-ellipsis">{verticalAxisTitle()}</div>
                     </div>
                 </div>
                 <div className="left-side-bar-column three-row-grid">
@@ -297,7 +280,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
-                        <div className="side-bar-label side-bar-label-vertical rotate-label">{verticalAxisCategoryTitle('up')}</div>
+                        <div className="side-bar-label side-bar-label-vertical rotate-label text-ellipsis">{verticalAxisCategoryTitle('up')}</div>
                     </div>
                     <div className="label-container"
                          style={{
@@ -305,7 +288,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
-                        <div className="side-bar-label side-bar-label-vertical rotate-label">{verticalAxisCategoryTitle('middle')}</div>
+                        <div className="side-bar-label side-bar-label-vertical rotate-label text-ellipsis">{verticalAxisCategoryTitle('middle')}</div>
                     </div>
                     <div className="label-container"
                          style={{
@@ -314,7 +297,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
 
                          }}
                     >
-                        <div className="side-bar-label rotate-label">{verticalAxisCategoryTitle('down') }</div>
+                        <div className="side-bar-label rotate-label text-ellipsis">{verticalAxisCategoryTitle('down') }</div>
                     </div>
                 </div>
             </div>) }
@@ -334,10 +317,10 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                                  color: datasource.theme === 'light' ?  item.theme.light.textColor :  item.theme.dark.textColor
                              }}
                         >
-                            <div className='cell-header-left-text'>
+                            <div className='cell-header-left-text text-ellipsis'>
                                 { cellTitle(index) }
                             </div>
-                            <div className='cell-header-right-text'>
+                            <div className='cell-header-right-text text-ellipsis'>
                                 {(datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).total}, {(datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).percent}%
                             </div>
                         </div>
@@ -351,9 +334,9 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                                         </div>) : '' }
                                         <div className="cell-content-group" style={{ color: datasource.theme === 'light' ?  item.theme.light.textColor :  item.theme.dark.textColor, borderColor: group.category.length > 0 ? (datasource.theme === 'light' ?  item.theme.light.leftBorderColor :  item.theme.dark.leftBorderColor) : '', }}>
                                             {group.persons.map((person, subIndex) => {
-                                                return <div className='flex-row' key={person + 'key' + subIndex}>
+                                                return <div className='person-container' key={person + 'key' + subIndex}>
                                                     <img src={personIcon} alt="" className="selection-icon" />
-                                                    <div className='person-label'>{person}</div>
+                                                    <div className='person-label text-ellipsis'>{person}</div>
                                                 </div>
                                             })}
                                         </div>
@@ -374,7 +357,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
-                        <div className="side-bar-label">{horizontalAxisCategoryTitle('left')}</div>
+                        <div className="side-bar-label text-ellipsis">{horizontalAxisCategoryTitle('left')}</div>
                     </div>
 
                     <div className="label-container"
@@ -383,7 +366,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
-                        <div className="side-bar-label">{horizontalAxisCategoryTitle('middle')}</div>
+                        <div className="side-bar-label text-ellipsis">{horizontalAxisCategoryTitle('middle')}</div>
                     </div>
                     <div className="label-container"
                          style={{
@@ -391,7 +374,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}
                     >
-                        <div className="side-bar-label">{horizontalAxisCategoryTitle('right')}</div>
+                        <div className="side-bar-label text-ellipsis">{horizontalAxisCategoryTitle('right')}</div>
                     </div>
                 </div>
                 <div className="bottom-side-bar-row"
@@ -401,7 +384,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                              backgroundColor: datasource.theme === 'light' ? '#EFF4FF' : '#383C43',
                              color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
                          }}>
-                        <div className="side-bar-label">{horizontalAxisTitle()}</div>
+                        <div className="side-bar-label text-ellipsis">{horizontalAxisTitle()}</div>
                     </div>
                 </div>
             </div>)}

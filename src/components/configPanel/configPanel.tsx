@@ -43,7 +43,9 @@ interface IConfigPanelPropsType {
 export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const { t, i18n } = useTranslation();
-    const [inputValue, setInputValue] = useState('');
+    const [personSearchValue, setPersonSearchValue] = useState('');
+    const [horizontalAxisSearchValue, setHorizontalAxisSearchValue] = useState('');
+    const [verticalAxisSearchValue, setVerticalAxisSearchValue] = useState('');
 
     // 类型与数据
     const { datasourceConfig, updateDatasourceConfig } = useDatasourceConfigStore((state) => state);
@@ -471,6 +473,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         }
     }
 
+    function searchLabel(sugInput, option) {
+        let label = option.label.toUpperCase();
+        let sug = sugInput.toUpperCase();
+        return label.includes(sug);
+    }
+
     return (
         <div
             className="border-[rgba(31, 35, 41, 0.15)] dark:border-[rgba(207,207,207, 0.15)] relative flex h-screen w-[350px] flex-col border-l-[0.5px]  bg-[--semi-color-bg-0]"
@@ -560,6 +568,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-title" style={{ marginBottom: '8px' }}>{t('personnel')}</div>
                                             <Form.Select
                                                 field="personnel"
+                                                filter={searchLabel}
                                                 noLabel={true}
                                                 style={{ width: 300,...textColorStyle() }}
                                                 remote={true}
