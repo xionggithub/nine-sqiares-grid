@@ -91,7 +91,7 @@ export class TableDataGroupHelper {
 
     mapRecordByDisplayInfo(groupedRecords: { category: string, persons: IRecord[] }[],
                            personnelField: any | null,
-                           datasource: any
+                           totalRowCount: number
     ): { list: { category: string, persons: string[] }[], total: number, percent: number } {
         console.log('--------',groupedRecords, personnelField)
         let displayInfo: { category: string, persons: string[] }[] = [];
@@ -108,7 +108,7 @@ export class TableDataGroupHelper {
         const list = displayInfo.filter(item => item.persons.length > 0)
         const total = list.map(item => item.persons).flat().length
         console.log(list, displayInfo, total)
-        return { total, percent: Math.floor((total*100)/datasource.totalRowCount), list };
+        return { total, percent: Math.floor((total*100)/totalRowCount), list };
     }
 
 
@@ -166,38 +166,38 @@ export class TableDataGroupHelper {
         // 九个格子的数据未分组的数据数组
         let leftUpList = this.filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'left', datasourceConfigCache);
         let leftUpGroupList = this.groupRecordsByInfo(leftUpList, groupField, groupText);
-        datasource.leftUpValue = this.mapRecordByDisplayInfo(leftUpGroupList, personField, datasource)
+        datasource.leftUpValue = this.mapRecordByDisplayInfo(leftUpGroupList, personField, allRecords.length)
 
         let middleUpList = this.filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'middle', datasourceConfigCache);
         let middleUpGroupList = this.groupRecordsByInfo(middleUpList, groupField, groupText)
-        datasource.middleUpValue = this.mapRecordByDisplayInfo(middleUpGroupList, personField, datasource)
+        datasource.middleUpValue = this.mapRecordByDisplayInfo(middleUpGroupList, personField, allRecords.length)
 
         let rightUpList = this.filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'right', datasourceConfigCache);
         let rightUpGroupList = this.groupRecordsByInfo(rightUpList, groupField, groupText)
-        datasource.rightUpValue = this.mapRecordByDisplayInfo(rightUpGroupList, personField, datasource)
+        datasource.rightUpValue = this.mapRecordByDisplayInfo(rightUpGroupList, personField, allRecords.length)
 
         let leftMiddleList = this.filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'left', datasourceConfigCache);
         let leftMiddleGroupList = this.groupRecordsByInfo(leftMiddleList, groupField, groupText)
-        datasource.leftMiddleValue = this.mapRecordByDisplayInfo(leftMiddleGroupList, personField, datasource)
+        datasource.leftMiddleValue = this.mapRecordByDisplayInfo(leftMiddleGroupList, personField, allRecords.length)
 
         let middleMiddleList = this.filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'middle', datasourceConfigCache);
         let middleMiddleGroupList = this.groupRecordsByInfo(middleMiddleList, groupField, groupText)
-        datasource.middleMiddleValue = this.mapRecordByDisplayInfo(middleMiddleGroupList, personField, datasource)
+        datasource.middleMiddleValue = this.mapRecordByDisplayInfo(middleMiddleGroupList, personField, allRecords.length)
 
         let rightMiddleList = this.filterRecordsByInfo(allRecords, verticalField, 'middle', horizontalField, 'right', datasourceConfigCache);
         let rightMiddleGroupList = this.groupRecordsByInfo(rightMiddleList, groupField, groupText)
-        datasource.rightMiddleValue = this.mapRecordByDisplayInfo(rightMiddleGroupList, personField, datasource)
+        datasource.rightMiddleValue = this.mapRecordByDisplayInfo(rightMiddleGroupList, personField, allRecords.length)
 
         let leftDownList = this.filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'left', datasourceConfigCache);
         let leftDownGroupList = this.groupRecordsByInfo(leftDownList, groupField, groupText)
-        datasource.leftDownValue = this.mapRecordByDisplayInfo(leftDownGroupList, personField, datasource)
+        datasource.leftDownValue = this.mapRecordByDisplayInfo(leftDownGroupList, personField, allRecords.length)
 
         let middleDownList = this.filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'middle', datasourceConfigCache);
         let middleDownGroupList = this.groupRecordsByInfo(middleDownList, groupField, groupText)
-        datasource.middleDownValue = this.mapRecordByDisplayInfo(middleDownGroupList, personField, datasource)
+        datasource.middleDownValue = this.mapRecordByDisplayInfo(middleDownGroupList, personField, allRecords.length)
 
         let rightDownList = this.filterRecordsByInfo(allRecords, verticalField, 'down', horizontalField, 'right', datasourceConfigCache);
         let rightDownGroupList = this.groupRecordsByInfo(rightDownList, groupField, groupText)
-        datasource.rightDownValue = this.mapRecordByDisplayInfo(rightDownGroupList, personField, datasource)
+        datasource.rightDownValue = this.mapRecordByDisplayInfo(rightDownGroupList, personField, allRecords.length)
     }
 }
