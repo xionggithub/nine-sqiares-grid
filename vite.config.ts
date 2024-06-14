@@ -4,7 +4,8 @@ import { semiTheming } from 'vite-plugin-semi-theming'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
+    base: './',
+    plugins: [
       react(),
       semiTheming({
         theme: "@semi-bot/semi-theme-feishu-dashboard"
