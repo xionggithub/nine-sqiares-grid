@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {useEffect} from 'react';
 import {useDatasourceConfigStore, useDatasourceStore, useTextConfigStore} from '../../store';
 import {dashboard, DashboardState,} from '@lark-base-open/js-sdk';

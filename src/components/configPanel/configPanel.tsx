@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {
     dashboard,
     ThemeModeType,
@@ -31,11 +30,8 @@ import { useTranslation } from 'react-i18next';
 import './index.css';
 import { IDatasourceConfigCacheType, TableDataGroupHelper } from "../../utils/tableDataGroupHelper";
 
-interface IConfigPanelPropsType {
-    dataRange: IDataRange[];
-    categories: any[];
-    getTableConfig: (id: string | null) => any;
-}
+interface IConfigPanelPropsType {}
+
 
 export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
@@ -49,17 +45,17 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     const { datasource, updateDatasource } = useDatasourceStore((state) => state);
 
     // 保存选择表的字段数据
-    const [fields, setFields] = useState([])
+    const [fields, setFields] = useState<{ [key: string]: any }[]>([])
     // 保存竖轴选择完字段后子分类的选项数据
-    const [verticalCategoryOptions, setVerticalCategoryOptions] = useState([])
-    const [verticalCategories, setVerticalCategories] = useState({
+    const [verticalCategoryOptions, setVerticalCategoryOptions] = useState<{ [key: string]: any }[]>([])
+    const [verticalCategories, setVerticalCategories] = useState<{ up: string[], middle: string[], down: string[] }>({
         up: [''],
         middle: [''],
         down: ['']
     })
     // 保存横轴选择完字段后子分类的选项数据
-    const [horizontalCategoryOptions, setHorizontalCategoryOptions] = useState([])
-    const [horizontalCategories, setHorizontalCategories] = useState({
+    const [horizontalCategoryOptions, setHorizontalCategoryOptions] = useState<{ [key: string]: any }[]>([])
+    const [horizontalCategories, setHorizontalCategories] = useState<{ left: string[], middle: string[], right: string[] }>({
         left: [''],
         middle: [''],
         right: ['']
@@ -96,7 +92,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const chooseTable = async (tableId: string) => {
         console.log('on data source selected ', tableId, datasourceConfig)
-        let fields = [];
+        let fields: any[] = [];
         if (datasource.fields[tableId] && datasource.fields[tableId].length > 0) {
             fields = datasource.fields[tableId];
         } else {
@@ -104,7 +100,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             console.log('-----',table)
             fields = await table.getFieldMetaList()
         }
-        let allRecords = []
+        let allRecords: any[] = []
         if (datasource.allRecords[tableId] && datasource.allRecords[tableId].length > 0) {
             allRecords = datasource.allRecords[tableId];
         } else {
@@ -140,20 +136,21 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         datasource.tableId = tableId
         datasource.allRecords[tableId] = allRecords
         console.log(datasource, datasourceConfig, fields)
-        updateDatasource(datasource)
-        updateDatasourceConfig({...datasourceConfig})
+        updateDatasource((datasource as any))
+        updateDatasourceConfig({...(datasourceConfig as any)})
         setFields(addNoneForList(fields))
     }
 
     const choosePersonField = (personnel: string) => {
         datasourceConfig.personnelField = personnel;
-        let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+        const config: any = datasourceConfig;
+        let selectedIds = Object.values(config).filter(id => typeof id === 'string' && id.length > 0)
         console.log(selectedIds)
         fields.forEach(item => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
             console.log(item.disabled, item.id)
         })
-        updateDatasourceConfig({...datasourceConfig})
+        updateDatasourceConfig({...config})
         setFields(addNoneForList(fields))
         console.log('on personnel choose', personnel, datasourceConfig)
     }
@@ -165,7 +162,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         horizontalCategories.middle = [''];
         horizontalCategories.right = [''];
         setHorizontalCategories({...horizontalCategories})
-        let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+        let selectedIds = Object.values((datasourceConfig as any)).filter(id => typeof id === 'string' && id.length > 0)
         fields.forEach(item => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
             console.log(item.disabled, item.id)
@@ -201,9 +198,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         }
         console.log('chooseHorizontalAxisField++++++++++++++++++++++++==+++++++++++++++datasourceConfig', datasourceConfig)
         datasourceConfigCache = {...datasourceConfig}
-        updateDatasourceConfig({...datasourceConfig})
+        updateDatasourceConfig({...(datasourceConfig as any)})
         dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
-            updateDatasource({...datasource})
+            updateDatasource({...(datasource as any)})
         })
     }
 
@@ -214,7 +211,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         verticalCategories.middle = [''];
         verticalCategories.down = [''];
         setVerticalCategories({...verticalCategories})
-        let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+        let selectedIds = Object.values((datasourceConfig as any)).filter(id => typeof id === 'string' && id.length > 0)
         fields.forEach(item => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
             console.log(item.disabled, item.id)
@@ -248,25 +245,25 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         datasourceConfig.verticalCategories = { ...verticalCategories }
         console.log('chooseVerticalAxisField----------------------------------------datasourceConfig', datasourceConfig)
         datasourceConfigCache = {...datasourceConfig}
-        updateDatasourceConfig({...datasourceConfig})
+        updateDatasourceConfig({...(datasourceConfig as any)})
         dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
-            updateDatasource({...datasource})
+            updateDatasource({...(datasource as any)})
         })
     }
 
     const onGroupChange = (selectValue) => {
         datasourceConfig.groupField = selectValue as string;
         console.log(selectValue, 'gropu')
-        let selectedIds = Object.values(datasourceConfig).filter(id => typeof id === 'string' && id.length > 0)
+        let selectedIds = Object.values((datasourceConfig as any)).filter(id => typeof id === 'string' && id.length > 0)
         fields.forEach(item => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
             console.log(item.disabled, item.id)
         })
         datasourceConfigCache = {...datasourceConfig}
-        updateDatasourceConfig({...datasourceConfig})
+        updateDatasourceConfig({...(datasourceConfig as any)})
         setFields(addNoneForList(fields))
         dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
-            updateDatasource({...datasource})
+            updateDatasource({...(datasource as any)})
         })
     }
 
@@ -306,7 +303,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     // custom options style
     const PersonIcon = () => {
         return (
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+            <svg className="selection-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"
                  xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M6 8.66634H10C11.8409 8.66634 14 9.95205 14 12.2663V13.333C14 14.0663 13.4 14.6663 12.6667 14.6663H3.33333C2.6 14.6663 2 14.0663 2 13.333V12.2663C2 9.95399 4.15905 8.66634 6 8.66634ZM12.6667 13.333V12.2219C12.6667 10.8209 11.2473 9.99967 10 9.99967H6C4.77998 9.99967 3.33333 10.7808 3.33333 12.2219V13.333H12.6667ZM8 7.99967C6.15905 7.99967 4.66667 6.50729 4.66667 4.66634C4.66667 2.82539 6.15905 1.33301 8 1.33301C9.84095 1.33301 11.3333 2.82539 11.3333 4.66634C11.3333 6.50729 9.84095 7.99967 8 7.99967ZM8 6.66634C9.10457 6.66634 10 5.77091 10 4.66634C10 3.56177 9.10457 2.66634 8 2.66634C6.89543 2.66634 6 3.56177 6 4.66634C6 5.77091 6.89543 6.66634 8 6.66634Z"
@@ -317,7 +314,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const TableIcon = () => {
         return (
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg className="selection-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M1.33203 2.66634C1.33203 1.92996 1.92898 1.33301 2.66536 1.33301H13.332C14.0684 1.33301 14.6654 1.92996 14.6654 2.66634V13.333C14.6654 14.0694 14.0684 14.6663 13.332 14.6663H2.66536C1.92899 14.6663 1.33203 14.0694 1.33203 13.333V2.66634ZM2.66536 2.66634V13.333H13.332V2.66634H2.66536Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
                 <path d="M8.33203 4.66634C7.96384 4.66634 7.66536 4.96482 7.66536 5.33301C7.66536 5.7012 7.96384 5.99967 8.33203 5.99967H11.332C11.7002 5.99967 11.9987 5.7012 11.9987 5.33301C11.9987 4.96482 11.7002 4.66634 11.332 4.66634H8.33203Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
                 <path d="M3.9987 5.33301C3.9987 4.96482 4.29718 4.66634 4.66536 4.66634H5.9987C6.36689 4.66634 6.66536 4.96482 6.66536 5.33301C6.66536 5.7012 6.36689 5.99967 5.9987 5.99967H4.66536C4.29717 5.99967 3.9987 5.7012 3.9987 5.33301Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
@@ -332,7 +329,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const OptionIcon = () => {
         return (
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg className="selection-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M5.17151 7.7721C4.91219 7.51105 4.91239 7.08883 5.17257 6.82864C5.43276 6.56845 5.85499 6.56825 6.11518 6.82844L8.00112 8.71437L9.88683 6.82866C10.1471 6.56838 10.5691 6.56859 10.8294 6.82887C11.0897 7.08915 11.0899 7.51118 10.8305 7.77232C10.043 8.56499 9.25976 9.36275 8.46225 10.1452C8.20596 10.3966 7.79627 10.3966 7.53998 10.1452C6.74239 9.36267 5.95904 8.56484 5.17151 7.7721Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
                 <path d="M8.0013 15.3337C3.95121 15.3337 0.667969 12.0504 0.667969 8.00033C0.667969 3.95024 3.95121 0.666992 8.0013 0.666992C12.0514 0.666992 15.3346 3.95024 15.3346 8.00033C15.3346 12.0504 12.0514 15.3337 8.0013 15.3337ZM8.0013 14.0003C11.315 14.0003 14.0013 11.314 14.0013 8.00033C14.0013 4.68662 11.315 2.00033 8.0013 2.00033C4.68759 2.00033 2.0013 4.68662 2.0013 8.00033C2.0013 11.314 4.68759 14.0003 8.0013 14.0003Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
             </svg>
@@ -341,26 +338,26 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const renderPersonSelectedItem = optionNode => (
         <div style={{ display: 'flex', alignItems: 'center',...textColorStyle() }}>
-            <PersonIcon className="selection-icon" style={{ opacity: optionNode.label ? 1 : 0 }}/>
+            <PersonIcon/>
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
         </div>
     );
 
     const renderTableSelectedItem = optionNode => (
         <div style={{ display: 'flex', alignItems: 'center', ...textColorStyle() }}>
-            <TableIcon className="selection-icon" style={{ opacity: optionNode.label ? 1 : 0 }}/>
+            <TableIcon/>
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
         </div>
     );
 
-    const classNames = (options: { [key: string]: boolean }) => {
-        let cls = [];
+    const classNames: (options: { [key: string]: boolean }) => string = (options: { [key: string]: boolean }) => {
+        let cls: string[] = [];
         Object.keys(options).forEach(key => {
            if (options[key]) {
                cls.push(key)
            }
         });
-        return cls;
+        return cls.join(' ');
     }
     const renderTableOptionItem = renderProps => {
         const {
@@ -386,8 +383,11 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         });
         // const searchWords = [inputValue];
         return (
-            <div style={{ ...style, ...{ display: 'flex', flexDirection: 'row', padding: '8px 12px', cursor:'pointer', alignItems: 'center',...textColorStyle() } }} className={optionCls} onClick={() => onClick()} onMouseEnter={e => onMouseEnter()}>
-                <TableIcon className="selection-icon" style={{ opacity: label ? 1 : 0 }}/>
+            <div style={{ ...style, ...{ display: 'flex', flexDirection: 'row', padding: '8px 12px', cursor:'pointer', alignItems: 'center',...textColorStyle() } }}
+                 className={optionCls}
+                 onClick={() => onClick()}
+                 onMouseEnter={e => onMouseEnter()}>
+                <TableIcon/>
                 <span style={{ marginLeft: 8 }}>{label}</span>
                 { selected ? (<IconTick style={{ marginLeft: 'auto', marginRight: '0' }}>
                 </IconTick>) : '' }
@@ -397,7 +397,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const renderSelectOptionSelectedItem = optionNode => (
         <div style={{ display: 'flex', alignItems: 'center', ...textColorStyle() }}>
-            <OptionIcon className="selection-icon" style={{ opacity: optionNode.label ? 1 : 0 }} />
+            <OptionIcon />
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
         </div>
     );
@@ -465,7 +465,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     const saveConfig = () => {
         datasourceConfig.horizontalCategories = {...horizontalCategories}
         datasourceConfig.verticalCategories = {...verticalCategories}
-        updateDatasourceConfig({ ...datasourceConfig });
+        updateDatasourceConfig({ ...(datasourceConfig as any) });
         console.log('save config:::', datasource, datasourceConfig, textConfig)
         dashboard.saveConfig({
             dataConditions: [
@@ -480,25 +480,25 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         }).then();
     };
 
-    const panelBgColorStyle = () => {
+    const panelBgColorStyle: () => { [key: string]: string } = () => {
         return {
             backgroundColor: datasource.theme === 'light' ? '#FFFFFF' : '#292929'
         }
     }
 
-    const bgColorStyle = () => {
+    const bgColorStyle: () => { [key: string]: string } = () => {
         return {
             backgroundColor: datasource.theme === 'light' ? '#EFF4FF' : '#292929'
         }
     }
 
-    const textColorStyle = () => {
+    const textColorStyle: () => { [key: string]: string } = () => {
         return {
             color: datasource.theme === 'light' ?  "#1F2329" :  "#FFFFFF"
         }
     }
 
-    const cardColorStyle = () => {
+    const cardColorStyle :() => { [key: string]: string } = () => {
         return {
             backgroundColor: datasource.theme === 'light' ? '#F5F6F7' : '#1F2329',
             borderColor: datasource.theme === 'light' ? '#DEE0E3' : '#1F2329'
@@ -570,7 +570,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 key={datasourceConfig.dataRange}
                                                 remote={true}
                                                 initValue={datasourceConfig.dataRange}
-                                                defaultValue={datasourceConfig.dataRange}
                                                 onChange={(selectedValue) => {
                                                     datasourceConfig.dataRange = selectedValue as string
                                                     console.log('on data range selected ', selectedValue, datasourceConfig)
@@ -605,7 +604,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 style={{ width: 300,...textColorStyle() }}
                                                 remote={true}
                                                 initValue={datasourceConfig.personnelField}
-                                                defaultValue={datasourceConfig.personnelField}
                                                 onChange={async (selectValue) => choosePersonField(selectValue as string)}
                                                 renderSelectedItem={renderPersonSelectedItem}
                                                 optionList={fields.map((item) => {
@@ -630,7 +628,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     filter={searchLabel}
                                                     remote={true}
                                                     initValue={datasourceConfig.horizontalField}
-                                                    defaultValue={datasourceConfig.horizontalField}
                                                     renderSelectedItem={renderSelectOptionSelectedItem}
                                                     onChange={async (selectValue) => chooseHorizontalAxisField(selectValue as string)}
                                                     optionList={fields.map((item) => {
@@ -648,8 +645,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
                                                 <div className="selection-card-title" style={textColorStyle()}>{t('left')}</div>
                                                 {horizontalCategories.left.map((id, index) => {
-                                                    // console.log('horizontalCategories left', id, index)
-                                                    return (<div className="delete-able-select-container">
+                                                    return (<div className="delete-able-select-container" key={id + ' '+ index}>
                                                         <Form.Select
                                                             field={'horizontalLeftValues'+index}
                                                             noLabel={true}
@@ -657,7 +653,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
                                                             initValue={id}
-                                                            defaultValue={id}
                                                             onSelect={ (selectValue) => {
                                                                 const value = selectValue as string;
                                                                 if (value === horizontalCategories.left[index]) {
@@ -699,7 +694,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 <div className="selection-card-title" style={textColorStyle()}>{t('middle')}</div>
                                                 {horizontalCategories.middle.map((id, index) => {
                                                     // console.log('horizontalCategories middle', id, index)
-                                                    return (<div className="delete-able-select-container">
+                                                    return (<div className="delete-able-select-container" key={id + ' ' + index}>
                                                         <Form.Select
                                                             field={'horizontalMiddleValue'+index}
                                                             noLabel={true}
@@ -707,7 +702,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             remote={true}
                                                             key={id}
                                                             initValue={id}
-                                                            defaultValue={id}
                                                             onSelect={ (selectValue) => {
                                                                 const value = selectValue as string;
                                                                 if (value === horizontalCategories.middle[index]) {
@@ -747,8 +741,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
                                                 <div className="selection-card-title" style={textColorStyle()}>{t('right')}</div>
                                                 {horizontalCategories.right.map((id, index) => {
-                                                    // console.log('horizontalCategories right', id, index)
-                                                    return (<div className="delete-able-select-container">
+                                                    return (<div className="delete-able-select-container" key={id +' ' + index}>
                                                         <Form.Select
                                                             field={'horizontalRightValue'+index}
                                                             noLabel={true}
@@ -756,7 +749,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                             style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
                                                             initValue={id}
-                                                            defaultValue={id}
                                                             onSelect={ (selectValue) => {
                                                                 const value = selectValue as string;
                                                                 if (value === horizontalCategories.right[index]) {
@@ -827,7 +819,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
                                                 <div className="selection-card-title" style={textColorStyle()}>{t('up')}</div>
                                                 {verticalCategories.up.map((id, index) => {
-                                                    return (<div className="delete-able-select-container">
+                                                    return (<div className="delete-able-select-container" key={id + ' '+ index}>
                                                         <Form.Select
                                                             field={'verticalUpValue'+index}
                                                             noLabel={true}
@@ -877,7 +869,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
                                                 <div className="selection-card-title" style={textColorStyle()}>{t('middle')}</div>
                                                 {verticalCategories.middle.map((id, index) => {
-                                                    return (<div className="delete-able-select-container">
+                                                    return (<div className="delete-able-select-container" key={id + ' '+ index}>
                                                         <Form.Select
                                                             field={'verticalMiddleValue'+index}
                                                             noLabel={true}
@@ -925,7 +917,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
                                                 <div className="selection-card-title" style={textColorStyle()}>{t('down')}</div>
                                                 {verticalCategories.down.map((id, index) => {
-                                                    return (<div className="delete-able-select-container">
+                                                    return (<div className="delete-able-select-container" key={id + ' '+ index}>
                                                         <Form.Select
                                                             field={'verticalDownValue'+index}
                                                             noLabel={true}

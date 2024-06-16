@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { useCallback, useEffect, useState } from 'react';
 import { NineSquaresGrid } from "./components/nineSquaresGrid";
 import { ConfigPanel } from "./components/configPanel";
-import { base, dashboard, DashboardState, bitable } from "@lark-base-open/js-sdk";
+import {base, dashboard, DashboardState, bitable, SourceType} from "@lark-base-open/js-sdk";
 import { useDatasourceConfigStore, useDatasourceStore, useTextConfigStore } from './store';
 import { TableDataGroupHelper, IDatasourceConfigCacheType } from "./utils/tableDataGroupHelper";
 
@@ -76,13 +75,17 @@ function App() {
         const fields = await table.getFieldMetaList()
         datasource.fields[tableId] = [...fields];
         // console.log('获取选中表的所有字段信息: ',datasource.fields);
-        datasource.dataRanges = await dashboard.getTableDataRange(tableId)
+        datasource.dataRanges = (await dashboard.getTableDataRange(tableId)).map(item => ({
+            type: item.type,
+            viewId: item['viewId'],
+            viewName:item['viewName']
+        }))
         datasourceConfig.dataRange = 'All';
         console.log('获取表数据范围: ',datasource.dataRanges);
         // 如果不是创建面板，则根据 自定义配置组装数据
         if (dashboard.state !== DashboardState.Create) {
             await dataHelper.prepareData(tableId, datasource, datasourceConfigCache)
-            updateDatasource({...datasource})
+            updateDatasource({...(datasource as any)})
         }
         console.log('------------------------------------------------------数据已经准备好: ',datasource, new Date().toISOString())
         // 强制刷新
@@ -102,19 +105,20 @@ function App() {
                 datasource.theme = 'dark'
             }
             updateTheme(event.data.theme.toLocaleLowerCase())
-            updateDatasource({ ...datasource })
+            updateDatasource({ ...(datasource as any) })
         });
         async function getConfig() {
             // 先获取保存的配置数据
             if (dashboard.state !== DashboardState.Create) {
                 console.log('load config')
                 dashboard.getConfig().then((config) => {
-                    console.log('获取到 config start========：', config, textConfig, datasourceConfig, {...datasourceConfig, ...config.customConfig.datasourceConfig});
-                    updateDatasourceConfig({...datasourceConfig, ...config.customConfig.datasourceConfig})
-                    updateTextConfig({...textConfig, ...config.customConfig.textConfig})
-                    datasourceConfigCache = {...JSON.parse(JSON.stringify(config.customConfig.datasourceConfig))}
+                    const customConfig: any = config.customConfig
+                    console.log('获取到 config start========：', config, textConfig, datasourceConfig, {...datasourceConfig, ...customConfig.datasourceConfig});
+                    updateDatasourceConfig({...datasourceConfig, ...customConfig.datasourceConfig})
+                    updateTextConfig({...textConfig, ...customConfig.textConfig})
+                    datasourceConfigCache = {...JSON.parse(JSON.stringify(customConfig.datasourceConfig))}
                     console.log('获取到 config end=====：', config, datasourceConfigCache);
-                    initConfigData(config.customConfig.datasourceConfig.tableId).then();
+                    initConfigData(customConfig.datasourceConfig.tableId).then();
                 })
             } else {
                 initConfigData(null).then();

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {base, IRecord, ITable} from "@lark-base-open/js-sdk";
 
 export interface IDatasourceConfigCacheType {
