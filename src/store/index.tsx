@@ -10,7 +10,7 @@ export interface IDatasourceType {
     fields: { [key: string]: any[] };
     allRecords: { [key: string]: { [key: string]: any[] }[] },
     totalRowCount: number;
-    dataRanges: { [key: string]: string | number }[]
+    dataRanges: { [key: string]: { [key: string]: string | number }[] },
     leftDownValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
     middleDownValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
     rightDownValue: { list: { category: string, persons: string[] }[], total: number, percent: number },
@@ -35,7 +35,7 @@ export const useDatasourceStore = create<IDatasourceStore>((set) => ({
         allRecords: {},
         theme: 'light',
         totalRowCount: 0,
-        dataRanges: [],
+        dataRanges: {},
         leftDownValue: { total: 0, percent: 0, list: [] },
         middleDownValue: { total: 0, percent: 0, list: [] },
         rightDownValue: { total: 0, percent: 0, list: [] },

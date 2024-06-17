@@ -75,7 +75,7 @@ function App() {
         const fields = await table.getFieldMetaList()
         datasource.fields[tableId] = [...fields];
         // console.log('获取选中表的所有字段信息: ',datasource.fields);
-        datasource.dataRanges = (await dashboard.getTableDataRange(tableId)).map(item => ({
+        datasource.dataRanges[tableId] = (await dashboard.getTableDataRange(tableId)).map(item => ({
             type: item.type,
             viewId: item['viewId'],
             viewName:item['viewName']
@@ -137,7 +137,10 @@ function App() {
             </div>) : (<div className="flex h-full">
                 <NineSquaresGrid/>
                 {dashboard.state === DashboardState.Create || dashboard.state === DashboardState.Config ? (
-                    <ConfigPanel/>
+                    <ConfigPanel
+                        tables={datasource.tables}
+                        dataRanges={datasource.dataRanges[datasource.tableId]}
+                    />
                 ) : null}
             </div>)
         )}

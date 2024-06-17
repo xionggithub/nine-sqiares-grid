@@ -30,15 +30,24 @@ import { useTranslation } from 'react-i18next';
 import './index.css';
 import { IDatasourceConfigCacheType, TableDataGroupHelper } from "../../utils/tableDataGroupHelper";
 
-interface IConfigPanelPropsType {}
+interface IConfigPanelPropsType {
+    dataRanges: { [key: string]: string | number }[],
+    tables: any[];
+}
 
 
 export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
+
+    const { tables, dataRanges } = props;
+
 
     const { t, i18n } = useTranslation();
     const [personSearchValue, setPersonSearchValue] = useState('');
     const [horizontalAxisSearchValue, setHorizontalAxisSearchValue] = useState('');
     const [verticalAxisSearchValue, setVerticalAxisSearchValue] = useState('');
+
+    const [tableList, setTableList] = useState(tables);
+    const [dataRangeList, setDataRangeList] = useState(dataRanges);
 
     // 类型与数据
     const { datasourceConfig, updateDatasourceConfig } = useDatasourceConfigStore((state) => state);
@@ -90,7 +99,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const dataHelper = new TableDataGroupHelper()
 
-    const chooseTable = async (tableId: string) => {
+    const  chooseTable = async (tableId: string) => {
         console.log('on data source selected ', tableId, datasourceConfig)
         let fields: any[] = [];
         if (datasource.fields[tableId] && datasource.fields[tableId].length > 0) {
@@ -105,8 +114,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             allRecords = datasource.allRecords[tableId];
         } else {
             const table = await base.getTable(tableId);
-            allRecords = await dataHelper.loadAllRecordsForTable(table)
+            allRecords = await dataHelper.loadAllRecordsForTable(table, datasourceConfigCache)
         }
+        datasource.dataRanges[tableId] = (await dashboard.getTableDataRange(tableId)).map(item => ({
+            type: item.type,
+            viewId: item['viewId'],
+            viewName:item['viewName']
+        }))
+        setDataRangeList([...datasource.dataRanges[tableId]])
+
         if (datasourceConfig.tableId !== tableId) {
             datasourceConfig.horizontalField = ''
             datasourceConfig.verticalField = ''
@@ -132,13 +148,24 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             datasource.middleUpValue = { total: 0, percent: 0, list: [] }
             datasource.rightUpValue = { total: 0, percent: 0, list: [] }
         }
-        datasource.fields[tableId] = [...fields.map(item => ({ ...item, disabled: false}))];
+        fields = fields.map(item => ({ ...item, disabled: false }))
+        datasource.fields[tableId] = [...fields];
         datasource.tableId = tableId
         datasource.allRecords[tableId] = allRecords
-        console.log(datasource, datasourceConfig, fields)
+        console.log('change table---------',datasource, datasourceConfig, fields, fields.filter(item => dataHelper.supportedFiled(item.type)))
         updateDatasource((datasource as any))
         updateDatasourceConfig({...(datasourceConfig as any)})
-        setFields(addNoneForList(fields))
+        setFields(addNoneForList(fields.filter(item => dataHelper.supportedFiled(item.type))))
+    }
+
+    const tableDataRangeChange = (range) => {
+        datasourceConfig.dataRange = range
+        updateDatasourceConfig({...(datasourceConfig as any)})
+        datasourceConfigCache = {...datasourceConfig}
+        console.log('on data range selected ', range)
+        dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
+            updateDatasource({...(datasource as any)})
+        })
     }
 
     const choosePersonField = (personnel: string) => {
@@ -553,7 +580,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 initValue={datasourceConfig.tableId}
                                                 renderSelectedItem={renderTableSelectedItem}
                                                 onChange={ async (selectValue) => chooseTable(selectValue as string)}
-                                                optionList={datasource.tables.map((source) => ({
+                                                optionList={tableList.map((source) => ({
                                                     value: source.tableId,
                                                     label: source.tableName,
                                                 }))}
@@ -570,12 +597,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 key={datasourceConfig.dataRange}
                                                 remote={true}
                                                 initValue={datasourceConfig.dataRange}
-                                                onChange={(selectedValue) => {
-                                                    datasourceConfig.dataRange = selectedValue as string
-                                                    console.log('on data range selected ', selectedValue, datasourceConfig)
-                                                }}
+                                                onChange={(selectedValue) => tableDataRangeChange(selectedValue as string)}
                                                 renderSelectedItem={renderTableSelectedItem}
-                                                optionList={datasource.dataRanges.map((range) => {
+                                                optionList={dataRangeList.map((range) => {
                                                     const { type, viewName, viewId } = range as any;
                                                     if (type === SourceType.ALL) {
                                                         return {

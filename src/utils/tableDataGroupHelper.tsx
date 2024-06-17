@@ -1,4 +1,5 @@
-import {base, IRecord, ITable} from "@lark-base-open/js-sdk";
+import {base, IGetRecordsParams, IRecord, ITable} from "@lark-base-open/js-sdk";
+import {IDatasourceConfigType} from "../store";
 
 export interface IDatasourceConfigCacheType {
     tableId: string;
@@ -21,11 +22,20 @@ export interface IDatasourceConfigCacheType {
 
 export class TableDataGroupHelper {
 
-    async loadAllRecordsForTable(table: ITable): Promise<IRecord[]> {
+    supportedFiled(fieldType: number): Boolean {
+        return [1, 3, 11, 19, 20].some(type => type === fieldType);
+    }
+
+    async loadAllRecordsForTable(table: ITable, dataSourceConfig: IDatasourceConfigType): Promise<IRecord[]> {
         let allRecords: IRecord[] = [];
         // 分页加载，每次加载 5000 条 直到加载完数据
         const loadRecordsByPage = async (lastRecordId: string) => {
-            const { hasMore , records } = await table.getRecords({ pageSize: 5000 , pageToken: lastRecordId });
+            let params: IGetRecordsParams = { pageSize: 5000 , pageToken: lastRecordId }
+            if (dataSourceConfig.dataRange && dataSourceConfig.dataRange !== 'All') {
+                params.viewId = dataSourceConfig.dataRange
+            }
+            console.log('load data params', params, dataSourceConfig.dataRange)
+            const { hasMore , records } = await table.getRecords(params);
             allRecords.push(...records)
             if (hasMore) {
                 const last = allRecords[allRecords.length - 1];
@@ -37,8 +47,8 @@ export class TableDataGroupHelper {
     }
 
     groupRecordsByInfo(records: IRecord[],
-                                groupField: any | null,
-                                groupTexts: string[]
+                       groupField: any | null,
+                       groupTexts: string[]
 
     ): { category: string, persons: IRecord[] }[] {
         if (!groupField) {
@@ -150,7 +160,7 @@ export class TableDataGroupHelper {
         const fields = await table.getFieldMetaList()
         console.log('prepare data fields',fields);
         // 获取数据
-        const allRecords = await  this.loadAllRecordsForTable(table)
+        const allRecords = await  this.loadAllRecordsForTable(table, datasourceConfigCache)
         console.log('加载完当前 table 所以记录 ', allRecords,)
         datasource.totalRowCount = allRecords.length
         datasource.allRecords[table.id] = allRecords
