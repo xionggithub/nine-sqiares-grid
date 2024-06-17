@@ -322,7 +322,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                     >
                         <div className="cell-header"
                              style={{
-                                 borderBottom:  datasource.theme === 'light' ?  '1px solid #1F23291A' : '1px solid #FFFFFF',
+                                 borderBottom:  datasource.theme === 'light' ?  '1px solid #0000001A' : '1px solid #FFFFFF1A',
                                  color: datasource.theme === 'light' ?  item.theme.light.textColor :  item.theme.dark.textColor
                              }}
                         >
