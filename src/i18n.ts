@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import translationZH from '../public/locales/zh-CN/translation.json?url';
-import translationEN from '../public/locales/en/translation.json?url';
+import translationZH from '../public/locales/zh-CN/translation.json';
+import translationEN from '../public/locales/en/translation.json';
 
 export function initI18n(lang: any) {
   // 初始化 i18n
