@@ -133,12 +133,15 @@ function App() {
         dashboard.onDataChange(getConfig);
     }, []);
 
-    return <div style={{ width: '100%', height: '100%', display: 'grid', alignItems: 'center', justifyItems: 'center' }}>
-        {(
-            isLoading ? (<div style={{ width: 'max-content', height: 'max-content', display: 'flex', flexDirection: 'column', alignItems: 'center', rowGap: '10px', justifyItems: 'center' }}>
-                    <Icon svg={<IconLoading />} />
-                    <div style={{textAlign: 'center', fontSize: '16px'}}>加载中...</div>
-                </div>) : (<div className="flex h-full">
+    return isLoading ?
+        (<div style={{ width: '100%', height: '100%', display: 'grid', alignItems: 'center', justifyItems: 'center' }}>
+            <div style={{ width: 'max-content', height: 'max-content', display: 'flex', flexDirection: 'column', alignItems: 'center', rowGap: '10px', justifyItems: 'center' }}>
+                <Icon svg={<IconLoading />} />
+                <div style={{textAlign: 'center', fontSize: '16px'}}>加载中...</div>
+            </div>
+        </div>) :
+        (<div>
+            <div className="flex h-full">
                 <NineSquaresGrid/>
                 {dashboard.state === DashboardState.Create || dashboard.state === DashboardState.Config ? (
                     <ConfigPanel
@@ -146,9 +149,8 @@ function App() {
                         dataRanges={datasource.dataRanges[datasource.tableId]}
                     />
                 ) : null}
-            </div>)
-        )}
-    </div>
+            </div>
+        </div>)
 }
 
 export default App
