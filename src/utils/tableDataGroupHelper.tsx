@@ -23,6 +23,7 @@ export interface IDatasourceConfigCacheType {
 export class TableDataGroupHelper {
 
     supportedFiled(fieldType: number): Boolean {
+        // 1 文本，3 单选  11 人员  19 查找引用  20公式
         return [1, 3, 11, 19, 20].some(type => type === fieldType);
     }
 
@@ -122,11 +123,11 @@ export class TableDataGroupHelper {
 
 
     filterRecordsByInfo(allRecords: IRecord[],
-                                 verticalField: any | null,
-                                 verticalType: 'up' | 'middle' | 'down',
-                                 horizontalField: any | null,
-                                 horizontalType: 'left' | 'middle' | 'right',
-                                 datasourceConfigCache: any
+                        verticalField: any | null,
+                        verticalType: 'up' | 'middle' | 'down',
+                        horizontalField: any | null,
+                        horizontalType: 'left' | 'middle' | 'right',
+                        datasourceConfigCache: any
     ): IRecord[] {
         let filteredRecord: IRecord[] = []
         if (verticalField) {

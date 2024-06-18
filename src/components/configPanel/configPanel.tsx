@@ -17,6 +17,7 @@ import {
     Divider,
     Select
 } from '@douyinfe/semi-ui';
+import Icon, {IconDeleteStroked, IconPlus} from '@douyinfe/semi-icons';
 import { IconTick } from '@douyinfe/semi-icons';
 
 import { useDatasourceConfigStore, useTextConfigStore, useDatasourceStore } from '../../store';
@@ -29,6 +30,15 @@ import { useTranslation } from 'react-i18next';
 
 import './index.css';
 import { IDatasourceConfigCacheType, TableDataGroupHelper } from "../../utils/tableDataGroupHelper";
+import IconTable from '../../assets/icon_table.svg?react';
+import IconPerson from '../../assets/icon_person.svg?react';
+import IconChoose from '../../assets/icon_choose.svg?react';
+
+import IconText from '../../assets/icon_text.svg?react';
+import IconSelect from '../../assets/icon_select.svg?react';
+import IconFunction from '../../assets/icon_function.svg?react';
+import IconFindReference from '../../assets/icon_find_reference.svg?react';
+
 
 interface IConfigPanelPropsType {
     dataRanges: { [key: string]: string | number }[],
@@ -332,51 +342,17 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     }
 
     // custom options style
-    const PersonIcon = () => {
-        return (
-            <svg className="selection-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                 xmlns="http://www.w3.org/2000/svg">
-                <path
-                    d="M6 8.66634H10C11.8409 8.66634 14 9.95205 14 12.2663V13.333C14 14.0663 13.4 14.6663 12.6667 14.6663H3.33333C2.6 14.6663 2 14.0663 2 13.333V12.2663C2 9.95399 4.15905 8.66634 6 8.66634ZM12.6667 13.333V12.2219C12.6667 10.8209 11.2473 9.99967 10 9.99967H6C4.77998 9.99967 3.33333 10.7808 3.33333 12.2219V13.333H12.6667ZM8 7.99967C6.15905 7.99967 4.66667 6.50729 4.66667 4.66634C4.66667 2.82539 6.15905 1.33301 8 1.33301C9.84095 1.33301 11.3333 2.82539 11.3333 4.66634C11.3333 6.50729 9.84095 7.99967 8 7.99967ZM8 6.66634C9.10457 6.66634 10 5.77091 10 4.66634C10 3.56177 9.10457 2.66634 8 2.66634C6.89543 2.66634 6 3.56177 6 4.66634C6 5.77091 6.89543 6.66634 8 6.66634Z"
-                    fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
-            </svg>
-        )
-    }
-
-    const TableIcon = () => {
-        return (
-            <svg className="selection-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1.33203 2.66634C1.33203 1.92996 1.92898 1.33301 2.66536 1.33301H13.332C14.0684 1.33301 14.6654 1.92996 14.6654 2.66634V13.333C14.6654 14.0694 14.0684 14.6663 13.332 14.6663H2.66536C1.92899 14.6663 1.33203 14.0694 1.33203 13.333V2.66634ZM2.66536 2.66634V13.333H13.332V2.66634H2.66536Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
-                <path d="M8.33203 4.66634C7.96384 4.66634 7.66536 4.96482 7.66536 5.33301C7.66536 5.7012 7.96384 5.99967 8.33203 5.99967H11.332C11.7002 5.99967 11.9987 5.7012 11.9987 5.33301C11.9987 4.96482 11.7002 4.66634 11.332 4.66634H8.33203Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
-                <path d="M3.9987 5.33301C3.9987 4.96482 4.29718 4.66634 4.66536 4.66634H5.9987C6.36689 4.66634 6.66536 4.96482 6.66536 5.33301C6.66536 5.7012 6.36689 5.99967 5.9987 5.99967H4.66536C4.29717 5.99967 3.9987 5.7012 3.9987 5.33301Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
-                <path d="M8.33203 7.33301C7.96384 7.33301 7.66536 7.63148 7.66536 7.99967C7.66536 8.36786 7.96384 8.66634 8.33203 8.66634H11.332C11.7002 8.66634 11.9987 8.36786 11.9987 7.99967C11.9987 7.63148 11.7002 7.33301 11.332 7.33301H8.33203Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
-                <path d="M3.9987 7.99967C3.9987 7.63148 4.29718 7.33301 4.66536 7.33301H5.9987C6.36689 7.33301 6.66536 7.63148 6.66536 7.99967C6.66536 8.36786 6.36689 8.66634 5.9987 8.66634H4.66536C4.29717 8.66634 3.9987 8.36786 3.9987 7.99967Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
-                <path d="M8.33203 9.99967C7.96384 9.99967 7.66536 10.2982 7.66536 10.6663C7.66536 11.0345 7.96384 11.333 8.33203 11.333H11.332C11.7002 11.333 11.9987 11.0345 11.9987 10.6663C11.9987 10.2982 11.7002 9.99967 11.332 9.99967H8.33203Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
-                <path d="M3.9987 10.6663C3.9987 10.2982 4.29718 9.99967 4.66536 9.99967H5.9987C6.36689 9.99967 6.66536 10.2982 6.66536 10.6663C6.66536 11.0345 6.36689 11.333 5.9987 11.333H4.66536C4.29717 11.333 3.9987 11.0345 3.9987 10.6663Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
-            </svg>
-
-        )
-    }
-
-    const OptionIcon = () => {
-        return (
-            <svg className="selection-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5.17151 7.7721C4.91219 7.51105 4.91239 7.08883 5.17257 6.82864C5.43276 6.56845 5.85499 6.56825 6.11518 6.82844L8.00112 8.71437L9.88683 6.82866C10.1471 6.56838 10.5691 6.56859 10.8294 6.82887C11.0897 7.08915 11.0899 7.51118 10.8305 7.77232C10.043 8.56499 9.25976 9.36275 8.46225 10.1452C8.20596 10.3966 7.79627 10.3966 7.53998 10.1452C6.74239 9.36267 5.95904 8.56484 5.17151 7.7721Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
-                <path d="M8.0013 15.3337C3.95121 15.3337 0.667969 12.0504 0.667969 8.00033C0.667969 3.95024 3.95121 0.666992 8.0013 0.666992C12.0514 0.666992 15.3346 3.95024 15.3346 8.00033C15.3346 12.0504 12.0514 15.3337 8.0013 15.3337ZM8.0013 14.0003C11.315 14.0003 14.0013 11.314 14.0013 8.00033C14.0013 4.68662 11.315 2.00033 8.0013 2.00033C4.68759 2.00033 2.0013 4.68662 2.0013 8.00033C2.0013 11.314 4.68759 14.0003 8.0013 14.0003Z" fill={ datasource.theme === 'light' ? '#646A73' : '#ffffff' }/>
-            </svg>
-        )
-    }
 
     const renderPersonSelectedItem = optionNode => (
         <div style={{ display: 'flex', alignItems: 'center',...textColorStyle() }}>
-            <PersonIcon/>
+            <Icon svg={<IconPerson />} />
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
         </div>
     );
 
     const renderTableSelectedItem = optionNode => (
         <div style={{ display: 'flex', alignItems: 'center', ...textColorStyle() }}>
-            <TableIcon/>
+            <Icon svg={<IconTable />} />
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
         </div>
     );
@@ -418,7 +394,62 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                  className={optionCls}
                  onClick={() => onClick()}
                  onMouseEnter={e => onMouseEnter()}>
-                <TableIcon/>
+                <Icon svg={<IconTable />} />
+                <span style={{ marginLeft: 8 }}>{label}</span>
+                { selected ? (<IconTick style={{ marginLeft: 'auto', marginRight: '0' }}>
+                </IconTick>) : '' }
+            </div>
+        );
+    };
+
+
+    const renderFieldOptionIcon = (type: number) => {
+        // 1 文本，3 单选  11 人员  19 查找引用  20公式
+        switch (type) {
+            case 1:
+                return (<Icon svg={<IconText />} />)
+            case 3:
+                return (<Icon svg={<IconSelect />} />)
+            case 11:
+                return (<Icon svg={<IconPerson />} />)
+            case 19:
+                return (<Icon svg={<IconFindReference />} />)
+            case 20:
+                return (<Icon svg={<IconFunction />} />)
+            default:
+                return (<Icon svg={<IconText />} />)
+        }
+    }
+
+    const renderFieldOptionItem = renderProps => {
+        const {
+            disabled,
+            selected,
+            label,
+            value,
+            focused,
+            className,
+            style,
+            onMouseEnter,
+            onClick,
+            empty,
+            emptyContent,
+            type,
+            ...rest
+        } = renderProps;
+        const optionCls = classNames({
+            ['custom-option-render']: true,
+            ['custom-option-render-focused']: focused,
+            ['custom-option-render-disabled']: disabled,
+            ['custom-option-render-selected']: selected,
+        });
+        // const searchWords = [inputValue];
+        return (
+            <div style={{ ...style, ...{ display: 'flex', flexDirection: 'row', padding: '8px 12px', cursor:'pointer', alignItems: 'center',...textColorStyle() } }}
+                 className={optionCls}
+                 onClick={() => onClick()}
+                 onMouseEnter={e => onMouseEnter()}>
+                { renderFieldOptionIcon(type) }
                 <span style={{ marginLeft: 8 }}>{label}</span>
                 { selected ? (<IconTick style={{ marginLeft: 'auto', marginRight: '0' }}>
                 </IconTick>) : '' }
@@ -428,7 +459,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const renderSelectOptionSelectedItem = optionNode => (
         <div style={{ display: 'flex', alignItems: 'center', ...textColorStyle() }}>
-            <OptionIcon />
+            <Icon svg={<IconChoose />} />
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
         </div>
     );
@@ -635,13 +666,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 onChange={async (selectValue) => choosePersonField(selectValue as string)}
                                                 renderSelectedItem={renderPersonSelectedItem}
                                                 optionList={fields.map((item) => {
-                                                    const { id, name, disabled } = item as any;
+                                                    const { id, name, disabled , type} = item as any;
                                                     return {
                                                         value: id,
                                                         label: id === '' ? t(name) : name,
-                                                        disabled: disabled
+                                                        disabled: disabled,
+                                                        type: type
                                                     };
                                                 })}
+                                                renderOptionItem={renderFieldOptionItem}
                                             />
                                         </div>
 
@@ -659,13 +692,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     renderSelectedItem={renderSelectOptionSelectedItem}
                                                     onChange={async (selectValue) => chooseHorizontalAxisField(selectValue as string)}
                                                     optionList={fields.map((item) => {
-                                                        const { id, name, disabled } = item as any;
+                                                        const { id, name, disabled, type } = item as any;
                                                         return {
                                                             value: id,
                                                             label: id === '' ? t(name) : name,
-                                                            disabled: disabled
+                                                            disabled: disabled,
+                                                            type: type
                                                         };
                                                     })}
+                                                    renderOptionItem={renderFieldOptionItem}
                                                 />
                                             </div>
                                         </div>
@@ -832,13 +867,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     renderSelectedItem={renderSelectOptionSelectedItem}
                                                     onChange={async (selectValue) => chooseVerticalAxisField(selectValue as string)}
                                                     optionList={fields.map((item) => {
-                                                        const { id, name, disabled } = item as any;
+                                                        const { id, name, disabled, type } = item as any;
                                                         return {
                                                             value: id,
                                                             label: id === '' ? t(name) : name,
-                                                            disabled: disabled
+                                                            disabled: disabled,
+                                                            type: type
                                                         };
                                                     })}
+                                                    renderOptionItem={renderFieldOptionItem}
                                                 />
                                             </div>
                                         </div>
@@ -1004,13 +1041,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 onChange={async (selectValue) => onGroupChange(selectValue)}
                                                 renderSelectedItem={renderSelectOptionSelectedItem}
                                                 optionList={fields.map((item) => {
-                                                    const { id, name, disabled } = item as any;
+                                                    const { id, name, disabled, type } = item as any;
                                                     return {
                                                         value: id,
                                                         label: id === '' ? t((name === 'none') ? 'noneGroup' : name) : name,
-                                                        disabled: disabled
+                                                        disabled: disabled,
+                                                        type: type
                                                     };
                                                 })}
+                                                renderOptionItem={renderFieldOptionItem}
                                             />
                                         </div>
                                     </div>
