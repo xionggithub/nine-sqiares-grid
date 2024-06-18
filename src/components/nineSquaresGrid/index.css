@@ -82,7 +82,7 @@
 }
 .side-bar-label {
     font-family: "PingFang SC";
-    max-width: 100%;
+    max-width: 20vh;
     font-weight: 500;
     font-size: 12px;
     line-height: 22px;

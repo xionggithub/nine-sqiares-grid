@@ -178,8 +178,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             console.log(item.disabled, item.id)
         })
         updateDatasourceConfig({...config})
+        datasourceConfigCache = {...config}
         setFields(addNoneForList(fields))
         console.log('on personnel choose', personnel, datasourceConfig)
+        dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
+            updateDatasource({...(datasource as any)})
+        })
     }
 
     const chooseHorizontalAxisField = (horizontalField: string) => {

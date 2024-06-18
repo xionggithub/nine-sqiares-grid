@@ -204,7 +204,8 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
     }
 
     const horizontalAxisTitle = () => {
-        return datasource.fields[datasource.tableId].find(item => item.id === datasourceConfig.horizontalField)?.name ?? ""
+        const fields: { name: string, id: string }[] = datasource.fields[datasource.tableId]
+        return fields.find(item => item.id === datasourceConfig.horizontalField)?.name ?? ""
     }
 
     const horizontalAxisCategoryMainTitle = (type: 'left' | 'middle' | 'right') => {
@@ -212,7 +213,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
         if (!field) return  ''
         if (!field.property?.options) return ''
         let optionIds = datasourceConfig.horizontalCategories[type]
-        let options = field.property.options.filter(item => !!optionIds.some(id => id === item.id));
+        let options = field.property.options.filter(item => optionIds.some(id => id === item.id));
         if (options.length === 0) return  ''
         return options.map(item => item.name).join('/');
     }
@@ -220,17 +221,18 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
     const horizontalAxisCategoryTitle = (type: 'left' | 'middle' | 'right') => {
         let text = horizontalAxisCategoryMainTitle(type);
         if (type === 'left') {
-            text += textConfig.HLeftValue.length > 0 ? (' ' +  textConfig.HLeftValue) : ''
+            text = textConfig.HLeftValue.length > 0 ? textConfig.HLeftValue : text
         } else if (type === 'middle') {
-            text += textConfig.HMiddleValue.length > 0 ? (' ' +  textConfig.HMiddleValue) : ''
+            text = textConfig.HMiddleValue.length > 0 ? textConfig.HMiddleValue : text
         } else if (type === 'right') {
-            text += textConfig.HRightValue.length > 0 ? (' ' +  textConfig.HRightValue) : ''
+            text = textConfig.HRightValue.length > 0 ? textConfig.HRightValue : text
         }
         return  text;
     }
 
     const verticalAxisTitle = () => {
-        return  datasource.fields[datasource.tableId].find(item => item.id === datasourceConfig.verticalField)?.name ?? ""
+        const fields: { name: string, id: string }[] = datasource.fields[datasource.tableId]
+        return  fields.find(item => item.id === datasourceConfig.verticalField)?.name ?? ""
     }
 
     const verticalAxisCategoryMainTitle = (type: 'up' | 'middle' | 'down') => {
@@ -238,7 +240,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
         if (!field) return  ''
         if (!field.property?.options) return ''
         let optionIds = datasourceConfig.verticalCategories[type]
-        let options = field.property.options.filter(item => !!optionIds.some(id => id === item.id));
+        let options = field.property.options.filter(item => optionIds.some(id => id === item.id));
         if (options.length === 0) return  ''
         return options.map(item => item.name).join('/');
     }
@@ -246,11 +248,11 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
     const verticalAxisCategoryTitle = (type: 'up' | 'middle' | 'down') => {
         let text = verticalAxisCategoryMainTitle(type);
         if (type === 'up') {
-            text += textConfig.VUpValue.length > 0 ? (' ' + textConfig.VUpValue) : ''
+            text = textConfig.VUpValue.length > 0 ? textConfig.VUpValue : text
         } else if (type === 'middle') {
-            text += textConfig.VMiddleValue.length > 0 ? (' ' +  textConfig.VMiddleValue) : ''
+            text = textConfig.VMiddleValue.length > 0 ? textConfig.VMiddleValue : text
         } else if (type === 'down') {
-            text += textConfig.VDownValue.length > 0 ? (' ' +  textConfig.VDownValue) : ''
+            text = textConfig.VDownValue.length > 0 ? textConfig.VDownValue : text
         }
         return  text;
     }
