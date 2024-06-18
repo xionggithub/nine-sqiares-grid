@@ -381,7 +381,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             emptyContent,
             ...rest
         } = renderProps;
-
         const optionCls = classNames({
             ['custom-option-render']: true,
             ['custom-option-render-focused']: focused,
@@ -434,9 +433,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             onClick,
             empty,
             emptyContent,
+            inputValue,
             type,
             ...rest
         } = renderProps;
+        console.log(renderProps, '-----------+++++')
+
         const optionCls = classNames({
             ['custom-option-render']: true,
             ['custom-option-render-focused']: focused,
@@ -444,7 +446,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             ['custom-option-render-selected']: selected,
         });
         // const searchWords = [inputValue];
-        return (
+        return  label.includes(inputValue) ? (
             <div style={{ ...style, ...{ display: 'flex', flexDirection: 'row', padding: '8px 12px', cursor:'pointer', alignItems: 'center',...textColorStyle() } }}
                  className={optionCls}
                  onClick={() => onClick()}
@@ -454,7 +456,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                 { selected ? (<IconTick style={{ marginLeft: 'auto', marginRight: '0' }}>
                 </IconTick>) : '' }
             </div>
-        );
+        ) : ''
     };
 
     const renderSelectOptionSelectedItem = optionNode => (
@@ -675,7 +677,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-title" style={{ marginBottom: '8px' }}>{t('personnel')}</div>
                                             <Form.Select
                                                 field="personnel"
-                                                filter={searchLabel}
+                                                filter
                                                 noLabel={true}
                                                 style={{ width: 300,...textColorStyle() }}
                                                 remote={true}
