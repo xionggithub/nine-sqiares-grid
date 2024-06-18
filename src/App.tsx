@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { NineSquaresGrid } from "./components/nineSquaresGrid";
 import { ConfigPanel } from "./components/configPanel";
 import {base, dashboard, DashboardState, bitable, SourceType} from "@lark-base-open/js-sdk";
 import { useDatasourceConfigStore, useDatasourceStore, useTextConfigStore } from './store';
 import { TableDataGroupHelper, IDatasourceConfigCacheType } from "./utils/tableDataGroupHelper";
+import Icon, {IconDeleteStroked, IconPlus} from '@douyinfe/semi-icons';
+import IconLoading from './assets/icon_loading.svg?react';
+import IconTable from "*.svg?react";
 
 function App() {
 
@@ -130,11 +133,12 @@ function App() {
         dashboard.onDataChange(getConfig);
     }, []);
 
-    return <div>
+    return <div style={{ width: '100%', height: '100%', display: 'grid', alignItems: 'center', justifyItems: 'center' }}>
         {(
-            isLoading ? (<div style={{ width: '100%', height: '100%', display: 'grid', alignItems: 'center', justifyItems: 'center' }}>
-                <div style={{textAlign: 'center', fontSize: '30px'}}>加载中...</div>
-            </div>) : (<div className="flex h-full">
+            isLoading ? (<div style={{ width: 'max-content', height: 'max-content', display: 'flex', flexDirection: 'column', alignItems: 'center', rowGap: '10px', justifyItems: 'center' }}>
+                    <Icon svg={<IconLoading />} />
+                    <div style={{textAlign: 'center', fontSize: '16px'}}>加载中...</div>
+                </div>) : (<div className="flex h-full">
                 <NineSquaresGrid/>
                 {dashboard.state === DashboardState.Create || dashboard.state === DashboardState.Config ? (
                     <ConfigPanel
