@@ -518,8 +518,25 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     };
 
     const handleTextConfigFormValueChange = (values: any) => {
-        console.log('handleTextConfigFormValueChange',textConfig)
-        const newConfig = { ...textConfig, ...values };
+        console.log('handleTextConfigFormValueChange',textConfig, values)
+        const newValue = {...{
+                HLeftValue: '',
+                HMiddleValue: '',
+                HRightValue: '',
+                VUpValue: '',
+                VMiddleValue: '',
+                VDownValue: '',
+                leftDownValue: '',
+                middleDownValue: '',
+                rightDownValue: '',
+                leftMiddleValue: '',
+                middleMiddleValue: '',
+                rightMiddleValue: '',
+                leftUpValue: '',
+                middleUpValue: '',
+                rightUpValue: '',
+            }, ...values}
+        const newConfig = { ...textConfig, ...newValue };
         updateTextConfig({ ...newConfig });
     };
 
