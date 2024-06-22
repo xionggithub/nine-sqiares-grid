@@ -182,7 +182,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         datasourceConfig.personnelField = personnel;
         const config: any = datasourceConfig;
         let selectedIds = Object.values(config).filter(id => typeof id === 'string' && id.length > 0)
-        console.log(selectedIds)
+        // console.log(selectedIds)
         fields.forEach(item => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
             console.log(item.disabled, item.id)
@@ -190,14 +190,14 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         updateDatasourceConfig({...config})
         datasourceConfigCache = {...config}
         setFields(addNoneForList(fields))
-        console.log('on personnel choose', personnel, datasourceConfig)
+        // console.log('on personnel choose', personnel, datasourceConfig)
         dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
             updateDatasource({...(datasource as any)})
         })
     }
 
     const chooseHorizontalAxisField = (horizontalField: string) => {
-        console.log('on horizontalAxis selected ', horizontalField, datasourceConfig)
+        // console.log('on horizontalAxis selected ', horizontalField, datasourceConfig)
         datasourceConfig.horizontalField = horizontalField;
         horizontalCategories.left = ['']
         horizontalCategories.middle = [''];
@@ -206,13 +206,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         let selectedIds = Object.values((datasourceConfig as any)).filter(id => typeof id === 'string' && id.length > 0)
         fields.forEach(item => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
-            console.log(item.disabled, item.id)
         })
-        console.log('horizontalField-----',datasource.fields[datasource.tableId])
+        // console.log('horizontalField-----',datasource.fields[datasource.tableId])
         setFields(addNoneForList(fields))
         let field = fields.find(item => item.id === datasourceConfig.horizontalField)
         if (field && field.property?.options) {
-            console.log('----field::', field)
+            // console.log('----field::', field)
             let options = field.property.options.map(item => ({ ...item, disabled: false}))
 
             if (options.length === 1) {
@@ -237,7 +236,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             setHorizontalCategoryOptions(addNoneForList(options))
             setHorizontalCategories({...horizontalCategories})
         }
-        console.log('chooseHorizontalAxisField++++++++++++++++++++++++==+++++++++++++++datasourceConfig', datasourceConfig)
+        // console.log('chooseHorizontalAxisField++++++++++++++++++++++++==+++++++++++++++datasourceConfig', datasourceConfig)
         datasourceConfigCache = {...datasourceConfig}
         updateDatasourceConfig({...(datasourceConfig as any)})
         dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
@@ -246,7 +245,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     }
 
     const chooseVerticalAxisField = (verticalField: string) => {
-        console.log('on verticalAxis selected ', verticalField, datasourceConfig)
+        // console.log('on verticalAxis selected ', verticalField, datasourceConfig)
         datasourceConfig.verticalField = verticalField;
         verticalCategories.up = ['']
         verticalCategories.middle = [''];
@@ -255,12 +254,11 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         let selectedIds = Object.values((datasourceConfig as any)).filter(id => typeof id === 'string' && id.length > 0)
         fields.forEach(item => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
-            console.log(item.disabled, item.id)
         })
         setFields(addNoneForList(fields))
         let field = fields.find(item => item.id === datasourceConfig.verticalField)
         if (field) {
-            console.log('----field::', field)
+            // console.log('----field::', field)
             let options = field.property.options.map(item => ({ ...item, disabled: false}))
             if (options.length === 1) {
                 options[0].disabled = true
@@ -284,7 +282,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             setVerticalCategories({...verticalCategories})
         }
         datasourceConfig.verticalCategories = { ...verticalCategories }
-        console.log('chooseVerticalAxisField----------------------------------------datasourceConfig', datasourceConfig)
+        // console.log('chooseVerticalAxisField----------------------------------------datasourceConfig', datasourceConfig)
         datasourceConfigCache = {...datasourceConfig}
         updateDatasourceConfig({...(datasourceConfig as any)})
         dataHelper.prepareData(datasource.tableId, datasource, datasourceConfigCache).then(() => {
@@ -294,11 +292,10 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const onGroupChange = (selectValue) => {
         datasourceConfig.groupField = selectValue as string;
-        console.log(selectValue, 'gropu')
+        // console.log(selectValue, 'gropu')
         let selectedIds = Object.values((datasourceConfig as any)).filter(id => typeof id === 'string' && id.length > 0)
         fields.forEach(item => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
-            console.log(item.disabled, item.id)
         })
         datasourceConfigCache = {...datasourceConfig}
         updateDatasourceConfig({...(datasourceConfig as any)})
@@ -310,7 +307,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
 
     const addVerticalCategory = (type: 'up' | 'middle' | 'down') => {
-        console.log('vertical category ',type,'   ' , verticalCategories[type])
+        // console.log('vertical category ',type,'   ' , verticalCategories[type])
         verticalCategories[type].push('')
         setVerticalCategories({...verticalCategories})
         datasourceConfig.verticalCategories = {...verticalCategories}
@@ -326,7 +323,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     }
 
     const addHorizontalCategory = (type: 'left' | 'middle' | 'right') => {
-        console.log('add category::', type, "   ", horizontalCategories[type])
+        // console.log('add category::', type, "   ", horizontalCategories[type])
         horizontalCategories[type].push('')
         setHorizontalCategories({...horizontalCategories})
         datasourceConfig.horizontalCategories = {...horizontalCategories}
@@ -437,8 +434,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             type,
             ...rest
         } = renderProps;
-        console.log(renderProps, '-----------+++++')
-
         const optionCls = classNames({
             ['custom-option-render']: true,
             ['custom-option-render-focused']: focused,

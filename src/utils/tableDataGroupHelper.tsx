@@ -103,7 +103,7 @@ export class TableDataGroupHelper {
                            personnelField: any | null,
                            totalRowCount: number
     ): { list: { category: string, persons: string[] }[], total: number, percent: number } {
-        console.log('--------',groupedRecords, personnelField)
+        // console.log('--------',groupedRecords, personnelField)
         let displayInfo: { category: string, persons: string[] }[] = [];
         groupedRecords.filter(group => group.persons.length > 0).forEach(group => {
             let list: string[] = [];
@@ -117,8 +117,8 @@ export class TableDataGroupHelper {
         });
         const list = displayInfo.filter(item => item.persons.length > 0)
         const total = list.map(item => item.persons).flat().length
-        console.log(list, displayInfo, total)
-        return { total, percent: Math.floor((total*100)/totalRowCount), list };
+        console.log('mapRecordByDisplayInfo:::::::::::',list, displayInfo, total, totalRowCount, (total*100)/totalRowCount)
+        return { total, percent: Math.floor((total*100*100)/totalRowCount)/100.0, list };
     }
 
 
@@ -132,14 +132,14 @@ export class TableDataGroupHelper {
         let filteredRecord: IRecord[] = []
         if (verticalField) {
             let optionIds: string[] = datasourceConfigCache.verticalCategories[verticalType] ?? [];
-            console.log(verticalType, optionIds)
+            // console.log(verticalType, optionIds)
             filteredRecord = allRecords.filter(item => optionIds.some(id => {
                 let itemFieldInfo = ((item.fields[verticalField.id]) instanceof Array) ? (item.fields[verticalField.id] as any[])[0] : (item.fields[verticalField.id]);
                 const itemId = itemFieldInfo ? itemFieldInfo['id'] : ''
                 return id === itemId
             }))
         }
-        console.log(JSON.parse(JSON.stringify(filteredRecord)))
+        // console.log(JSON.parse(JSON.stringify(filteredRecord)))
         if (horizontalField) {
             let optionIds: string[] = datasourceConfigCache.horizontalCategories[horizontalType] ?? [];
             console.log(horizontalType,optionIds)
@@ -149,7 +149,7 @@ export class TableDataGroupHelper {
                 return id === itemId
             }))
         }
-        console.log(JSON.parse(JSON.stringify(filteredRecord)))
+        // console.log(JSON.parse(JSON.stringify(filteredRecord)))
         if (!verticalField || !horizontalField) {
             console.log('组装数据错误，缺失横轴或则竖轴字段')
         }
@@ -159,10 +159,10 @@ export class TableDataGroupHelper {
     async prepareData(tableId: string, datasource: any,  datasourceConfigCache: any) {
         const table = await base.getTable(tableId);
         const fields = await table.getFieldMetaList()
-        console.log('prepare data fields',fields);
+        // console.log('prepare data fields',fields);
         // 获取数据
         const allRecords = await  this.loadAllRecordsForTable(table, datasourceConfigCache)
-        console.log('加载完当前 table 所以记录 ', allRecords,)
+        // console.log('加载完当前 table 所以记录 ', allRecords,)
         datasource.totalRowCount = allRecords.length
         datasource.allRecords[table.id] = allRecords
         // 根据配置面板数据准备数据
@@ -172,7 +172,7 @@ export class TableDataGroupHelper {
         let verticalField = fields.find(item => item.id === datasourceConfigCache.verticalField)
         let horizontalField = fields.find(item => item.id === datasourceConfigCache.horizontalField)
         const groupText = this.groupTextsFor(allRecords, groupField)
-        console.log(personField, groupField, verticalField, horizontalField, datasourceConfigCache, groupText)
+        // console.log(personField, groupField, verticalField, horizontalField, datasourceConfigCache, groupText)
         // 九个格子的数据未分组的数据数组
         let leftUpList = this.filterRecordsByInfo(allRecords, verticalField, 'up', horizontalField, 'left', datasourceConfigCache);
         let leftUpGroupList = this.groupRecordsByInfo(leftUpList, groupField, groupText);
