@@ -16,10 +16,10 @@ body {
 
 body[theme-mode="light"] {
     --svg-path-fill: #646A73;
-
+    --svg-path-fill-disable: #646A735f;
 }
 
 body[theme-mode="dark"] {
     --svg-path-fill: #ffffff;
-
+    --svg-path-fill-disable: #ffffff5f;
 }
