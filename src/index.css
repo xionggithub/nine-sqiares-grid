@@ -12,3 +12,14 @@ body {
 #root {
     height: 100%;
 }
+
+
+body[theme-mode="light"] {
+    --svg-path-fill: #646A73;
+
+}
+
+body[theme-mode="dark"] {
+    --svg-path-fill: #ffffff;
+
+}
