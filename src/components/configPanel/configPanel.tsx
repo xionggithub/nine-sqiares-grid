@@ -182,7 +182,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         datasourceConfig.personnelField = personnel;
         const config: any = datasourceConfig;
         let selectedIds = Object.values(config).filter(id => typeof id === 'string' && id.length > 0)
-        // console.log(selectedIds)
+        console.log(selectedIds)
         fields.forEach(item => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
             console.log(item.disabled, item.id)
@@ -440,9 +440,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             ['custom-option-render-disabled']: disabled,
             ['custom-option-render-selected']: selected,
         });
-        // const searchWords = [inputValue];
-        return  label.includes(inputValue) ? (
-            <div style={{ ...style, ...{ display: 'flex', flexDirection: 'row', padding: '8px 12px', cursor:'pointer', alignItems: 'center',...textColorStyle() } }}
+        return  (inputValue.length === 0 || label.toUpperCase().includes(inputValue.toUpperCase())) ? (
+            <div
+                style={{ ...style, ...{ opacity: disabled ? '0.6':'1.0', display: 'flex', flexDirection: 'row', padding: '8px 12px', cursor:'pointer', alignItems: 'center',...textColorStyle() } }}
                  className={optionCls}
                  onClick={() => onClick()}
                  onMouseEnter={e => onMouseEnter()}>
@@ -467,17 +467,6 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     const { textConfig, updateTextConfig } = useTextConfigStore(
         (state) => state,
     );
-
-
-    // const switchTheme = (theme: string) => {
-    //     const body = document.body;
-    //     body.removeAttribute('theme-mode');
-    //
-    //     body.setAttribute(
-    //         'theme-mode',
-    //         theme === ThemeModeType.LIGHT ? 'light' : 'dark',
-    //     );
-    // };
 
     useEffect(() => {
         // console.log('config panel useeffect', datasourceConfig, textConfig, datasource)
