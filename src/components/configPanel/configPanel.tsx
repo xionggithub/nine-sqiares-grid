@@ -38,6 +38,7 @@ import IconText from '../../assets/icon_text.svg?react';
 import IconSelect from '../../assets/icon_select.svg?react';
 import IconFunction from '../../assets/icon_function.svg?react';
 import IconFindReference from '../../assets/icon_find_reference.svg?react';
+import IconNumber from '../../assets/icon_number.svg?react';
 
 
 interface IConfigPanelPropsType {
@@ -404,6 +405,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         switch (type) {
             case 1:
                 return (<Icon svg={<IconText />} />)
+            case 2:
+                return (<Icon svg={<IconNumber />} />)
             case 3:
                 return (<Icon svg={<IconSelect />} />)
             case 11:
