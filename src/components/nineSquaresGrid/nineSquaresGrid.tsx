@@ -3,6 +3,7 @@ import {useDatasourceConfigStore, useDatasourceStore, useTextConfigStore} from '
 import {dashboard, DashboardState,} from '@lark-base-open/js-sdk';
 
 import "./index.css"
+import {a} from "vite/dist/node/types.d-aGj9QkWt";
 
 interface NineSquaresGridProps {
 
@@ -213,7 +214,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
         if (!field) return  ''
         if (!field.property?.options) return ''
         let optionIds = datasourceConfig.horizontalCategories[type]
-        let options = field.property.options.filter(item => optionIds.some(id => id === item.id));
+        let options = (field.property.options as any[]).filter(item => optionIds.some(id => id === item.id));
         if (options.length === 0) return  ''
         return options.map(item => item.name).join('/');
     }
@@ -240,7 +241,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
         if (!field) return  ''
         if (!field.property?.options) return ''
         let optionIds = datasourceConfig.verticalCategories[type]
-        let options = field.property.options.filter(item => optionIds.some(id => id === item.id));
+        let options = (field.property.options as any[]).filter(item => optionIds.some(id => id === item.id));
         if (options.length === 0) return  ''
         return options.map(item => item.name).join('/');
     }
@@ -258,7 +259,7 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
     }
 
     const cellTitle = (index: number) => {
-        return (textConfig[cellTitleKeyList[index]] ?? '') as string
+        return ((textConfig as any)[cellTitleKeyList[index]] ?? '') as string
     }
 
     return (
@@ -332,19 +333,19 @@ export  function NineSquaresGrid({}: NineSquaresGridProps) {
                                 { cellTitle(index) }
                             </div>
                             <div className='cell-header-right-text text-ellipsis'>
-                                {(datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).total}, {(datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).percent}%
+                                {((datasource as any)[item.valueKey] ?? { total: 0, percent: 0, list: [] }).total}, {((datasource as any)[item.valueKey] ?? { total: 0, percent: 0, list: [] }).percent}%
                             </div>
                         </div>
 
                         <div className="cell-content-scroll">
                             <div className="cell-content">
-                                { (datasource[item.valueKey] ?? { total: 0, percent: 0, list: [] }).list.map((group, index) => {
+                                { (((datasource as any)[item.valueKey] ?? { total: 0, percent: 0, list: [] }).list as any[]).map((group, index) => {
                                     return <div className="flex-column" style={{ rowGap: '6px' }} key={group.category + 'key' + index}>
                                         { group.category.length > 0 ? (<div className="cell-content-category" style={{ color: datasource.theme === 'light' ?  item.theme.light.titleColor :  item.theme.dark.titleColor }}>
                                             {group.category}
                                         </div>) : '' }
                                         <div className="cell-content-group" style={{ color: datasource.theme === 'light' ?  item.theme.light.textColor :  item.theme.dark.textColor, borderColor: group.category.length > 0 ? (datasource.theme === 'light' ?  item.theme.light.leftBorderColor :  item.theme.dark.leftBorderColor) : '', }}>
-                                            {group.persons.map((person, subIndex) => {
+                                            {(group.persons as string[]).map((person, subIndex) => {
                                                 return <div className='person-container' key={person + 'key' + subIndex}>
                                                     {/*<img src={personIcon} alt="" className="selection-icon" />*/}
                                                     <PersonIcon />

@@ -78,10 +78,11 @@ function App() {
         const fields = await table.getFieldMetaList()
         datasource.fields[tableId] = [...fields];
         // console.log('获取选中表的所有字段信息: ',datasource.fields);
-        datasource.dataRanges[tableId] = (await dashboard.getTableDataRange(tableId)).map(item => ({
+        const tableDataRange: any[] =  await dashboard.getTableDataRange(tableId)
+        datasource.dataRanges[tableId] = tableDataRange.map(item => ({
             type: item.type,
-            viewId: item['viewId'],
-            viewName:item['viewName']
+            viewId: item.viewId,
+            viewName:item.viewName
         }))
         datasourceConfig.dataRange = 'All';
         console.log('获取表数据范围: ',datasource.dataRanges);

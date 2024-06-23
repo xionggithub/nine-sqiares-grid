@@ -127,10 +127,11 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             const table = await base.getTable(tableId);
             allRecords = await dataHelper.loadAllRecordsForTable(table, datasourceConfigCache)
         }
-        datasource.dataRanges[tableId] = (await dashboard.getTableDataRange(tableId)).map(item => ({
+        const tableDataRange: any[] = await dashboard.getTableDataRange(tableId)
+        datasource.dataRanges[tableId] = tableDataRange.map(item => ({
             type: item.type,
-            viewId: item['viewId'],
-            viewName:item['viewName']
+            viewId: item.viewId,
+            viewName:item.viewName
         }))
         setDataRangeList([...datasource.dataRanges[tableId]])
 
@@ -169,7 +170,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         setFields(addNoneForList(fields.filter(item => dataHelper.supportedFiled(item.type))))
     }
 
-    const tableDataRangeChange = (range) => {
+    const tableDataRangeChange = (range: string) => {
         datasourceConfig.dataRange = range
         updateDatasourceConfig({...(datasourceConfig as any)})
         datasourceConfigCache = {...datasourceConfig}
@@ -213,7 +214,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         let field = fields.find(item => item.id === datasourceConfig.horizontalField)
         if (field && field.property?.options) {
             // console.log('----field::', field)
-            let options = field.property.options.map(item => ({ ...item, disabled: false}))
+            let options = (field.property.options as any[]).map(item => ({ ...item, disabled: false}))
 
             if (options.length === 1) {
                 options[0].disabled = true
@@ -260,7 +261,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         let field = fields.find(item => item.id === datasourceConfig.verticalField)
         if (field) {
             // console.log('----field::', field)
-            let options = field.property.options.map(item => ({ ...item, disabled: false}))
+            let options = (field.property.options as  any[]).map(item => ({ ...item, disabled: false}))
             if (options.length === 1) {
                 options[0].disabled = true
                 verticalCategories.up = [options[0].id]
@@ -291,8 +292,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         })
     }
 
-    const onGroupChange = (selectValue) => {
-        datasourceConfig.groupField = selectValue as string;
+    const onGroupChange = (selectValue: string) => {
+        datasourceConfig.groupField = selectValue;
         // console.log(selectValue, 'gropu')
         let selectedIds = Object.values((datasourceConfig as any)).filter(id => typeof id === 'string' && id.length > 0)
         fields.forEach(item => {
@@ -341,14 +342,14 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     // custom options style
 
-    const renderPersonSelectedItem = optionNode => (
+    const renderPersonSelectedItem = (optionNode: any) => (
         <div style={{ display: 'flex', alignItems: 'center',...textColorStyle() }}>
             <Icon svg={<IconPerson />} />
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
         </div>
     );
 
-    const renderTableSelectedItem = optionNode => (
+    const renderTableSelectedItem = (optionNode: any) => (
         <div style={{ display: 'flex', alignItems: 'center', ...textColorStyle() }}>
             <Icon svg={<IconTable />} />
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
@@ -364,7 +365,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         });
         return cls.join(' ');
     }
-    const renderTableOptionItem = renderProps => {
+    const renderTableOptionItem = (renderProps: any) => {
         const {
             disabled,
             selected,
@@ -420,7 +421,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         }
     }
 
-    const renderFieldOptionItem = renderProps => {
+    const renderFieldOptionItem = (renderProps: any) => {
         const {
             disabled,
             selected,
@@ -457,7 +458,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         ) : ''
     };
 
-    const renderSelectOptionSelectedItem = optionNode => (
+    const renderSelectOptionSelectedItem = (optionNode: any) => (
         <div style={{ display: 'flex', alignItems: 'center', ...textColorStyle() }}>
             <Icon svg={<IconChoose />} />
             <span style={{ marginLeft: 8 }}>{optionNode.label}</span>
@@ -484,14 +485,14 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         let field = datasource.fields[datasourceConfig.tableId].find(item => item.id === datasourceConfig.verticalField)
         // console.log(field, '11')
         if (field) {
-            let options = field.property.options.map(item => ({ ...item, disabled: (Object.values(datasourceConfig.verticalCategories)).flat().some(id => id === item.id)}))
+            let options = (field.property.options as any[]).map(item => ({ ...item, disabled: (Object.values(datasourceConfig.verticalCategories)).flat().some(id => id === item.id)}))
             console.log(options)
             setVerticalCategoryOptions([...options])
         }
         let field1 = datasource.fields[datasourceConfig.tableId].find(item => item.id === datasourceConfig.horizontalField)
         // console.log(field1, '22')
         if (field1) {
-            let options = field1.property.options.map(item => ({ ...item, disabled: (Object.values(datasourceConfig.horizontalCategories)).flat().some(id => id === item.id)}))
+            let options = (field1.property.options as any[]).map(item => ({ ...item, disabled: (Object.values(datasourceConfig.horizontalCategories)).flat().some(id => id === item.id)}))
             console.log(options)
             setHorizontalCategoryOptions([...options])
         }
@@ -573,7 +574,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         }
     }
 
-    function searchLabel(sugInput, option) {
+    function searchLabel(sugInput: string, option: any) {
         let label = option.label.toUpperCase();
         let sug = sugInput.toUpperCase();
         return label.includes(sug);
@@ -1044,7 +1045,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 style={{ width: 300,...textColorStyle() }}
                                                 remote={true}
                                                 initValue={datasourceConfig.groupField}
-                                                onChange={async (selectValue) => onGroupChange(selectValue)}
+                                                onChange={async (selectValue) => onGroupChange(selectValue as string)}
                                                 renderSelectedItem={renderSelectOptionSelectedItem}
                                                 optionList={fields.map((item) => {
                                                     const { id, name, disabled, type } = item as any;
