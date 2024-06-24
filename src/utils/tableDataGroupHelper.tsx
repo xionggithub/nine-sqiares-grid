@@ -27,6 +27,26 @@ export class TableDataGroupHelper {
         return [1, 3, 11, 19, 20].some(type => type === fieldType);
     }
 
+    async findAvailableTableForRender(tableList: any[], index: number): Promise<{ tableId: string, fields: any[] } | undefined> {
+        // 找个 有 type 3 单选  type 11 人员 字段的表，而且 type 3 的 字段大于等于 2，
+        let result: { tableId: string, fields: any[] } | undefined = undefined;
+        const findTableItem = tableList[index];
+        if (!findTableItem) return  undefined;
+        const table = await base.getTable(findTableItem.tableId);
+        const fields = (await table.getFieldMetaList()) as any[]
+        // 找到 有两个以上 数字字段的表
+        const userFields = fields.filter(field => field.type === 11)
+        const optionFields = fields.filter(field => field.type === 3)
+        if (userFields.length > 0 && optionFields.length >= 2) {
+            result = { tableId: findTableItem.tableId, fields: fields };
+            return result
+        }
+        if (index < tableList.length - 1) {
+            return await this.findAvailableTableForRender(tableList, index + 1);
+        }
+        return undefined;
+    }
+
     async loadAllRecordsForTable(table: ITable, dataSourceConfig: IDatasourceConfigType): Promise<IRecord[]> {
         let allRecords: IRecord[] = [];
         // 分页加载，每次加载 5000 条 直到加载完数据
@@ -117,7 +137,7 @@ export class TableDataGroupHelper {
         });
         const list = displayInfo.filter(item => item.persons.length > 0)
         const total = list.map(item => item.persons).flat().length
-        console.log('mapRecordByDisplayInfo:::::::::::',list, displayInfo, total, totalRowCount, (total*100)/totalRowCount)
+        // console.log('mapRecordByDisplayInfo:::::::::::',list, displayInfo, total, totalRowCount, (total*100)/totalRowCount)
         return { total, percent: Math.floor((total*100*100)/totalRowCount)/100.0, list };
     }
 
@@ -142,7 +162,7 @@ export class TableDataGroupHelper {
         // console.log(JSON.parse(JSON.stringify(filteredRecord)))
         if (horizontalField) {
             let optionIds: string[] = datasourceConfigCache.horizontalCategories[horizontalType] ?? [];
-            console.log(horizontalType,optionIds)
+            // console.log(horizontalType,optionIds)
             filteredRecord = filteredRecord.filter(item => optionIds.some(id => {
                 let itemFieldInfo = ((item.fields[horizontalField.id]) instanceof Array) ? (item.fields[horizontalField.id] as any[])[0] : (item.fields[horizontalField.id]);
                 const itemId = itemFieldInfo ? itemFieldInfo['id'] : ''
