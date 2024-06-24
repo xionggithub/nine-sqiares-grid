@@ -70,7 +70,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     const [personnelFieldId, setPersonnelFieldId] = useState<string>(datasourceConfig.personnelField)
     const [horizontalFieldId, setHorizontalFieldId] = useState<string>(datasourceConfig.horizontalField)
     const [verticalFieldId, setVerticalFieldId] = useState<string>(datasourceConfig.verticalField)
-
+    const [groupFieldId, setGroupFieldId] = useState<string>(datasourceConfig.groupField)
 
 
     // 保存竖轴选择完字段后子分类的选项数据
@@ -152,6 +152,8 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         setVerticalFieldId('')
         datasourceConfig.personnelField = ''
         setPersonnelFieldId('')
+        datasourceConfig.groupField = ''
+        setGroupFieldId('')
         datasourceConfig.horizontalCategories = {
             left: [''],
             middle: [''],
@@ -316,7 +318,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const onGroupChange = (selectValue: string) => {
         datasourceConfig.groupField = selectValue;
-        // console.log(selectValue, 'gropu')
+        setGroupFieldId(selectValue)
         let selectedIds = Object.values((datasourceConfig as any)).filter(id => typeof id === 'string' && id.length > 0)
         fields.forEach(item => {
             item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
@@ -686,10 +688,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         <div className="selection-field">
                                             <div className="selection-title" style={{ marginBottom: '8px' }}>{t('data_source')}</div>
                                             <Select
-                                                field="tableId"
-                                                noLabel={true}
                                                 style={{ width: 300, ...textColorStyle() }}
-                                                initValue={tableId}
                                                 defaultValue={tableId}
                                                 value={tableId}
                                                 renderSelectedItem={renderTableSelectedItem}
@@ -705,12 +704,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         <div className="selection-field">
                                             <div className="selection-title" style={{ marginBottom: '8px' }}>{t('data_range')}</div>
                                             <Select
-                                                field="dataRange"
-                                                noLabel={true}
                                                 style={{ width: 300, ...textColorStyle() }}
                                                 key={dataRangeId}
                                                 remote={true}
-                                                initValue={dataRangeId}
                                                 defaultValue={dataRangeId}
                                                 value={dataRangeId}
                                                 onChange={(selectedValue) => tableDataRangeChange(selectedValue as string)}
@@ -738,14 +734,11 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                         <div className="selection-field">
                                             <div className="selection-title" style={{ marginBottom: '8px' }}>{t('personnel')}</div>
                                             <Select
-                                                field="personnel"
                                                 filter
-                                                noLabel={true}
                                                 style={{ width: 300,...textColorStyle() }}
                                                 remote={true}
                                                 defaultValue={personnelFieldId}
                                                 value={personnelFieldId}
-                                                initValue={personnelFieldId}
                                                 onChange={async (selectValue) => choosePersonField(selectValue as string)}
                                                 renderSelectedItem={renderPersonSelectedItem}
                                                 optionList={fields.map((item) => {
@@ -766,12 +759,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
                                                 <div className="selection-card-title">{t('chooseField')}</div>
                                                 <Select
-                                                    field="horizontalField"
-                                                    noLabel={true}
                                                     style={{ width: '100%' }}
                                                     filter={searchLabel}
                                                     remote={true}
-                                                    initValue={horizontalFieldId}
                                                     defaultValue={horizontalFieldId}
                                                     value={horizontalFieldId}
                                                     renderSelectedItem={renderSelectOptionSelectedItem}
@@ -795,12 +785,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {horizontalCategories.left.map((id, index) => {
                                                     return (<div className="delete-able-select-container" key={id + ' '+ index}>
                                                         <Select
-                                                            field={'horizontalLeftValues'+index}
-                                                            noLabel={true}
                                                             key={id}
                                                             style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
-                                                            initValue={id}
                                                             defaultValue={id}
                                                             value={id}
                                                             onSelect={ (selectValue) => {
@@ -846,12 +833,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                     // console.log('horizontalCategories middle', id, index)
                                                     return (<div className="delete-able-select-container" key={id + ' ' + index}>
                                                         <Select
-                                                            field={'horizontalMiddleValue'+index}
-                                                            noLabel={true}
                                                             style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
                                                             key={id}
-                                                            initValue={id}
                                                             defaultValue={id}
                                                             value={id}
                                                             onSelect={ (selectValue) => {
@@ -895,12 +879,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {horizontalCategories.right.map((id, index) => {
                                                     return (<div className="delete-able-select-container" key={id +' ' + index}>
                                                         <Select
-                                                            field={'horizontalRightValue'+index}
-                                                            noLabel={true}
                                                             key={id}
                                                             style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
-                                                            initValue={id}
                                                             defaultValue={id}
                                                             value={id}
                                                             onSelect={ (selectValue) => {
@@ -949,12 +930,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
                                                 <div className="selection-card-title" style={textColorStyle()}>{t('chooseField')}</div>
                                                 <Select
-                                                    field="verticalField"
-                                                    noLabel={true}
                                                     filter={searchLabel}
                                                     style={{ width: '100%',...textColorStyle() }}
                                                     remote={true}
-                                                    initValue={verticalFieldId}
                                                     defaultValue={verticalFieldId}
                                                     value={verticalFieldId}
                                                     renderSelectedItem={renderSelectOptionSelectedItem}
@@ -979,12 +957,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {verticalCategories.up.map((id, index) => {
                                                     return (<div className="delete-able-select-container" key={id + ' '+ index}>
                                                         <Select
-                                                            field={'verticalUpValue'+index}
-                                                            noLabel={true}
                                                             key={id}
                                                             style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
-                                                            initValue={id}
                                                             defaultValue={id}
                                                             value={id}
                                                             onSelect={ (selectValue) => {
@@ -1031,12 +1006,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {verticalCategories.middle.map((id, index) => {
                                                     return (<div className="delete-able-select-container" key={id + ' '+ index}>
                                                         <Select
-                                                            field={'verticalMiddleValue'+index}
-                                                            noLabel={true}
                                                             key={id}
                                                             style={{ width: '100%',...textColorStyle() }}
                                                             remote={true}
-                                                            initValue={id}
                                                             defaultValue={id}
                                                             value={id}
                                                             onSelect={ (selectValue) => {
@@ -1047,7 +1019,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                                     verticalCategories.middle[index] = value
                                                                 }
                                                                 let selectedIds = Object.values(verticalCategories).flat().filter(id => id.length > 0)
-                                                                console.log(selectedIds, Object.values(verticalCategories))
+                                                                // console.log(selectedIds, Object.values(verticalCategories))
                                                                 verticalCategoryOptions.forEach(item => {
                                                                     item.disabled = selectedIds.findIndex(id => id === item.id) !== -1;
                                                                     console.log(item.disabled, item.id)
@@ -1081,12 +1053,9 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                                 {verticalCategories.down.map((id, index) => {
                                                     return (<div className="delete-able-select-container" key={id + ' '+ index}>
                                                         <Select
-                                                            field={'verticalDownValue'+index}
-                                                            noLabel={true}
                                                             style={{ width: '100%',...textColorStyle() }}
                                                             key={id}
                                                             id={id}
-                                                            initValue={id}
                                                             defaultValue={id}
                                                             value={id}
                                                             onSelect={ (selectValue) => {
@@ -1130,13 +1099,12 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
                                         <div className="selection-field">
                                             <div className="selection-title" style={{ marginBottom: '8px' }}>{t('group')}</div>
-                                            <Form.Select
-                                                field="group"
-                                                noLabel={true}
+                                            <Select
                                                 filter={searchLabel}
                                                 style={{ width: 300,...textColorStyle() }}
                                                 remote={true}
-                                                initValue={datasourceConfig.groupField}
+                                                defaultValue={groupFieldId}
+                                                value={groupFieldId}
                                                 onChange={async (selectValue) => onGroupChange(selectValue as string)}
                                                 renderSelectedItem={renderSelectOptionSelectedItem}
                                                 optionList={fields.map((item) => {
