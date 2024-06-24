@@ -15,7 +15,7 @@ import {
     Input,
     Button,
     Divider,
-    Select
+    Select, Toast
 } from '@douyinfe/semi-ui';
 import Icon, {IconDeleteStroked, IconPlus} from '@douyinfe/semi-icons';
 import { IconTick } from '@douyinfe/semi-icons';
@@ -39,6 +39,7 @@ import IconSelect from '../../assets/icon_select.svg?react';
 import IconFunction from '../../assets/icon_function.svg?react';
 import IconFindReference from '../../assets/icon_find_reference.svg?react';
 import IconNumber from '../../assets/icon_number.svg?react';
+import config from "tailwindcss/defaultConfig";
 
 
 interface IConfigPanelPropsType {
@@ -53,19 +54,25 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
 
     const { t, i18n } = useTranslation();
-    const [personSearchValue, setPersonSearchValue] = useState('');
-    const [horizontalAxisSearchValue, setHorizontalAxisSearchValue] = useState('');
-    const [verticalAxisSearchValue, setVerticalAxisSearchValue] = useState('');
 
-    const [tableList, setTableList] = useState(tables);
-    const [dataRangeList, setDataRangeList] = useState(dataRanges);
 
     // 类型与数据
     const { datasourceConfig, updateDatasourceConfig } = useDatasourceConfigStore((state) => state);
     const { datasource, updateDatasource } = useDatasourceStore((state) => state);
 
+
+    const [tableList, setTableList] = useState(tables);
+    const [dataRangeId, setDataRangeId] = useState<string>(datasourceConfig.dataRange)
+    const [dataRangeList, setDataRangeList] = useState(dataRanges);
+
     // 保存选择表的字段数据
     const [fields, setFields] = useState<{ [key: string]: any }[]>([])
+    const [personnelFieldId, setPersonnelFieldId] = useState<string>(datasourceConfig.personnelField)
+    const [horizontalFieldId, setHorizontalFieldId] = useState<string>(datasourceConfig.horizontalField)
+    const [verticalFieldId, setVerticalFieldId] = useState<string>(datasourceConfig.verticalField)
+
+
+
     // 保存竖轴选择完字段后子分类的选项数据
     const [verticalCategoryOptions, setVerticalCategoryOptions] = useState<{ [key: string]: any }[]>([])
     const [verticalCategories, setVerticalCategories] = useState<{ up: string[], middle: string[], down: string[] }>({
@@ -135,35 +142,40 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
         }))
         setDataRangeList([...datasource.dataRanges[tableId]])
 
-        if (datasourceConfig.tableId !== tableId) {
-            datasourceConfig.horizontalField = ''
-            datasourceConfig.verticalField = ''
-            datasourceConfig.personnelField = ''
-            datasourceConfig.horizontalCategories = {
-                left: [''],
-                middle: [''],
-                right: ['']
-            }
-            datasourceConfig.verticalCategories = {
-                up: [''],
-                middle: [''],
-                down: ['']
-            }
-            datasourceConfig.tableId = tableId
-            datasource.leftDownValue =  { total: 0, percent: 0, list: [] }
-            datasource.middleDownValue = { total: 0, percent: 0, list: [] }
-            datasource.rightDownValue = { total: 0, percent: 0, list: [] }
-            datasource.leftMiddleValue = { total: 0, percent: 0, list: [] }
-            datasource.middleMiddleValue = { total: 0, percent: 0, list: [] }
-            datasource.rightMiddleValue = { total: 0, percent: 0, list: [] }
-            datasource.leftUpValue = { total: 0, percent: 0, list: [] }
-            datasource.middleUpValue = { total: 0, percent: 0, list: [] }
-            datasource.rightUpValue = { total: 0, percent: 0, list: [] }
+        console.log(datasourceConfig.tableId, tableId, '---------------hhhaahhh')
+        datasourceConfig.horizontalField = ''
+        setHorizontalFieldId('')
+        datasourceConfig.verticalField = ''
+        setVerticalFieldId('')
+        datasourceConfig.personnelField = ''
+        setPersonnelFieldId('')
+        datasourceConfig.horizontalCategories = {
+            left: [''],
+            middle: [''],
+            right: ['']
         }
+        datasourceConfig.verticalCategories = {
+            up: [''],
+            middle: [''],
+            down: ['']
+        }
+        datasourceConfig.tableId = tableId
+        datasource.leftDownValue =  { total: 0, percent: 0, list: [] }
+        datasource.middleDownValue = { total: 0, percent: 0, list: [] }
+        datasource.rightDownValue = { total: 0, percent: 0, list: [] }
+        datasource.leftMiddleValue = { total: 0, percent: 0, list: [] }
+        datasource.middleMiddleValue = { total: 0, percent: 0, list: [] }
+        datasource.rightMiddleValue = { total: 0, percent: 0, list: [] }
+        datasource.leftUpValue = { total: 0, percent: 0, list: [] }
+        datasource.middleUpValue = { total: 0, percent: 0, list: [] }
+        datasource.rightUpValue = { total: 0, percent: 0, list: [] }
+
         fields = fields.map(item => ({ ...item, disabled: false }))
         datasource.fields[tableId] = [...fields];
         datasource.tableId = tableId
         datasource.allRecords[tableId] = allRecords
+        datasourceConfig.dataRange = 'All';
+        setDataRangeId('All');
         console.log('change table---------',datasource, datasourceConfig, fields, fields.filter(item => dataHelper.supportedFiled(item.type)))
         updateDatasource((datasource as any))
         updateDatasourceConfig({...(datasourceConfig as any)})
@@ -172,6 +184,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const tableDataRangeChange = (range: string) => {
         datasourceConfig.dataRange = range
+        setDataRangeId(range);
         updateDatasourceConfig({...(datasourceConfig as any)})
         datasourceConfigCache = {...datasourceConfig}
         console.log('on data range selected ', range)
@@ -182,6 +195,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     const choosePersonField = (personnel: string) => {
         datasourceConfig.personnelField = personnel;
+        setPersonnelFieldId(personnel)
         const config: any = datasourceConfig;
         let selectedIds = Object.values(config).filter(id => typeof id === 'string' && id.length > 0)
         console.log(selectedIds)
@@ -201,6 +215,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     const chooseHorizontalAxisField = (horizontalField: string) => {
         // console.log('on horizontalAxis selected ', horizontalField, datasourceConfig)
         datasourceConfig.horizontalField = horizontalField;
+        setHorizontalFieldId(horizontalField)
         horizontalCategories.left = ['']
         horizontalCategories.middle = [''];
         horizontalCategories.right = [''];
@@ -249,6 +264,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
     const chooseVerticalAxisField = (verticalField: string) => {
         // console.log('on verticalAxis selected ', verticalField, datasourceConfig)
         datasourceConfig.verticalField = verticalField;
+        setVerticalFieldId(verticalField)
         verticalCategories.up = ['']
         verticalCategories.middle = [''];
         verticalCategories.down = [''];
@@ -532,6 +548,22 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
     // 保存配置
     const saveConfig = () => {
+        if (!datasourceConfig.tableId) {
+            Toast.error(t('tablePlaceholder'));
+            return;
+        }
+        if (!datasourceConfig.personnelField) {
+            Toast.error(t('personFieldPlaceholder'));
+            return;
+        }
+        if (!datasourceConfig.horizontalField) {
+            Toast.error(t('horizontalAxisFieldPlaceholder'));
+            return;
+        }
+        if (!datasourceConfig.verticalField) {
+            Toast.error(t('verticalAxisFieldPlaceholder'));
+            return;
+        }
         datasourceConfig.horizontalCategories = {...horizontalCategories}
         datasourceConfig.verticalCategories = {...verticalCategories}
         updateDatasourceConfig({ ...(datasourceConfig as any) });
@@ -615,11 +647,13 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                     <div className="flex-column form-list">
                                         <div className="selection-field">
                                             <div className="selection-title" style={{ marginBottom: '8px' }}>{t('data_source')}</div>
-                                            <Form.Select
+                                            <Select
                                                 field="tableId"
                                                 noLabel={true}
                                                 style={{ width: 300, ...textColorStyle() }}
                                                 initValue={datasourceConfig.tableId}
+                                                defaultValue={datasourceConfig.tableId}
+                                                value={datasourceConfig.tableId}
                                                 renderSelectedItem={renderTableSelectedItem}
                                                 onChange={ async (selectValue) => chooseTable(selectValue as string)}
                                                 optionList={tableList.map((source) => ({
@@ -632,13 +666,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
                                         <div className="selection-field">
                                             <div className="selection-title" style={{ marginBottom: '8px' }}>{t('data_range')}</div>
-                                            <Form.Select
+                                            <Select
                                                 field="dataRange"
                                                 noLabel={true}
                                                 style={{ width: 300, ...textColorStyle() }}
-                                                key={datasourceConfig.dataRange}
+                                                key={dataRangeId}
                                                 remote={true}
-                                                initValue={datasourceConfig.dataRange}
+                                                initValue={dataRangeId}
+                                                defaultValue={dataRangeId}
+                                                value={dataRangeId}
                                                 onChange={(selectedValue) => tableDataRangeChange(selectedValue as string)}
                                                 renderSelectedItem={renderTableSelectedItem}
                                                 optionList={dataRangeList.map((range) => {
@@ -663,13 +699,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
                                         <div className="selection-field">
                                             <div className="selection-title" style={{ marginBottom: '8px' }}>{t('personnel')}</div>
-                                            <Form.Select
+                                            <Select
                                                 field="personnel"
                                                 filter
                                                 noLabel={true}
                                                 style={{ width: 300,...textColorStyle() }}
                                                 remote={true}
-                                                initValue={datasourceConfig.personnelField}
+                                                defaultValue={personnelFieldId}
+                                                value={personnelFieldId}
+                                                initValue={personnelFieldId}
                                                 onChange={async (selectValue) => choosePersonField(selectValue as string)}
                                                 renderSelectedItem={renderPersonSelectedItem}
                                                 optionList={fields.map((item) => {
@@ -689,13 +727,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
                                             <div className="selection-title" style={{ marginBottom: '8px' }}>{t('horizontalAxis')}</div>
                                             <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
                                                 <div className="selection-card-title">{t('chooseField')}</div>
-                                                <Form.Select
+                                                <Select
                                                     field="horizontalField"
                                                     noLabel={true}
                                                     style={{ width: '100%' }}
                                                     filter={searchLabel}
                                                     remote={true}
-                                                    initValue={datasourceConfig.horizontalField}
+                                                    initValue={horizontalFieldId}
+                                                    defaultValue={horizontalFieldId}
+                                                    value={horizontalFieldId}
                                                     renderSelectedItem={renderSelectOptionSelectedItem}
                                                     onChange={async (selectValue) => chooseHorizontalAxisField(selectValue as string)}
                                                     optionList={fields.map((item) => {
@@ -864,13 +904,15 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
 
                                             <div className="selection-card" style={{ ...textColorStyle(), ...cardColorStyle()}}>
                                                 <div className="selection-card-title" style={textColorStyle()}>{t('chooseField')}</div>
-                                                <Form.Select
+                                                <Select
                                                     field="verticalField"
                                                     noLabel={true}
                                                     filter={searchLabel}
                                                     style={{ width: '100%',...textColorStyle() }}
                                                     remote={true}
-                                                    initValue={datasourceConfig.verticalField}
+                                                    initValue={verticalFieldId}
+                                                    defaultValue={verticalFieldId}
+                                                    value={verticalFieldId}
                                                     renderSelectedItem={renderSelectOptionSelectedItem}
                                                     onChange={async (selectValue) => chooseVerticalAxisField(selectValue as string)}
                                                     optionList={fields.map((item) => {
