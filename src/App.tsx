@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { NineSquaresGrid } from "./components/nineSquaresGrid";
 import { ConfigPanel } from "./components/configPanel";
-import {base, dashboard, DashboardState, bitable, SourceType} from "@lark-base-open/js-sdk";
+import { base, dashboard, DashboardState, bitable, IDataCondition } from "@lark-base-open/js-sdk";
 import { useDatasourceConfigStore, useDatasourceStore, useTextConfigStore } from './store';
 import { TableDataGroupHelper, IDatasourceConfigCacheType } from "./utils/tableDataGroupHelper";
 import Icon, {IconDeleteStroked, IconPlus} from '@douyinfe/semi-icons';
 import IconLoading from './assets/icon_loading.svg?react';
-import IconTable from "*.svg?react";
 
 function App() {
 
@@ -116,7 +115,16 @@ function App() {
             if (dashboard.state !== DashboardState.Create) {
                 console.log('load config')
                 dashboard.getConfig().then((config) => {
+                    console.log(config, 'load config finish')
                     const customConfig: any = config.customConfig
+                    const dataConditions: IDataCondition[] = config.dataConditions
+                    // 主要处理 复制模版 custom config 中的数据不会被动态替换，导致复制模版获取的 table id 不对
+                    if (dataConditions.length > 0) {
+                        const firstCondition = dataConditions[0];
+                        if (firstCondition.tableId) {
+                            customConfig.datasourceConfig.tableId = firstCondition.tableId
+                        }
+                    }
                     console.log('获取到 config start========：', config, textConfig, datasourceConfig, {...datasourceConfig, ...customConfig.datasourceConfig});
                     updateDatasourceConfig({...datasourceConfig, ...customConfig.datasourceConfig})
                     updateTextConfig({...textConfig, ...customConfig.textConfig})
