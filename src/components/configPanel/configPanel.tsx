@@ -573,7 +573,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             return false;
         }
 
-        if (!(Object.values(datasourceConfig.horizontalCategories) as string[][]).some(list => list.length === 0)) {
+        if ((Object.values(datasourceConfig.horizontalCategories) as string[][]).some(list => list.length === 0)) {
             if (datasourceConfig.horizontalCategories.left.length === 0) {
                 Toast.error(t('horizontalAxisLeftFieldPlaceholder'));
             }
@@ -585,7 +585,7 @@ export const ConfigPanel: FC<IConfigPanelPropsType> = (props) => {
             }
             return false;
         }
-        if (!(Object.values(datasourceConfig.verticalCategories) as string[][]).some(list => list.length === 0)) {
+        if ((Object.values(datasourceConfig.verticalCategories) as string[][]).some(list => list.length === 0)) {
             if (datasourceConfig.verticalCategories.up.length === 0) {
                 Toast.error(t('verticalAxisUpFieldPlaceholder'));
             }
