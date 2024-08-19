@@ -180,6 +180,14 @@ function App() {
         console.log('------------------------------------------------------数据已经准备好: ',datasource, new Date().toISOString())
         // 强制刷新
         setIsLoading(false)
+
+        // 渲染完通知 宿主
+        setTimeout(() => {
+            console.log('------------------------------------------------------渲染完成 ');
+            dashboard.setRendered().then( res => {
+                console.log('set rendered: ',res);
+            })
+        }, 1000);
     }
 
     function updateTheme(theme: string) {
