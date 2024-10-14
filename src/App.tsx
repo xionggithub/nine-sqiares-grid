@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { NineSquaresGrid } from "./components/nineSquaresGrid";
 import { ConfigPanel } from "./components/configPanel";
-import {base, dashboard, DashboardState, bitable, IDataCondition, ITable} from "@lark-base-open/js-sdk";
+import { base, dashboard, DashboardState, bitable, IDataCondition, ITable } from "@lark-base-open/js-sdk";
 import { useDatasourceConfigStore, useDatasourceStore, useTextConfigStore } from './store';
 import { TableDataGroupHelper, IDatasourceConfigCacheType } from "./utils/tableDataGroupHelper";
-import Icon, {IconDeleteStroked, IconPlus} from '@douyinfe/semi-icons';
+import Icon, { IconDeleteStroked, IconPlus } from '@douyinfe/semi-icons';
 import IconLoading from './assets/icon_loading.svg?react';
+import '@lark-base-open/js-sdk/dist/style/dashboard.css';
 
 function App() {
 
@@ -122,16 +123,16 @@ function App() {
     }
 
     async function initConfigData(id: string | null) {
-        console.log('-----------------------------------------------更新表格数据', id, dashboard.state);
         //LIGHT = "LIGHT", DARK = "DARK"
-        const theme = await bitable.bridge.getTheme()
-        if (theme === 'LIGHT') {
+        //dashboard 2.0
+        const theme = await dashboard.getTheme();//bitable.bridge.getTheme()
+        if (theme.theme === 'LIGHT') {
             datasource.theme = 'light'
         } else {
             datasource.theme = 'dark'
         }
         console.log(theme, '++++++++++++++++++')
-        updateTheme(theme.toLocaleLowerCase())
+        updateTheme(theme.theme.toLocaleLowerCase())
         const tableIdList = await base.getTableList();
         // console.log('获取表 id 列表: ',tableIdList)
         const tableList = await Promise.all(getTableList(tableIdList));
@@ -195,16 +196,28 @@ function App() {
     }
 
     useEffect(() => {
-        bitable.bridge.onThemeChange((event) => {
-            console.log('theme change', event.data.theme);
-            if (event.data.theme === 'LIGHT') {
+        // bitable.bridge.onThemeChange((event) => {
+        //     console.log('theme change', event.data.theme);
+        //     if (event.data.theme === 'LIGHT') {
+        //         datasource.theme = 'light'
+        //     } else {
+        //         datasource.theme = 'dark'
+        //     }
+        //     updateTheme(event.data.theme.toLocaleLowerCase())
+        //     updateDatasource({ ...(datasource as any) })
+        // });
+        //dashboard 2.0
+        dashboard.onThemeChange(theme => {
+            console.log('theme change', theme.data.theme);
+            if (theme.data.theme === 'LIGHT') {
                 datasource.theme = 'light'
             } else {
                 datasource.theme = 'dark'
             }
-            updateTheme(event.data.theme.toLocaleLowerCase())
+            updateTheme(theme.data.theme.toLocaleLowerCase())
             updateDatasource({ ...(datasource as any) })
         });
+
         async function getConfig() {
             // 先获取保存的配置数据
             if (dashboard.state !== DashboardState.Create) {
